@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelShield - Real-Time Financial Fraud Detection Engine & Drift Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="glow-container">
+    <div class="glow-orb" id="orb-1"></div>
+    <div class="glow-orb" id="orb-2"></div>
+  </div>
+
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-icon">🛡️</div>
+      <div class="logo-text">
+        <h1>SentinelShield</h1>
+        <span>Real-Time Statistical Inference & Drift Monitoring</span>
+      </div>
+    </div>
+    <div class="system-status">
+      <div class="status-indicator live"></div>
+      <span class="status-label">Kafka Stream Active</span>
+      <span class="status-divider">|</span>
+      <span class="env-badge">Production Engine</span>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    <!-- Row 1: Real-time Ingestion Metrics -->
+    <section class="metrics-container col-span-3">
+      <div class="metric-card">
+        <span class="metric-title">Ingestion Rate</span>
+        <div class="metric-value-row">
+          <span class="metric-value" id="val-rate">1,250</span>
+          <span class="metric-unit">txn/sec</span>
+        </div>
+        <div class="metric-trend green">↑ 4.2% vs baseline</div>
+      </div>
+      <div class="metric-card">
+        <span class="metric-title">Offset Lag</span>
+        <div class="metric-value-row">
+          <span class="metric-value" id="val-lag">0</span>
+          <span class="metric-unit">events</span>
+        </div>
+        <div class="metric-trend green">Consumer caught up</div>
+      </div>
+      <div class="metric-card">
+        <span class="metric-title">Isolation Threshold</span>
+        <div class="metric-value-row">
+          <span class="metric-value">0.68</span>
+          <span class="metric-unit">anomaly score</span>
+        </div>
+        <div class="metric-trend yellow">Calibrated via SMOTE</div>
+      </div>
+      <div class="metric-card highlight-card" id="drift-status-card">
+        <span class="metric-title">Evidently AI Drift Tracker</span>
+        <div class="metric-value-row">
+          <span class="metric-value" id="val-drift">STABLE</span>
+        </div>
+        <div class="metric-trend" id="val-drift-sub">KS-Test: p = 0.842</div>
+      </div>
+    </section>
+
+    <!-- Row 2 Column 1: Ingested Kafka Transactions -->
+    <section class="panel-card stream-panel col-span-2">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="icon">📟</span>
+          <h2>Kafka Live Consumer Stream</h2>
+        </div>
+        <div class="stream-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-pause-stream">Pause Feed</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table class="transaction-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Location</th>
+              <th>Amount ($)</th>
+              <th>Category</th>
+              <th>Path Depth</th>
+              <th>Fraud Risk</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="transaction-stream-body">
+            <!-- Simulated rows inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Row 2 Column 2: Isolation Forest Path Tester -->
+    <section class="panel-card test-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="icon">🔬</span>
+          <h2>Transaction Outlier Sandbox</h2>
+        </div>
+      </div>
+      <div class="form-container">
+        <p class="section-desc">Submit a transaction payload to test the Isolation Forest path length:</p>
+        <div class="form-group">
+          <label>Transaction Amount ($)</label>
+          <input type="number" id="input-amount" value="85" min="1">
+        </div>
+        <div class="form-group">
+          <label>Recent Frequency (Transactions in last 1hr)</label>
+          <input type="number" id="input-velocity" value="2" min="1">
+        </div>
+        <div class="form-group">
+          <label>Distance from Home (miles)</label>
+          <input type="number" id="input-distance" value="5" min="0">
+        </div>
+        <button class="btn btn-primary" id="btn-test-anomaly">Calculate Path Length</button>
+      </div>
+
+      <div class="outlier-results-box" id="outlier-results" style="display: none;">
+        <div class="result-score-row">
+          <div class="result-score-block">
+            <span class="label">Avg Search Path Length</span>
+            <span class="val" id="result-path">4.2</span>
+          </div>
+          <div class="result-score-block">
+            <span class="label">Anomaly Score</span>
+            <span class="val" id="result-score">0.18</span>
+          </div>
+        </div>
+        <div class="result-evaluation" id="result-evaluation-text">
+          ✅ Transaction resembles baseline. Normal behavior.
+        </div>
+      </div>
+    </section>
+
+    <!-- Row 3 Column 1: Feature Drift Chart -->
+    <section class="panel-card chart-panel col-span-2">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="icon">📊</span>
+          <h2>Evidently AI Feature Distribution Drift</h2>
+        </div>
+        <div class="distribution-legend">
+          <span class="legend-item"><span class="color-dot baseline"></span>Baseline</span>
+          <span class="legend-item"><span class="color-dot current"></span>Production Stream</span>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="driftChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Row 3 Column 2: SMOTE & Control Center -->
+    <section class="panel-card control-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="icon">⚙️</span>
+          <h2>Experiment Controller</h2>
+        </div>
+      </div>
+      <div class="control-actions">
+        <div class="control-block">
+          <h3>Simulation Scenario</h3>
+          <p class="desc">Modify the live data stream distribution to test detection & drift tracking.</p>
+          <div class="button-grid">
+            <button class="btn btn-secondary active" id="btn-scenario-normal">Standard Flow</button>
+            <button class="btn btn-warning" id="btn-scenario-drift">Inject Fraud Spike</button>
+          </div>
+        </div>
+
+        <div class="control-block">
+          <h3>Statistical Training</h3>
+          <p class="desc">Calibrate models against class imbalances using SMOTE over-sampling.</p>
+          <button class="btn btn-primary btn-full" id="btn-trigger-smote">Run SMOTE Calibration</button>
+          <div class="smote-stats" id="smote-stats-output" style="display: none;">
+            <p>✅ SMOTE balanced minority class (Ratio: 10%). Decision boundary updated. Threshold recalibrated.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>SentinelShield Financial Cybersecurity Pipeline | IIT Madras Summer Intern Portfolio</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

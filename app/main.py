@@ -24,6 +24,8 @@ from pydantic import BaseModel, Field
 
 # Mount static and templates folders
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/fraud-detector", StaticFiles(directory="app/static/realtime-fraud-detector", html=True), name="fraud-detector")
+app.mount("/ab-testing", StaticFiles(directory="app/static/ab-testing-platform", html=True), name="ab-testing")
 templates = Jinja2Templates(directory="app/templates")
 
 # Contact Form Schema
