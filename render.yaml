@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: personal-portfolio-hub
+    runtime: docker
+    plan: free
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: PORT
+        value: 8000
