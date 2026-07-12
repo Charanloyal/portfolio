@@ -322,9 +322,31 @@ main {
 /* About Grid */
 .about-grid {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 200px 1fr 340px;
     gap: 3rem;
     align-items: center;
+}
+
+.about-avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+    transition: all 0.3s ease;
+}
+
+.about-avatar:hover {
+    transform: scale(1.05);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 35px rgba(212, 175, 55, 0.4);
 }
 
 .about-text {
