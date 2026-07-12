@@ -720,6 +720,77 @@ footer {
     backdrop-filter: blur(10px);
 }
 
+/* Credentials Section */
+.credentials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+.credentials-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #f3e5ab, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.achievements-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.achievement-item {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+}
+
+.achievement-icon {
+    color: var(--primary);
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.achievement-highlight {
+    font-size: 1rem;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.achievement-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    line-height: 1.5;
+}
+
+.certs-tags-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.cert-badge {
+    background: rgba(212, 175, 55, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.16);
+    color: var(--primary-light);
+    padding: 0.45rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.cert-badge:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+}
+
 /* Responsive Grid layouts */
 @media(max-width: 900px) {
     .projects-grid {
@@ -732,6 +803,10 @@ footer {
     .skills-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
+    }
+    .credentials-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
     }
     .timeline::after {
         left: 31px;
