@@ -7,6 +7,9 @@ async def test_serve_portfolio(client):
     assert response.status_code == status.HTTP_200_OK
     assert "text/html" in response.headers["content-type"]
     assert "Charan Kumar Reddy" in response.text
+    assert "LakeFlow" in response.text
+    assert "txn-pipeline" in response.text
+    assert "Data Engineering" in response.text
 
 @pytest.mark.asyncio
 async def test_contact_form_success(client):

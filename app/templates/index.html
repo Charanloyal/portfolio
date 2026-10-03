@@ -66,9 +66,9 @@
     <main>
         <!-- Hero Banner -->
         <section class="hero-section">
-            <div class="hero-badge">Fintech & AI/ML Specialist</div>
-            <h1>Engineering <span>High-Availability Systems</span> & Predictive AI for Fintech</h1>
-            <p>Specialized in building high-throughput payment architectures (Visa-grade scale via async Redis connection pooling) and dual-stage predictive risk models (Intuit-grade credit classification using calibrated XGBoost ensembles). Developing low-latency FastAPI backends and Kafka data streaming pipelines backed by 93% test coverage and containerized deployments.</p>
+            <div class="hero-badge">Fintech, Data Engineering & AI/ML Specialist</div>
+            <h1>Engineering <span>High-Availability Systems</span>, Data Lakehouses & Predictive AI</h1>
+            <p>Specialized in building real-time CDC data lakehouses (PostgreSQL WAL &rarr; Kafka &rarr; Spark Structured Streaming &rarr; Iceberg on MinIO), high-throughput payment architectures (Visa-grade scale via async Redis connection pooling), and dual-stage predictive risk models. Developing low-latency FastAPI backends and Kafka streaming pipelines backed by verifiable delivery semantics and containerized deployments.</p>
             
             <div class="metrics-grid">
                 <div class="metric-card">
@@ -76,11 +76,11 @@
                     <p>Distributed Throughput</p>
                 </div>
                 <div class="metric-card">
-                    <h3>90% Accuracy</h3>
-                    <p>Fintech Risk Predictors</p>
+                    <h3>Sub-Second CDC</h3>
+                    <p>Iceberg Lakehouse Stream</p>
                 </div>
                 <div class="metric-card">
-                    <h3>3 Live Systems</h3>
+                    <h3>5+ Live Systems</h3>
                     <p>Production Showcases</p>
                 </div>
             </div>
@@ -123,12 +123,35 @@
             
             <div class="project-filters">
                 <button class="filter-btn active" onclick="filterProjects('all')">All Projects</button>
+                <button class="filter-btn" onclick="filterProjects('data-engineering')">Data Engineering</button>
                 <button class="filter-btn" onclick="filterProjects('fintech')">Fintech & Systems</button>
                 <button class="filter-btn" onclick="filterProjects('ai')">AI/ML</button>
             </div>
 
             <div class="projects-grid">
-                <!-- Project 1: AgentCodex -->
+                <!-- Project 1: LakeFlow CDC Lakehouse -->
+                <div class="project-card glass-panel" data-category="data-engineering systems">
+                    <div class="project-card-header">
+                        <span class="project-tag">Data Engineering</span>
+                    </div>
+                    <h3>LakeFlow: CDC Lakehouse Engine</h3>
+                    <p>Sub-second PostgreSQL WAL streaming into an Apache Iceberg lakehouse with verifiable delivery semantics. Features Debezium CDC into Kafka KRaft, Spark 3.5 Structured Streaming with LSN-guarded idempotent MERGE, contract validation, DLQ replay, Trino query engine, and Airflow maintenance DAGs.</p>
+                    <div class="tech-stack-list">
+                        <span>PostgreSQL CDC</span>
+                        <span>Debezium</span>
+                        <span>Apache Kafka</span>
+                        <span>Apache Spark</span>
+                        <span>Apache Iceberg</span>
+                        <span>Trino</span>
+                        <span>Airflow</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://lakeflow-demo.onrender.com/lakeflow/" target="_blank" class="proj-link primary">Live Demo</a>
+                        <a href="https://github.com/Charanloyal/lakeflow" target="_blank" class="proj-link outline">GitHub</a>
+                    </div>
+                </div>
+
+                <!-- Project 2: AgentCodex -->
                 <div class="project-card glass-panel" data-category="ai">
                     <div class="project-card-header">
                         <span class="project-tag">AI/ML</span>
@@ -147,7 +170,7 @@
                     </div>
                 </div>
 
-                <!-- Project 2: SmartRecovery -->
+                <!-- Project 3: SmartRecovery -->
                 <div class="project-card glass-panel" data-category="fintech">
                     <div class="project-card-header">
                         <span class="project-tag">Fintech</span>
@@ -167,8 +190,8 @@
                     </div>
                 </div>
 
-                <!-- Project 3: OctoScale -->
-                <div class="project-card glass-panel" data-category="fintech">
+                <!-- Project 4: OctoScale -->
+                <div class="project-card glass-panel" data-category="fintech systems">
                     <div class="project-card-header">
                         <span class="project-tag">Systems</span>
                     </div>
@@ -187,8 +210,8 @@
                     </div>
                 </div>
 
-                <!-- Project 4: Real-Time Fraud Detector -->
-                <div class="project-card glass-panel" data-category="ai">
+                <!-- Project 5: Real-Time Fraud Detector -->
+                <div class="project-card glass-panel" data-category="data-engineering ai">
                     <div class="project-card-header">
                         <span class="project-tag">Data Engineering</span>
                     </div>
@@ -207,7 +230,29 @@
                     </div>
                 </div>
 
-                <!-- Project 5: A/B Testing Platform -->
+                <!-- Project 6: txn-pipeline -->
+                <div class="project-card glass-panel" data-category="data-engineering fintech">
+                    <div class="project-card-header">
+                        <span class="project-tag">Data Pipeline</span>
+                    </div>
+                    <h3>txn-pipeline: High-Throughput Transaction Engine</h3>
+                    <p>Distributed asynchronous transaction ingestion and validation engine. Built with Celery worker pools over Redis brokers, PostgreSQL 16 ACID persistence with Alembic migrations, Docker Compose orchestration, and Gemini 1.5 LLM transaction classification.</p>
+                    <div class="tech-stack-list">
+                        <span>FastAPI</span>
+                        <span>Celery</span>
+                        <span>Redis Broker</span>
+                        <span>PostgreSQL 16</span>
+                        <span>Alembic</span>
+                        <span>Docker Compose</span>
+                        <span>Gemini AI</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Charanloyal/txn-pipeline" target="_blank" class="proj-link primary">GitHub Code</a>
+                        <a href="https://github.com/Charanloyal/txn-pipeline#architecture" target="_blank" class="proj-link outline">Architecture</a>
+                    </div>
+                </div>
+
+                <!-- Project 7: A/B Testing Platform -->
                 <div class="project-card glass-panel" data-category="ai">
                     <div class="project-card-header">
                         <span class="project-tag">Data Science</span>
@@ -227,7 +272,7 @@
                     </div>
                 </div>
 
-                <!-- Project 6: Task Portal -->
+                <!-- Project 8: Task Portal -->
                 <div class="project-card glass-panel" data-category="fintech">
                     <div class="project-card-header">
                         <span class="project-tag">Full-Stack</span>
@@ -321,18 +366,22 @@
                 </div>
 
                 <div class="skill-category">
-                    <h3>AI & Data Engineering</h3>
+                    <h3>Data Engineering & AI</h3>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Scikit-Learn / XGBoost</span><span>92%</span></div>
-                        <div class="skill-bar"><div class="skill-progress" style="width: 92%;"></div></div>
+                        <div class="skill-info"><span>Apache Spark & Iceberg</span><span>90%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 90%;"></div></div>
                     </div>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>PyTorch / TensorFlow</span><span>88%</span></div>
+                        <div class="skill-info"><span>Apache Kafka & Debezium CDC</span><span>88%</span></div>
                         <div class="skill-bar"><div class="skill-progress" style="width: 88%;"></div></div>
                     </div>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Apache Spark / Airflow</span><span>80%</span></div>
-                        <div class="skill-bar"><div class="skill-progress" style="width: 80%;"></div></div>
+                        <div class="skill-info"><span>Scikit-Learn, PyTorch & XGBoost</span><span>92%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 92%;"></div></div>
+                    </div>
+                    <div class="skill-bar-wrapper">
+                        <div class="skill-info"><span>Trino, Airflow & Data Contracts</span><span>85%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 85%;"></div></div>
                     </div>
                 </div>
 

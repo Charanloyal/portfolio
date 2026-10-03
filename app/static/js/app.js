@@ -4,21 +4,20 @@ function filterProjects(category) {
     buttons.forEach(btn => {
         btn.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
+    }
 
     // Filter project cards
     const cards = document.querySelectorAll('.project-card');
     cards.forEach(card => {
-        const cardCategory = card.getAttribute('data-category');
+        const cardCategory = card.getAttribute('data-category') || '';
+        const categories = cardCategory.split(/\s+/);
         
-        if (category === 'all') {
+        if (category === 'all' || categories.includes(category)) {
             card.style.display = 'flex';
         } else {
-            if (cardCategory === category) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
+            card.style.display = 'none';
         }
     });
 }
