@@ -8,6 +8,8 @@ async def test_serve_portfolio(client):
     assert "text/html" in response.headers["content-type"]
     assert "Charan Kumar Reddy" in response.text
     assert "LakeFlow" in response.text
+    assert "FeatureHub" in response.text
+    assert "DataGuard" in response.text
     assert "txn-pipeline" in response.text
     assert "Data Engineering" in response.text
 
