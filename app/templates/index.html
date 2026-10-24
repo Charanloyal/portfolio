@@ -3,420 +3,489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charan Kumar Reddy | AI/ML & Systems Developer Portfolio</title>
-    <meta name="description" content="Senior developer portfolio of Charan Kumar Reddy, specializing in Fintech, AI/ML engineering, and high-performance backend systems.">
+    <title>Charan Kumar Reddy | Distributed Systems & AI/ML Engineer Portfolio</title>
+    <meta name="description" content="Senior portfolio of Charan Kumar Reddy. Specializing in Distributed Consensus (RaftKV), High-Throughput Gateways (NeuralGateway, OctoScale), Autonomous Multi-Agent AI (AgentForge, AOS), and Real-Time CDC Lakehouses (LakeFlow).">
+    <meta name="keywords" content="Charan Kumar Reddy, Distributed Systems, Raft Consensus, gRPC, Machine Learning, FeatureHub, DataGuard, LakeFlow, Apache Iceberg, Kafka, FastAPI, Python, PySpark, LangGraph">
+    <meta name="author" content="Charan Kumar Reddy">
     
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / LinkedIn / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://personal-portfolio-hub-3z4y.onrender.com/">
-    <meta property="og:title" content="Charan Kumar Reddy | AI/ML & Systems Developer Portfolio">
-    <meta property="og:description" content="Senior developer portfolio of Charan Kumar Reddy, specializing in Fintech, AI/ML engineering, and high-performance backend systems.">
-    <meta property="og:image" content="https://personal-portfolio-hub-3z4y.onrender.com/static/portfolio_thumbnail.png">
+    <meta property="og:title" content="Charan Kumar Reddy | Distributed Systems & AI/ML Engineer Portfolio">
+    <meta property="og:description" content="Specializing in Distributed Consensus (RaftKV), High-Throughput Gateways (NeuralGateway), Multi-Agent RAG (AgentForge), and Real-Time CDC Lakehouses (LakeFlow).">
+    <meta property="og:image" content="/static/portfolio_thumbnail.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://personal-portfolio-hub-3z4y.onrender.com/">
-    <meta property="twitter:title" content="Charan Kumar Reddy | AI/ML & Systems Developer Portfolio">
-    <meta property="twitter:description" content="Senior developer portfolio of Charan Kumar Reddy, specializing in Fintech, AI/ML engineering, and high-performance backend systems.">
-    <meta property="twitter:image" content="https://personal-portfolio-hub-3z4y.onrender.com/static/portfolio_thumbnail.png">
+    <meta property="twitter:title" content="Charan Kumar Reddy | Distributed Systems & AI/ML Engineer Portfolio">
+    <meta property="twitter:description" content="Specializing in Distributed Systems, Raft Consensus, High-Throughput Gateways, and AI/ML Engineering.">
+    <meta property="twitter:image" content="/static/portfolio_thumbnail.png">
 
-    <!-- Favicon -->
+    <!-- Favicon & Stylesheet -->
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3256/3256114.png">
     <link rel="stylesheet" href="/static/css/styles.css">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Background styling elements -->
+
+    <!-- Dynamic Glassmorphic Ambient Canvas & Glow Blobs -->
     <div class="background-wrapper">
+        <canvas id="particle-canvas"></canvas>
         <div class="grid-overlay"></div>
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
         <div class="blob blob-3"></div>
     </div>
 
-    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
-        <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#f3e5ab" />
-            <stop offset="100%" stop-color="#d4af37" />
-        </linearGradient>
-    </svg>
-
-    <!-- Header Navigation -->
+    <!-- Sticky Glassmorphic Header -->
     <header>
-        <div class="logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-            </svg>
-            <span>Charan Kumar Reddy</span>
+        <div class="header-container">
+            <a href="#" class="logo-container">
+                <div class="logo-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="logo-text-group">
+                    <span class="logo-title">Charan Kumar Reddy</span>
+                    <span class="logo-subtitle">Systems & AI Architect</span>
+                </div>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="#about">About</a>
+                <a href="#projects">Projects <span class="nav-counter-pill">13</span></a>
+                <a href="#terminal">Terminal</a>
+                <a href="#github-stats">GitHub Sync</a>
+                <a href="#experience">Timeline</a>
+                <a href="#skills">Skills</a>
+                <a href="#credentials">Credentials</a>
+                <a href="#contact" class="nav-cta">Hire Me</a>
+            </nav>
         </div>
-        <nav class="nav-links">
-            <a href="#about">About</a>
-            <a href="#projects">Projects</a>
-            <a href="#experience">Timeline</a>
-            <a href="#skills">Skills</a>
-            <a href="#contact" class="nav-cta">Hire Me</a>
-        </nav>
     </header>
 
     <main>
-        <!-- Hero Banner -->
+        <!-- ==========================================================================
+             HERO SECTION
+             ========================================================================== -->
         <section class="hero-section">
-            <div class="hero-badge">Fintech, Data Engineering & AI/ML Specialist</div>
-            <h1>Engineering <span>High-Availability Systems</span>, Data Lakehouses & Predictive AI</h1>
-            <p>Specialized in building real-time CDC data lakehouses (PostgreSQL WAL &rarr; Kafka &rarr; Spark Structured Streaming &rarr; Iceberg on MinIO), production feature stores (120+ features with leak-free PIT joins), automated schema contract guards, and high-throughput payment architectures. Developing low-latency FastAPI microservices and distributed data pipelines backed by verifiable delivery semantics.</p>
-            
-            <div class="metrics-grid">
+            <div class="hero-status-pill">
+                <span class="status-beacon"></span>
+                Available for Senior SDE, Distributed Systems & AI/ML Roles
+            </div>
+
+            <h1 class="hero-headline">
+                Engineering <span class="gold-gradient-text">High-Availability Systems</span>, <br>
+                <span id="hero-typewriter" class="typewriter-text"></span>
+            </h1>
+
+            <p class="hero-summary">
+                Specialized in building <strong>production-grade distributed consensus engines</strong> (RaftKV), 
+                <strong>high-throughput LLM gateways & microservices</strong> (NeuralGateway, OctoScale), 
+                <strong>autonomous multi-agent RAG platforms</strong> (AgentForge, Agent Orchestration System), 
+                and <strong>verifiable CDC data lakehouses</strong> (LakeFlow with Iceberg & Kafka). 
+                Designing low-latency async architectures backed by strict mathematical guarantees and automated CI contract gating.
+            </p>
+
+            <!-- Metrics Ribbon -->
+            <div class="metrics-ribbon">
                 <div class="metric-card">
-                    <h3>10K+ Req/Sec</h3>
-                    <p>Distributed Throughput</p>
+                    <span class="metric-number">10K+ Req/s</span>
+                    <span class="metric-label">Distributed Throughput</span>
+                    <span class="metric-sub">OctoScale & NeuralGateway</span>
                 </div>
                 <div class="metric-card">
-                    <h3>120+ Features</h3>
-                    <p>FeatureHub Store (0% Leak)</p>
+                    <span class="metric-number">100% CI Gated</span>
+                    <span class="metric-label">276 Passed Tests</span>
+                    <span class="metric-sub">FeatureHub + DataGuard</span>
                 </div>
                 <div class="metric-card">
-                    <h3>Sub-Second CDC</h3>
-                    <p>Iceberg Lakehouse Stream</p>
+                    <span class="metric-number">Raft Core</span>
+                    <span class="metric-label">Distributed Consensus</span>
+                    <span class="metric-sub">RaftKV (Ongaro & Ousterhout)</span>
                 </div>
                 <div class="metric-card">
-                    <h3>100% CI Guard</h3>
-                    <p>DataGuard Drift Blocked</p>
+                    <span class="metric-number">0.04s Cache</span>
+                    <span class="metric-label">Multi-Hop RAG Stream</span>
+                    <span class="metric-sub">AgentCodex & AgentForge</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-number">Top 5.8%</span>
+                    <span class="metric-label">550+ LeetCode Solved</span>
+                    <span class="metric-sub">Handle: charan_red</span>
                 </div>
             </div>
 
-            <div class="hero-buttons">
-                <a href="#projects" class="btn">
+            <!-- Hero Action Buttons -->
+            <div class="hero-cta-group">
+                <a href="#projects" class="btn btn-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                    Explore Portfolio Projects
+                    Explore 13 Production Showcases
+                </a>
+                <a href="#terminal" class="btn btn-cyan">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    Launch CharanOS Terminal
                 </a>
                 <a href="https://github.com/Charanloyal" target="_blank" class="btn btn-outline">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                    GitHub Profile
+                    GitHub (@Charanloyal)
                 </a>
-            </div>
-        </section>
-
-        <!-- About Me Section -->
-        <section id="about" class="section glass-panel">
-            <h2>About My Engineering Vision</h2>
-            <div class="about-grid">
-                <div class="about-avatar-container">
-                    <img src="/static/avatar.jpg" alt="Charan Kumar Reddy" class="about-avatar">
-                </div>
-                <div class="about-text">
-                    <p>I combine core Software Engineering, distributed systems, and quantitative machine learning to build secure, robust software. Rather than treating ML models as standalone scripts, I package them into high-performance dockerized microservices served by FastAPI with rate-limiting guardrails and database connection pools.</p>
-                    <p style="margin-top: 1rem;">Currently pursuing my B.Tech in **ECE with Data Science Specialization** at **SRM Institute of Science and Technology** (Chennai), focusing on quantitative risk modelling, high-throughput transaction pipelines, and multi-agent systems. My career objective is to drive architecture decisions at leading Global Capability Centers (GCCs), bringing robust system designs, security rate limiters, and scalable ML pipelines to production.</p>
-                </div>
-                <div class="about-edu-card">
-                    <h4>🎓 Education</h4>
-                    <p class="edu-title">B.Tech ECE (Data Science Specialization)</p>
-                    <p class="edu-school">SRM Institute of Science & Technology</p>
-                    <p class="edu-meta">Chennai, India | CGPA: <strong>8.7 / 10.0</strong></p>
+                <div class="copy-email-box" onclick="copyEmailToClipboard()" title="Click to copy email">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    charan.workmaill@gmail.com
                 </div>
             </div>
         </section>
 
-        <!-- Featured Projects Gallery (Filterable) -->
+        <!-- ==========================================================================
+             INTERACTIVE TERMINAL (CharanOS v2.4)
+             ========================================================================== -->
+        <section id="terminal" class="terminal-section">
+            <div class="terminal-window glass-panel">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="terminal-dot dot-red"></span>
+                        <span class="terminal-dot dot-yellow"></span>
+                        <span class="terminal-dot dot-green"></span>
+                    </div>
+                    <span class="terminal-title">charan@systems-core: ~/portfolio (x86_64-linux-gnu)</span>
+                    <span style="font-size:0.75rem; color:var(--cyan-accent); font-family:var(--font-mono);">CharanOS v2.4</span>
+                </div>
+
+                <div class="terminal-quick-bar">
+                    <span style="font-size:0.75rem; color:var(--text-muted); align-self:center; margin-right:4px;">Quick Actions:</span>
+                    <button class="quick-cmd-btn" data-cmd="latest">latest</button>
+                    <button class="quick-cmd-btn" data-cmd="projects">projects</button>
+                    <button class="quick-cmd-btn" data-cmd="status">status</button>
+                    <button class="quick-cmd-btn" data-cmd="skills">skills</button>
+                    <button class="quick-cmd-btn" data-cmd="timeline">timeline</button>
+                    <button class="quick-cmd-btn" data-cmd="contact">contact</button>
+                    <button class="quick-cmd-btn" data-cmd="clear">clear</button>
+                </div>
+
+                <div id="terminal-body" class="terminal-body">
+                    <div id="terminal-output" class="terminal-output">Welcome to <span class="term-gold">CharanOS v2.4 Interactive Shell</span>.
+Connected to systems node with live GitHub telemetry sync.
+Type <span class="term-cyan">'help'</span> for instructions, or click quick buttons above to query systems.</div>
+                    
+                    <div class="terminal-input-row">
+                        <span class="terminal-prompt">charan@systems:~$</span>
+                        <input type="text" id="terminal-input" class="terminal-input" placeholder="type 'projects', 'status', 'latest', or 'help'..." autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             FEATURED PROJECTS GALLERY (All 13 Projects with Instant Filtering & Search)
+             ========================================================================== -->
         <section id="projects" class="section">
-            <h2 class="section-title">Production Engineering Showcases</h2>
-            
-            <div class="project-filters">
-                <button class="filter-btn active" onclick="filterProjects('all')">All Projects</button>
-                <button class="filter-btn" onclick="filterProjects('data-engineering')">Data Engineering</button>
-                <button class="filter-btn" onclick="filterProjects('fintech')">Fintech & Systems</button>
-                <button class="filter-btn" onclick="filterProjects('ai')">AI/ML</button>
+            <div class="section-header-row">
+                <span class="section-eyebrow">Enterprise & Open-Source Engineering</span>
+                <h2 class="section-title">Production Systems & Git Projects</h2>
+                <p class="section-desc">
+                    Comprehensive catalog of 13 production-grade systems, distributed storage engines, multi-agent RAG platforms, and CDC lakehouses built and maintained on GitHub.
+                </p>
             </div>
 
+            <!-- Controls: Search & Filter Pills -->
+            <div class="projects-controls">
+                <div class="search-bar-wrapper">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="project-search" class="search-input" placeholder="Search systems by architecture, keyword or stack (e.g. Raft, Iceberg, Kafka, LangGraph, Redis, Celery)...">
+                </div>
+
+                <div class="filter-pills-row">
+                    <button class="filter-btn active" data-filter="all" onclick="filterProjects('all')">
+                        All Projects <span class="filter-count">13</span>
+                    </button>
+                    <button class="filter-btn" data-filter="distributed-systems" onclick="filterProjects('distributed-systems')">
+                        Distributed Systems <span class="filter-count">4</span>
+                    </button>
+                    <button class="filter-btn" data-filter="ai-agents" onclick="filterProjects('ai-agents')">
+                        Autonomous AI & Agents <span class="filter-count">4</span>
+                    </button>
+                    <button class="filter-btn" data-filter="data-engineering" onclick="filterProjects('data-engineering')">
+                        Data Platform & Lakehouse <span class="filter-count">3</span>
+                    </button>
+                    <button class="filter-btn" data-filter="fintech" onclick="filterProjects('fintech')">
+                        Fintech & Analytics <span class="filter-count">4</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
             <div class="projects-grid">
-                <!-- Project 1: LakeFlow CDC Lakehouse -->
-                <div class="project-card glass-panel" data-category="data-engineering systems">
-                    <div class="project-card-header">
-                        <span class="project-tag">Data Engineering</span>
+                {% for p in projects %}
+                <div class="project-card" data-category="{{ p.category }}" data-tags="{{ p.tags | join(' ') }}" data-highlights="{{ p.highlight }}">
+                    <div class="project-top-meta">
+                        <span class="project-badge-category">{{ p.category_label }}</span>
+                        <span class="project-badge-status">{{ p.status_badge }}</span>
                     </div>
-                    <h3>LakeFlow: CDC Lakehouse Engine</h3>
-                    <p>Sub-second PostgreSQL WAL streaming into an Apache Iceberg lakehouse with verifiable delivery semantics. Features Debezium CDC into Kafka KRaft, Spark 3.5 Structured Streaming with LSN-guarded idempotent MERGE, contract validation, DLQ replay, Trino query engine, and Airflow maintenance DAGs.</p>
-                    <div class="tech-stack-list">
-                        <span>PostgreSQL CDC</span>
-                        <span>Debezium</span>
-                        <span>Apache Kafka</span>
-                        <span>Apache Spark</span>
-                        <span>Apache Iceberg</span>
-                        <span>Trino</span>
-                        <span>Airflow</span>
+
+                    <h3 class="project-title">{{ p.title }}</h3>
+                    <p class="project-tagline">{{ p.tagline }}</p>
+
+                    <div class="project-highlight-box">
+                        {{ p.highlight }}
                     </div>
-                    <div class="project-links">
-                        <a href="https://lakeflow-demo.onrender.com/lakeflow/" target="_blank" class="proj-link primary">Live Demo</a>
-                        <a href="https://github.com/Charanloyal/lakeflow" target="_blank" class="proj-link outline">GitHub</a>
+
+                    <p class="project-desc">{{ p.description }}</p>
+
+                    <div class="project-metrics-row">
+                        {% for k, v in p.metrics.items() %}
+                        <div class="mini-metric-item">
+                            <span class="mini-metric-k">{{ k | replace('_', ' ') }}</span>
+                            <span class="mini-metric-v">{{ v }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="tech-tags-list">
+                        {% for tag in p.tags %}
+                        <span class="tech-tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="project-card-actions">
+                        {% if p.demo_url %}
+                        <a href="{{ p.demo_url }}" target="_blank" class="btn-card btn-card-demo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                            Live Demo
+                        </a>
+                        {% endif %}
+
+                        <a href="{{ p.github_url }}" target="_blank" class="btn-card btn-card-git">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                            GitHub
+                        </a>
+
+                        <button class="btn-card btn-card-spec" onclick="openSpecModal('{{ p.spec_id }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            Deep-Dive Architecture Spec
+                        </button>
                     </div>
                 </div>
+                {% endfor %}
+            </div>
 
-                <!-- Project 2: FeatureHub Feature Store -->
-                <div class="project-card glass-panel" data-category="data-engineering ai">
-                    <div class="project-card-header">
-                        <span class="project-tag">Feature Store</span>
+            <!-- Empty Search Results State -->
+            <div id="no-projects-found" style="display:none; text-align:center; padding:3rem; background:rgba(255,255,255,0.02); border-radius:16px; border:1px solid var(--border-glass);">
+                <p style="font-size:1.2rem; color:var(--gold-light); margin-bottom:0.5rem;">No matching projects found for your query.</p>
+                <p style="color:var(--text-muted);">Try searching for "Raft", "Iceberg", "Kafka", "Redis", "LangGraph", or click "All Projects".</p>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             REAL-TIME GITHUB PROFILE SYNC WIDGET
+             ========================================================================== -->
+        <section id="github-stats" class="section">
+            <div class="section-header-row">
+                <span class="section-eyebrow">Continuous Integration & Version Control</span>
+                <h2 class="section-title">Live GitHub Telemetry & Activity</h2>
+                <p class="section-desc">Direct synchronization with the @Charanloyal public engineering pipeline.</p>
+            </div>
+
+            <div class="glass-panel github-bento-card">
+                <div class="git-profile-left">
+                    <div class="git-avatar-wrapper">
+                        <img src="/static/avatar.jpg" alt="Charan Kumar Reddy" class="git-avatar-img">
                     </div>
-                    <h3>FeatureHub: Real-Time Feature Store & Serving Engine</h3>
-                    <p>Production-grade ML feature store managing 122 validated features for financial risk and transaction velocity. Engineered Point-In-Time (PIT) leak-free join engine for training dataset generation, sub-millisecond Redis online lookups, idempotent materialization pipelines, and low-latency FastAPI inference.</p>
-                    <div class="tech-stack-list">
-                        <span>Python</span>
-                        <span>Redis Online Store</span>
-                        <span>PySpark</span>
-                        <span>FastAPI</span>
-                        <span>PIT Join Engine</span>
-                        <span>PostgreSQL</span>
-                        <span>Docker</span>
+                    <div>
+                        <h3 style="font-size:1.35rem; font-weight:800; color:#fff;">Charan Kumar Reddy</h3>
+                        <a href="https://github.com/Charanloyal" target="_blank" style="color:var(--cyan-accent); font-family:var(--font-mono); font-size:0.9rem; text-decoration:none;">@Charanloyal</a>
                     </div>
-                    <div class="project-links">
-                        <a href="https://github.com/Charanloyal/featurehub-dataguard" target="_blank" class="proj-link primary">GitHub Repo</a>
-                        <a href="https://github.com/Charanloyal/featurehub-dataguard/tree/main/featurehub" target="_blank" class="proj-link outline">Architecture</a>
+                    <div class="git-stats-grid">
+                        <div class="git-stat-box">
+                            <span id="git-public-repos" class="git-stat-num">33+</span>
+                            <span class="git-stat-lbl">Repositories</span>
+                        </div>
+                        <div class="git-stat-box">
+                            <span id="git-followers" class="git-stat-num">15+</span>
+                            <span class="git-stat-lbl">Followers</span>
+                        </div>
+                        <div class="git-stat-box">
+                            <span id="git-following" class="git-stat-num">20+</span>
+                            <span class="git-stat-lbl">Following</span>
+                        </div>
                     </div>
+                    <a href="https://github.com/Charanloyal" target="_blank" class="btn btn-outline" style="width:100%; justify-content:center; padding:0.6rem 1rem; font-size:0.85rem;">
+                        View GitHub Profile
+                    </a>
                 </div>
 
-                <!-- Project 3: DataGuard Reliability Platform -->
-                <div class="project-card glass-panel" data-category="data-engineering systems">
-                    <div class="project-card-header">
-                        <span class="project-tag">Data Reliability</span>
+                <div class="git-languages-section">
+                    <div>
+                        <h4 style="font-size:1.1rem; font-weight:700; color:var(--gold-light); margin-bottom:0.4rem;">Top Language Ecosystem Distribution</h4>
+                        <p style="font-size:0.85rem; color:var(--text-secondary);">Calculated across all public production repositories and test suites.</p>
                     </div>
-                    <h3>DataGuard: Schema Contracts & Quality Platform</h3>
-                    <p>Enterprise data reliability and governance platform enforcing 25+ production YAML data contracts. Implements an automated Schema Diff Engine blocking 100% of breaking schema drifts in CI, Great Expectations quality validation suites with incident tracking, and OpenLineage column-level lineage graphs.</p>
-                    <div class="tech-stack-list">
-                        <span>YAML Contracts</span>
-                        <span>Great Expectations</span>
-                        <span>OpenLineage</span>
-                        <span>FastAPI</span>
-                        <span>CI Schema Guard</span>
-                        <span>PostgreSQL</span>
-                        <span>Airflow</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/Charanloyal/featurehub-dataguard" target="_blank" class="proj-link primary">GitHub Repo</a>
-                        <a href="https://github.com/Charanloyal/featurehub-dataguard/tree/main/dataguard" target="_blank" class="proj-link outline">Quality Specs</a>
-                    </div>
-                </div>
 
-                <!-- Project 4: AgentCodex -->
-                <div class="project-card glass-panel" data-category="ai">
-                    <div class="project-card-header">
-                        <span class="project-tag">AI/ML</span>
+                    <div class="lang-bar-container">
+                        <div class="lang-segment lang-python" title="Python (68%)"></div>
+                        <div class="lang-segment lang-ts" title="TypeScript & React (15%)"></div>
+                        <div class="lang-segment lang-sql" title="SQL & Databases (10%)"></div>
+                        <div class="lang-segment lang-html" title="HTML/CSS & Shell (7%)"></div>
                     </div>
-                    <h3>AgentCodex: Multi-Agent LLM Synthesizer</h3>
-                    <p>Architected a dual-agent cooperative pipeline (Synthesis + Critique) backed by a Multi-Hop RAG engine to generate and self-refine Python code. Streams live via Server-Sent Events (SSE) and caches query hashes to drop latency to 0.04s.</p>
-                    <div class="tech-stack-list">
-                        <span>FastAPI</span>
-                        <span>TF-IDF RAG</span>
-                        <span>SSE Stream</span>
-                        <span>Asyncio Queue</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://multi-agent-llm-code-generator.onrender.com" target="_blank" class="proj-link primary">Live Demo</a>
-                        <a href="https://github.com/Charanloyal/multi-agent-llm-code-generator" target="_blank" class="proj-link outline">GitHub</a>
-                    </div>
-                </div>
 
-                <!-- Project 3: SmartRecovery -->
-                <div class="project-card glass-panel" data-category="fintech">
-                    <div class="project-card-header">
-                        <span class="project-tag">Fintech</span>
+                    <div class="lang-legend-row">
+                        <div class="lang-legend-item"><span class="lang-dot" style="background:#3572A5;"></span> Python (68%)</div>
+                        <div class="lang-legend-item"><span class="lang-dot" style="background:#3178c6;"></span> TypeScript / React (15%)</div>
+                        <div class="lang-legend-item"><span class="lang-dot" style="background:#e38c00;"></span> SQL & Data Modeling (10%)</div>
+                        <div class="lang-legend-item"><span class="lang-dot" style="background:#e34c26;"></span> Web & Shell (7%)</div>
                     </div>
-                    <h3>SmartRecovery Risk & Recovery Engine</h3>
-                    <p>Dual-stage predictive scoring app evaluating applicant default risks (Logistic Regression F1: 88.73%) and forecasting expected recovery rates (R²: 0.6813%). Integrates dynamic calculators and Chart.js metrics panels.</p>
-                    <div class="tech-stack-list">
-                        <span>FastAPI</span>
-                        <span>XGBoost</span>
-                        <span>Scikit-Learn</span>
-                        <span>Joblib</span>
-                        <span>Docker</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://smart-loan-recovery-6ou2.onrender.com/" target="_blank" class="proj-link primary">Live Demo</a>
-                        <a href="https://github.com/Charanloyal/Smart-Loan-Recovery-System-with-Machine-Learning-" target="_blank" class="proj-link outline">GitHub</a>
-                    </div>
-                </div>
 
-                <!-- Project 4: OctoScale -->
-                <div class="project-card glass-panel" data-category="fintech systems">
-                    <div class="project-card-header">
-                        <span class="project-tag">Systems</span>
-                    </div>
-                    <h3>OctoScale: Distributed URL Shortener</h3>
-                    <p>High-throughput URL shortener designed to scale. Implements atomic Redis counters, write-through caching, and custom sliding-window rate limiters utilizing Redis Sorted Sets (ZSET) protecting async endpoints.</p>
-                    <div class="tech-stack-list">
-                        <span>FastAPI</span>
-                        <span>Redis ZSET</span>
-                        <span>PostgreSQL</span>
-                        <span>Docker Compose</span>
-                        <span>Pytest</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://octoscale-web.onrender.com" target="_blank" class="proj-link primary">Live Demo</a>
-                        <a href="https://github.com/Charanloyal/octoscale-url-shortener" target="_blank" class="proj-link outline">GitHub</a>
-                    </div>
-                </div>
-
-                <!-- Project 5: Real-Time Fraud Detector -->
-                <div class="project-card glass-panel" data-category="data-engineering ai">
-                    <div class="project-card-header">
-                        <span class="project-tag">Data Engineering</span>
-                    </div>
-                    <h3>Real-Time Financial Fraud Detector</h3>
-                    <p>Designed a streaming credit card fraud detection pipeline. Ingests simulated transaction feeds via Apache Kafka, processes streams using PySpark Structured Streaming, and applies Random Forest classifiers to predict fraudulent charges in real-time.</p>
-                    <div class="tech-stack-list">
-                        <span>Python</span>
-                        <span>Apache Kafka</span>
-                        <span>PySpark</span>
-                        <span>Scikit-Learn</span>
-                        <span>Docker</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="/fraud-detector/" target="_blank" class="proj-link primary">Live Demo</a>
-                        <a href="https://github.com/Charanloyal/Data-Science-Projects/tree/main/realtime-fraud-detector" target="_blank" class="proj-link outline">GitHub Code</a>
-                    </div>
-                </div>
-
-                <!-- Project 6: txn-pipeline -->
-                <div class="project-card glass-panel" data-category="data-engineering fintech">
-                    <div class="project-card-header">
-                        <span class="project-tag">Data Pipeline</span>
-                    </div>
-                    <h3>txn-pipeline: High-Throughput Transaction Engine</h3>
-                    <p>Distributed asynchronous transaction ingestion and validation engine. Built with Celery worker pools over Redis brokers, PostgreSQL 16 ACID persistence with Alembic migrations, Docker Compose orchestration, and Gemini 1.5 LLM transaction classification.</p>
-                    <div class="tech-stack-list">
-                        <span>FastAPI</span>
-                        <span>Celery</span>
-                        <span>Redis Broker</span>
-                        <span>PostgreSQL 16</span>
-                        <span>Alembic</span>
-                        <span>Docker Compose</span>
-                        <span>Gemini AI</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/Charanloyal/txn-pipeline" target="_blank" class="proj-link primary">GitHub Code</a>
-                        <a href="https://github.com/Charanloyal/txn-pipeline#architecture" target="_blank" class="proj-link outline">Architecture</a>
-                    </div>
-                </div>
-
-                <!-- Project 7: A/B Testing Platform -->
-                <div class="project-card glass-panel" data-category="ai">
-                    <div class="project-card-header">
-                        <span class="project-tag">Data Science</span>
-                    </div>
-                    <h3>A/B Testing & Statistical Inference Engine</h3>
-                    <p>Built a statistical platform for experiment evaluations. Calculates p-values, Z-scores, and confidence intervals across conversion rate splits, plotting statistical significance curves using Pandas and SciPy for automated business decision-making.</p>
-                    <div class="tech-stack-list">
-                        <span>Python</span>
-                        <span>SciPy</span>
-                        <span>Pandas</span>
-                        <span>Matplotlib</span>
-                        <span>Jupyter</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="/ab-testing/" target="_blank" class="proj-link primary">Live Demo</a>
-                        <a href="https://github.com/Charanloyal/Data-Science-Projects/tree/main/ab-testing-platform" target="_blank" class="proj-link outline">GitHub Code</a>
-                    </div>
-                </div>
-
-                <!-- Project 8: Task Portal -->
-                <div class="project-card glass-panel" data-category="fintech">
-                    <div class="project-card-header">
-                        <span class="project-tag">Full-Stack</span>
-                    </div>
-                    <h3>J.P. Morgan Workspace Task Board</h3>
-                    <p>Designed a real-time Kanban board and team communication portal mimicking corporate SWE workspaces. Integrates Socket.io websockets for instant task updates, Zustand state stores, and React-Query backend synchronization caches.</p>
-                    <div class="tech-stack-list">
-                        <span>React</span>
-                        <span>TypeScript</span>
-                        <span>Node.js</span>
-                        <span>Express</span>
-                        <span>Socket.io</span>
-                        <span>PostgreSQL</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://full-stack-integration-7m7z.onrender.com/" target="_blank" class="proj-link primary">Live Demo</a>
-                        <a href="https://github.com/Charanloyal/Full-Stack-Integration" target="_blank" class="proj-link outline">GitHub</a>
+                    <div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:1.2rem; border:1px solid rgba(255,255,255,0.05); margin-top:0.5rem;">
+                        <h5 style="font-size:0.85rem; font-family:var(--font-mono); color:var(--cyan-accent); margin-bottom:0.6rem; text-transform:uppercase;">Latest Git Pushed Repositories (October 2026)</h5>
+                        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem;">
+                            <li><a href="https://github.com/Charanloyal/raftkv" target="_blank" style="color:#fff; text-decoration:none; font-weight:600;">Charanloyal/raftkv</a> <span style="color:var(--text-muted); font-size:0.75rem;">— Strongly consistent distributed KV store</span></li>
+                            <li><a href="https://github.com/Charanloyal/Agent-Orchestration-System-" target="_blank" style="color:#fff; text-decoration:none; font-weight:600;">Charanloyal/Agent-Orchestration-System-</a> <span style="color:var(--text-muted); font-size:0.75rem;">— Evidence-backed multi-agent research</span></li>
+                            <li><a href="https://github.com/Charanloyal/featurehub-dataguard" target="_blank" style="color:#fff; text-decoration:none; font-weight:600;">Charanloyal/featurehub-dataguard</a> <span style="color:var(--text-muted); font-size:0.75rem;">— Feature store & CI schema diff guard</span></li>
+                            <li><a href="https://github.com/Charanloyal/neural-gateway" target="_blank" style="color:#fff; text-decoration:none; font-weight:600;">Charanloyal/neural-gateway</a> <span style="color:var(--text-muted); font-size:0.75rem;">— Multi-tenant distributed LLM inference gateway</span></li>
+                            <li><a href="https://github.com/Charanloyal/agent-forge" target="_blank" style="color:#fff; text-decoration:none; font-weight:600;">Charanloyal/agent-forge</a> <span style="color:var(--text-muted); font-size:0.75rem;">— Enterprise agentic RAG with reflection & reranker</span></li>
+                            <li><a href="https://github.com/Charanloyal/lakeflow" target="_blank" style="color:#fff; text-decoration:none; font-weight:600;">Charanloyal/lakeflow</a> <span style="color:var(--text-muted); font-size:0.75rem;">— Verifiable CDC lakehouse with Apache Iceberg</span></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Experience Timeline (internships) -->
+        <!-- ==========================================================================
+             ABOUT & ENGINEERING VISION SECTION
+             ========================================================================== -->
+        <section id="about" class="section glass-panel">
+            <div class="about-grid">
+                <img src="/static/avatar.jpg" alt="Charan Kumar Reddy" class="about-avatar">
+                
+                <div class="about-text">
+                    <h2 style="font-size:1.85rem; font-weight:800; color:#fff; margin-bottom:1rem;">Core Engineering Vision & Philosophy</h2>
+                    <p style="margin-bottom:1rem;">
+                        I combine core <strong>Systems Engineering, distributed algorithms, and quantitative machine learning</strong> to build bulletproof software. Rather than treating ML models as standalone scripts, I package them into high-performance dockerized microservices served by FastAPI with rate-limiting guardrails, connection pools, and verifiable delivery semantics.
+                    </p>
+                    <p>
+                        Currently pursuing my B.Tech in <strong>ECE with Data Science Specialization</strong> at <strong>SRM Institute of Science and Technology</strong> (Chennai), maintaining an 8.7/10.0 CGPA. My career objective is to drive architecture decisions at leading Global Capability Centers (GCCs) and Tier-1 product firms (such as Visa, Intuit, Goldman Sachs, and JPMorgan), designing scalable payment architectures, consensus engines, and autonomous agent loops.
+                    </p>
+                </div>
+
+                <div class="about-edu-card">
+                    <span style="font-size:1.4rem;">🎓</span>
+                    <p class="edu-title">B.Tech ECE (Data Science)</p>
+                    <p class="edu-school">SRM Institute of Science & Tech</p>
+                    <p class="edu-meta">Chennai, India | CGPA: <strong>8.7 / 10.0</strong></p>
+                    <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.08); font-size:0.8rem; color:var(--text-muted);">
+                        Specialized in Quantitative Modeling, Distributed Storage Systems, and Asynchronous Concurrency.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             EXPERIENCE TIMELINE
+             ========================================================================== -->
         <section id="experience" class="section">
-            <h2 class="section-title">Professional Experience Timeline</h2>
+            <div class="section-header-row">
+                <span class="section-eyebrow">Professional History</span>
+                <h2 class="section-title">Internship Experience Timeline</h2>
+                <p class="section-desc">Track record of delivering production software across research institutes, startups, and fintech organizations.</p>
+            </div>
+
             <div class="timeline">
                 <div class="timeline-item left">
                     <div class="timeline-content glass-panel">
                         <div class="timeline-date">Jun 2026 - Present</div>
-                        <h3>Full Stack Developer Intern</h3>
-                        <h4>IIT Madras &middot; Remote</h4>
-                        <p style="margin-bottom: 0.5rem;">&bull; Delivered full-stack features across 3+ modules using React, Node.js, and PostgreSQL on 2-week sprints; designed and integrated 10+ RESTful API endpoints that reduced cross-team integration bugs by 35%.</p>
-                        <p>&bull; Implemented CI/CD pipelines with GitHub Actions and Docker, cutting manual deployment time by 50% and ensuring reproducible builds across development and staging environments.</p>
+                        <h3 class="timeline-role">Full Stack Developer Intern</h3>
+                        <h4 class="timeline-company">IIT Madras &middot; Remote</h4>
+                        <ul class="timeline-bullets">
+                            <li>Delivered full-stack features across 3+ modules using React, Node.js, and PostgreSQL on 2-week sprints; designed and integrated 10+ RESTful API endpoints that reduced cross-team integration bugs by 35%.</li>
+                            <li>Implemented CI/CD pipelines with GitHub Actions and Docker, cutting manual deployment time by 50% and ensuring reproducible builds across development and staging environments.</li>
+                        </ul>
                     </div>
                 </div>
+
                 <div class="timeline-item right">
                     <div class="timeline-content glass-panel">
                         <div class="timeline-date">Feb 2026 - May 2026</div>
-                        <h3>Software Engineering Intern</h3>
-                        <h4>Developers Arena &middot; Bengaluru</h4>
-                        <p style="margin-bottom: 0.5rem;">&bull; Engineered Python automation pipelines (OOP patterns) processing 50+ weekly infrastructure tickets; cut manual classification by 40% via Jira and ServiceNow REST API integrations for auto-routing and escalation.</p>
-                        <p>&bull; Collaborated with 3 cross-functional teams on feature requirements; authored SOPs reducing Tier-2 escalations by 25% and maintained 99.9% GCP uptime (Compute Engine, VPC, IAM) for 30+ users.</p>
+                        <h3 class="timeline-role">Software Engineering Intern</h3>
+                        <h4 class="timeline-company">Developers Arena &middot; Bengaluru</h4>
+                        <ul class="timeline-bullets">
+                            <li>Engineered Python automation pipelines (OOP patterns) processing 50+ weekly infrastructure tickets; cut manual classification by 40% via Jira and ServiceNow REST API integrations for auto-routing and escalation.</li>
+                            <li>Collaborated with 3 cross-functional teams on feature requirements; authored SOPs reducing Tier-2 escalations by 25% and maintained 99.9% GCP uptime (Compute Engine, VPC, IAM) for 30+ users.</li>
+                        </ul>
                     </div>
                 </div>
+
                 <div class="timeline-item left">
                     <div class="timeline-content glass-panel">
                         <div class="timeline-date">Jul 2025 - Nov 2025</div>
-                        <h3>AI/ML Engineering Intern</h3>
-                        <h4>Labmentex &middot; Remote</h4>
-                        <p style="margin-bottom: 0.5rem;">&bull; Built an LLM-powered log analysis service (FastAPI + Python) processing thousands of telemetry entries; surfaced root-cause diagnostics 60% faster than manual review via Generative AI interpretation.</p>
-                        <p>&bull; Reduced application response latency from 2.5s to 1.6s (36% gain) via multi-agent orchestration, multi-hop RAG, and SSE streaming; maintained 100% uptime across 5 modules with automated remediation scripts.</p>
+                        <h3 class="timeline-role">AI/ML Engineering Intern</h3>
+                        <h4 class="timeline-company">Labmentex &middot; Remote</h4>
+                        <ul class="timeline-bullets">
+                            <li>Built an LLM-powered log analysis service (FastAPI + Python) processing thousands of telemetry entries; surfaced root-cause diagnostics 60% faster than manual review via Generative AI interpretation.</li>
+                            <li>Reduced application response latency from 2.5s to 1.6s (36% gain) via multi-agent orchestration, multi-hop RAG, and SSE streaming; maintained 100% uptime across 5 modules with automated remediation scripts.</li>
+                        </ul>
                     </div>
                 </div>
+
                 <div class="timeline-item right">
                     <div class="timeline-content glass-panel">
                         <div class="timeline-date">Jul 2025 - Sep 2025</div>
-                        <h3>Machine Learning Intern</h3>
-                        <h4>IIT Varanasi - Technex &middot; Remote</h4>
-                        <p>&bull; Applied Scikit-learn and PyTorch algorithms to 50,000+ record datasets; improved model F1-score by 18% through systematic hyperparameter tuning and 5-fold cross-validation; maintained version-controlled codebase in Git.</p>
+                        <h3 class="timeline-role">Machine Learning Intern</h3>
+                        <h4 class="timeline-company">IIT Varanasi - Technex &middot; Remote</h4>
+                        <ul class="timeline-bullets">
+                            <li>Applied Scikit-learn and PyTorch algorithms to 50,000+ record datasets; improved model F1-score by 18% through systematic hyperparameter tuning and 5-fold cross-validation; maintained version-controlled codebase in Git.</li>
+                        </ul>
                     </div>
                 </div>
+
                 <div class="timeline-item left">
                     <div class="timeline-content glass-panel">
                         <div class="timeline-date">May 2025 - Jun 2025</div>
-                        <h3>Data Analytics Intern</h3>
-                        <h4>Bluestock Fintech &middot; Remote</h4>
-                        <p>&bull; Optimised 15+ SQL queries and built Python ETL pipelines automating weekly reporting; cut analyst turnaround by 30% across a portfolio of 200+ financial instruments.</p>
+                        <h3 class="timeline-role">Data Analytics Intern</h3>
+                        <h4 class="timeline-company">Bluestock Fintech &middot; Remote</h4>
+                        <ul class="timeline-bullets">
+                            <li>Optimized 15+ SQL queries and built Python ETL pipelines automating weekly reporting; cut analyst turnaround by 30% across a portfolio of 200+ financial instruments.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Skills Progress Section -->
+        <!-- ==========================================================================
+             SKILLS INVENTORY MATRIX
+             ========================================================================== -->
         <section id="skills" class="section glass-panel">
-            <h2>Engineering Skills Inventory</h2>
+            <div style="text-align:center; padding-top:2rem;">
+                <span class="section-eyebrow">Technical Mastery</span>
+                <h2 class="section-title">Engineering Skills Inventory</h2>
+            </div>
+
             <div class="skills-grid">
                 <div class="skill-category">
-                    <h3>Languages</h3>
+                    <h3>⚡ Distributed Systems</h3>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Python</span><span>95%</span></div>
-                        <div class="skill-bar"><div class="skill-progress" style="width: 95%;"></div></div>
+                        <div class="skill-info"><span>Raft Consensus & gRPC</span><span>94%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 94%;"></div></div>
                     </div>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>SQL</span><span>90%</span></div>
+                        <div class="skill-info"><span>Redis (Lua Scripts & ZSET Rate Limiters)</span><span>92%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 92%;"></div></div>
+                    </div>
+                    <div class="skill-bar-wrapper">
+                        <div class="skill-info"><span>SQLite WAL & Persistence Engines</span><span>90%</span></div>
                         <div class="skill-bar"><div class="skill-progress" style="width: 90%;"></div></div>
-                    </div>
-                    <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>TypeScript / JS</span><span>85%</span></div>
-                        <div class="skill-bar"><div class="skill-progress" style="width: 85%;"></div></div>
                     </div>
                 </div>
 
                 <div class="skill-category">
-                    <h3>Data Engineering & AI</h3>
+                    <h3>🌊 Data Engineering & Lakehouses</h3>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Apache Spark & Iceberg</span><span>90%</span></div>
+                        <div class="skill-info"><span>Apache Iceberg & Trino Query Engine</span><span>92%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 92%;"></div></div>
+                    </div>
+                    <div class="skill-bar-wrapper">
+                        <div class="skill-info"><span>Apache Spark (Structured Streaming)</span><span>90%</span></div>
                         <div class="skill-bar"><div class="skill-progress" style="width: 90%;"></div></div>
                     </div>
                     <div class="skill-bar-wrapper">
@@ -424,70 +493,88 @@
                         <div class="skill-bar"><div class="skill-progress" style="width: 88%;"></div></div>
                     </div>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Scikit-Learn, PyTorch & XGBoost</span><span>92%</span></div>
+                        <div class="skill-info"><span>Data Contracts & Great Expectations</span><span>92%</span></div>
                         <div class="skill-bar"><div class="skill-progress" style="width: 92%;"></div></div>
-                    </div>
-                    <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Trino, Airflow & Data Contracts</span><span>85%</span></div>
-                        <div class="skill-bar"><div class="skill-progress" style="width: 85%;"></div></div>
                     </div>
                 </div>
 
                 <div class="skill-category">
-                    <h3>Cloud & Databases</h3>
+                    <h3>🤖 Autonomous AI & Agents</h3>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>PostgreSQL / MySQL</span><span>90%</span></div>
-                        <div class="skill-bar"><div class="skill-progress" style="width: 90%;"></div></div>
-                    </div>
-                    <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Redis (ZSET/Caching)</span><span>92%</span></div>
+                        <div class="skill-info"><span>LangGraph & Multi-Agent Loops</span><span>92%</span></div>
                         <div class="skill-bar"><div class="skill-progress" style="width: 92%;"></div></div>
                     </div>
                     <div class="skill-bar-wrapper">
-                        <div class="skill-info"><span>Docker / Compose / Render</span><span>88%</span></div>
-                        <div class="skill-bar"><div class="skill-progress" style="width: 88%;"></div></div>
+                        <div class="skill-info"><span>Hybrid RAG (BM25 + Qdrant Dense)</span><span>90%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 90%;"></div></div>
+                    </div>
+                    <div class="skill-bar-wrapper">
+                        <div class="skill-info"><span>Scikit-Learn, PyTorch & XGBoost</span><span>92%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 92%;"></div></div>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3>💻 Languages & Backend</h3>
+                    <div class="skill-bar-wrapper">
+                        <div class="skill-info"><span>Python 3.11 - 3.14 (FastAPI/Pydantic)</span><span>96%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 96%;"></div></div>
+                    </div>
+                    <div class="skill-bar-wrapper">
+                        <div class="skill-info"><span>SQL & PostgreSQL 16/17 (Alembic)</span><span>90%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 90%;"></div></div>
+                    </div>
+                    <div class="skill-bar-wrapper">
+                        <div class="skill-info"><span>TypeScript / React / WebSockets</span><span>85%</span></div>
+                        <div class="skill-bar"><div class="skill-progress" style="width: 85%;"></div></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Certifications & Achievements Section -->
+        <!-- ==========================================================================
+             CREDENTIALS & ACHIEVEMENTS BENTO
+             ========================================================================== -->
         <section id="credentials" class="section glass-panel">
             <div class="credentials-grid">
-                <div class="achievements-column">
-                    <h2 class="credentials-title">🏆 Engineering Achievements</h2>
+                <div>
+                    <h3 style="font-size:1.6rem; font-weight:800; color:#fff; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.6rem;">
+                        <span>🏆</span> Engineering Achievements
+                    </h3>
                     <ul class="achievements-list">
                         <li class="achievement-item">
                             <span class="achievement-icon">⚡</span>
                             <div>
                                 <strong class="achievement-highlight">550+ DSA Problems Solved on LeetCode</strong>
-                                <p class="achievement-desc">Ranked in the <strong>top 5.83% globally</strong> (LeetCode: <code>charan_red</code>) building strong algorithm fundamentals.</p>
+                                <p class="achievement-desc">Ranked in the <strong>top 5.83% globally</strong> (Handle: <code>charan_red</code>) building robust algorithm and data structure fundamentals.</p>
                             </div>
                         </li>
                         <li class="achievement-item">
                             <span class="achievement-icon">⚡</span>
                             <div>
                                 <strong class="achievement-highlight">Top 3 National Hackathon Finish</strong>
-                                <p class="achievement-desc">Placed in the top 3 out of 150+ teams, collaborating to build high-scale prototypes under pressure.</p>
+                                <p class="achievement-desc">Placed in the top 3 out of 150+ teams, collaborating to architect high-scale prototypes under high-pressure sprints.</p>
                             </div>
                         </li>
                         <li class="achievement-item">
                             <span class="achievement-icon">⚡</span>
                             <div>
                                 <strong class="achievement-highlight">Enterprise Technology Simulations</strong>
-                                <p class="achievement-desc">Completed industry simulation models with Goldman Sachs, JPMorgan Chase, and Deloitte.</p>
+                                <p class="achievement-desc">Completed comprehensive industry simulation models with Goldman Sachs, JPMorgan Chase, and Deloitte.</p>
                             </div>
                         </li>
                     </ul>
                 </div>
-                
-                <div class="certs-column">
-                    <h2 class="credentials-title">🛡️ Professional Certifications</h2>
+
+                <div>
+                    <h3 style="font-size:1.6rem; font-weight:800; color:#fff; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.6rem;">
+                        <span>🛡️</span> Professional Certifications
+                    </h3>
                     <div class="certs-tags-wrapper">
                         <span class="cert-badge">AWS Certified Developer Associate</span>
                         <span class="cert-badge">AWS Certified Cloud Practitioner</span>
-                        <span class="cert-badge">Google Associate Cloud Engineer</span>
-                        <span class="cert-badge">GCP Digital Leader</span>
+                        <span class="cert-badge">Google Associate Cloud Engineer (ACE)</span>
+                        <span class="cert-badge">Google Cloud Digital Leader</span>
                         <span class="cert-badge">Azure Developer Associate</span>
                         <span class="cert-badge">Azure Fundamentals</span>
                         <span class="cert-badge">Oracle Cloud Infrastructure (OCI)</span>
@@ -500,47 +587,100 @@
             </div>
         </section>
 
-        <!-- Contact Section -->
+        <!-- ==========================================================================
+             CONTACT FORM & CONNECT HUB
+             ========================================================================== -->
         <section id="contact" class="section glass-panel">
-            <h2>Let's Build Something High-Scale</h2>
-            <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem;">Recruiters and engineering leads, drop me a message directly. I am open to senior internship opportunities, SDE/SWE/AI/ML roles, and collaborative database/system designs.</p>
-            
-            <div id="contact-success" class="alert success" style="display: none; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(16,185,129,0.2); background: rgba(16,185,129,0.05); color: #10b981;"></div>
-            <div id="contact-error" class="alert error" style="display: none; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444;"></div>
+            <div class="contact-container">
+                <div style="text-align:center;">
+                    <span class="section-eyebrow">Direct Channel</span>
+                    <h2 class="section-title">Let's Build Something High-Scale</h2>
+                    <p style="color:var(--text-secondary); margin-top:0.5rem;">
+                        Recruiters and engineering leads, drop me a message directly. I am actively interviewing for Senior SDE, Distributed Systems, AI/ML Engineering, and High-Throughput Backend roles.
+                    </p>
 
-            <form id="contact-form" onsubmit="handleContact(event)">
-                <div class="contact-form-grid">
-                    <div class="form-group">
-                        <label for="name">Your Name</label>
-                        <input type="text" id="name" class="form-input" placeholder="e.g. John Doe" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" class="form-input" placeholder="e.g. john@company.com" required>
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label for="message">Your Message</label>
-                        <textarea id="message" rows="5" class="form-input" placeholder="Discuss SDE/ML roles or project collaborations..." required></textarea>
+                    <div class="copy-email-box" onclick="copyEmailToClipboard()" title="Click to copy email address">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        charan.workmaill@gmail.com (Click to Copy)
                     </div>
                 </div>
-                <button type="submit" id="submit-btn" class="btn" style="margin-top: 1rem; width: 100%;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                    Send Message
-                </button>
-            </form>
 
-            <div class="social-links-row" style="display: flex; justify-content: center; gap: 2rem; margin-top: 2.5rem; border-top: 1px solid rgba(212,175,55,0.05); padding-top: 2rem;">
-                <a href="https://www.linkedin.com/in/b-charan-kumar-reddy-132a36292/" target="_blank" class="social-link-item">LinkedIn</a>
-                <a href="https://github.com/Charanloyal" target="_blank" class="social-link-item">GitHub</a>
-                <a href="mailto:charan.workmaill@gmail.com" class="social-link-item">Email</a>
+                <div id="contact-success" style="display:none; padding:1.2rem; border-radius:12px; margin-bottom:1.5rem; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.1); color:#34d399; font-weight:600;"></div>
+                <div id="contact-error" style="display:none; padding:1.2rem; border-radius:12px; margin-bottom:1.5rem; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.1); color:#f87171; font-weight:600;"></div>
+
+                <form id="contact-form" onsubmit="handleContact(event)">
+                    <div class="contact-form-grid">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" class="form-input" placeholder="e.g. Sarah Jenkins (Engineering Director)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Work Email</label>
+                            <input type="email" id="email" class="form-input" placeholder="e.g. sarah.jenkins@company.com" required>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label for="message">Your Inquiry / Role Description</label>
+                            <textarea id="message" rows="5" class="form-input" placeholder="Describe the role or collaborative systems project..." required></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top:1.5rem; width:100%; justify-content:center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        Send High-Priority Message
+                    </button>
+                </form>
+
+                <div style="display:flex; justify-content:center; gap:2.5rem; margin-top:2.5rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:2rem;">
+                    <a href="https://www.linkedin.com/in/b-charan-kumar-reddy-132a36292/" target="_blank" style="color:var(--text-secondary); text-decoration:none; font-weight:600;">LinkedIn</a>
+                    <a href="https://github.com/Charanloyal" target="_blank" style="color:var(--text-secondary); text-decoration:none; font-weight:600;">GitHub</a>
+                    <a href="https://leetcode.com/u/charan_red/" target="_blank" style="color:var(--text-secondary); text-decoration:none; font-weight:600;">LeetCode</a>
+                    <a href="mailto:charan.workmaill@gmail.com" style="color:var(--text-secondary); text-decoration:none; font-weight:600;">Direct Email</a>
+                </div>
             </div>
         </section>
     </main>
 
+    <!-- Deep-Dive Architecture Specification Modal Dialog -->
+    <div id="spec-modal-overlay" class="modal-overlay" onclick="if(event.target === this) closeSpecModal()">
+        <div class="modal-content-card">
+            <button class="modal-close-btn" onclick="closeSpecModal()" title="Close dialog">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <div class="modal-header">
+                <span id="modal-cat" class="modal-category">Distributed Systems Architecture</span>
+                <h3 id="modal-title" class="modal-title">System Architecture Blueprint</h3>
+            </div>
+
+            <div class="modal-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                System Data Flow & Architecture Diagram
+            </div>
+            <pre id="modal-diagram" class="diagram-box"></pre>
+
+            <div class="modal-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Engineering Highlights & Design Decisions
+            </div>
+            <ul id="modal-highlights" class="modal-list"></ul>
+
+            <div class="modal-section-title" style="margin-top:1.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                Verified Benchmarks & Specifications
+            </div>
+            <div id="modal-metrics-grid" class="project-metrics-row" style="margin-top:0.8rem;"></div>
+
+            <div id="modal-actions-bar" class="modal-actions-bar"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Charan Kumar Reddy. Powered by Python, FastAPI & Gold Standard Engineering.</p>
+        <p>&copy; 2026 Charan Kumar Reddy. Powered by Python 3.13, FastAPI & High-Scale Systems Engineering.</p>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem;">Obsidian Glassmorphic Design &bull; Verifiable Systems &bull; Render Production Cluster</p>
     </footer>
 
+    <!-- Application Script -->
     <script src="/static/js/app.js"></script>
 </body>
 </html>
