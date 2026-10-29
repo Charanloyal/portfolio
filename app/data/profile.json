@@ -66,7 +66,7 @@
     {
       "role": "Full Stack Developer Intern",
       "org": "IIT Madras",
-      "period": "May 2026 – Jun 2026",
+      "period": "Jun 2026",
       "location": "Chennai, India",
       "bullets": [
         "Built 10+ REST APIs and Docker CI/CD, cutting integration defects by 35% and deployment time by 50%."
@@ -99,6 +99,15 @@
       "bullets": [
         "Benchmarked and cut LLM inference latency by 36% (2.5 s to 1.6 s) using INT8 quantization and prompt caching.",
         "Delivered a FastAPI log-analysis service using SSE-streaming multi-agent RAG, making diagnostics 60% faster."
+      ]
+    },
+    {
+      "role": "Data Analytics Intern",
+      "org": "Bluestock Fintech",
+      "period": "May 2025 – Jun 2025",
+      "location": "Remote",
+      "bullets": [
+        "Optimized 15+ SQL queries and built Python ETL pipelines that automated weekly reporting across 200+ financial instruments, cutting analyst turnaround by 30%."
       ]
     }
   ],
