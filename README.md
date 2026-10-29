@@ -1,4 +1,4 @@
-# Charan Kumar Reddy — Senior Developer Portfolio Hub v2.0
+# Charan Kumar Reddy — Developer Portfolio Hub v2.0
 
 [![Test Suite](https://img.shields.io/badge/pytest-5%20passed%20(100%25)-brightgreen.svg)](tests/)
 [![Python](https://img.shields.io/badge/Python-3.11%20--%203.14-blue.svg)](https://www.python.org/)
@@ -6,7 +6,7 @@
 [![Design System](https://img.shields.io/badge/UI-Obsidian%20Gold%20Glassmorphic-gold.svg)](#)
 [![Live Site](https://img.shields.io/badge/Live%20Portfolio-personal--portfolio--hub-blue.svg)](https://personal-portfolio-hub-3z4y.onrender.com/)
 
-High-performance Developer Portfolio Hub website for **Charan Kumar Reddy** (Distributed Systems & AI/ML Engineer), showcasing production-grade distributed consensus engines, autonomous multi-agent state machines, verifiable CDC data lakehouses, and high-throughput backend microservices.
+High-performance Developer Portfolio Hub website for **Charan Kumar Reddy** (Distributed Systems & AI/ML Engineer), showcasing production-grade distributed consensus engines, autonomous multi-agent state machines, verifiable CDC data lakehouses and high-throughput backend microservices.
 
 ---
 
@@ -81,4 +81,4 @@ pytest
 - **Email**: [charan.workmaill@gmail.com](mailto:charan.workmaill@gmail.com)
 - **LinkedIn**: [b-charan-kumar-reddy](https://www.linkedin.com/in/b-charan-kumar-reddy-132a36292/)
 - **GitHub**: [@Charanloyal](https://github.com/Charanloyal)
-- **LeetCode**: [charan_red](https://leetcode.com/u/charan_red/) (Top 5.83% Globally)
+  
