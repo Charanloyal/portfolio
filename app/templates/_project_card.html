@@ -1,0 +1,64 @@
+{% from "_icons.html" import icon, cover_art %}
+
+{% macro project_link(p) -%}
+{%- if p.case_study -%}/projects/{{ p.id }}{%- else -%}{{ p.github_url }}{%- endif -%}
+{%- endmacro %}
+
+{% macro project_card(p, variant="gallery", heading="h3", eager=False) -%}
+<article class="card {{ 'gallery-item' if variant == 'gallery' }}"
+  {% if variant == "gallery" -%}
+  data-categories="{{ p.all_categories | join(' ') }}"
+  data-search="{{ p | search_text }}"
+  data-updated="{{ p.updated }}"
+  data-rank="{{ p.featured_rank if p.featured_rank is not none else 999 }}"
+  data-title="{{ p.title | lower }}"
+  {%- endif %}>
+  <div class="card-media">
+    <div class="cover cover--{{ p.category }}">
+      {{ cover_art(p.category) }}
+      <span class="cover-label">{{ p.category_label }}</span>
+    </div>
+    {% if p.image %}
+    <img src="{{ p.image }}" alt="{{ p.image_alt or ('Screenshot of ' ~ p.title) }}" width="1280" height="720"
+      loading="{{ 'eager' if eager else 'lazy' }}" decoding="async" onerror="this.remove()">
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="badge badge--{{ p.status }}">{{ p.status_label }}</span>
+      {% if p.demo_url %}<span class="live-dot">● {{ p.demo_label }}</span>{% endif %}
+      <span>Updated <time datetime="{{ p.updated }}">{{ p.updated | month_year }}</time></span>
+    </div>
+    <{{ heading }} class="card-title">
+      <a href="{{ project_link(p) }}" {% if not p.case_study %}target="_blank" rel="noopener"{% endif %}>{{ p.title }}</a>
+    </{{ heading }}>
+    <p class="card-summary">{{ p.summary }}</p>
+
+    {% if variant == "featured" and p.metrics %}
+    <dl class="card-metrics">
+      {% for m in p.metrics[:3] %}
+      <div class="card-metric"><dt>{{ m.label }}</dt><dd>{{ m.value }}</dd></div>
+      {% endfor %}
+    </dl>
+    {% endif %}
+
+    <ul class="tag-list" aria-label="Technologies">
+      {% for t in p.tech[: (8 if variant == 'featured' else 5)] %}<li class="tag">{{ t }}</li>{% endfor %}
+    </ul>
+
+    <div class="card-foot">
+      {% if p.case_study and variant == "featured" %}
+      <a class="btn btn-secondary btn-sm" href="/projects/{{ p.id }}">Case study {{ icon("arrow-right") }}</a>
+      {% endif %}
+      <a class="btn btn-ghost btn-sm" href="{{ p.github_url }}" target="_blank" rel="noopener">
+        {{ icon("github") }} Code<span class="visually-hidden"> for {{ p.title }} on GitHub</span>
+      </a>
+      {% if p.demo_url %}
+      <a class="btn btn-ghost btn-sm" href="{{ p.demo_url }}" {% if p.demo_url.startswith('http') %}target="_blank" rel="noopener"{% endif %}>
+        {{ icon("external") }} {{ p.demo_label }}<span class="visually-hidden"> of {{ p.title }}</span>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</article>
+{%- endmacro %}

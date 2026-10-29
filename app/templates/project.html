@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+
+{% block content %}
+{% set cs = project.case_study %}
+<article>
+  <header class="cs-hero">
+    <div class="container">
+      <nav aria-label="Breadcrumb" class="breadcrumb">
+        <a href="/#projects">{{ icon("arrow-left") }} Projects</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ project.title }}</span>
+      </nav>
+      <p class="card-meta" style="margin-bottom:1rem">
+        <span class="badge badge--{{ project.status }}">{{ project.status_label }}</span>
+        <span>{{ project.category_label }}</span>
+        <span>Updated <time datetime="{{ project.updated }}">{{ project.updated | month_year }}</time></span>
+      </p>
+      <h1 class="cs-title">{{ project.title }}</h1>
+      <p class="cs-summary">{{ project.summary }}</p>
+      <div class="cs-actions">
+        <a class="btn btn-primary" href="{{ project.github_url }}" target="_blank" rel="noopener">{{ icon("github") }} View code on GitHub</a>
+        {% if project.demo_url %}
+        <a class="btn btn-secondary" href="{{ project.demo_url }}" {% if project.demo_url.startswith('http') %}target="_blank" rel="noopener"{% endif %}>{{ icon("external") }} {{ project.demo_label }}</a>
+        {% endif %}
+        {% if project.docs_url %}
+        <a class="btn btn-ghost" href="{{ project.docs_url }}" target="_blank" rel="noopener">{{ icon("code") }} API docs</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <div class="container cs-layout">
+    <div>
+      {% if project.image %}
+      <figure class="card-media" style="border:1px solid var(--border); border-radius: var(--radius-lg); margin:0 0 2rem;">
+        <img src="{{ project.image }}" alt="{{ project.image_alt or ('Screenshot of ' ~ project.title) }}" width="1280" height="720" loading="eager" onerror="this.closest('figure').remove()">
+      </figure>
+      {% endif %}
+
+      <section class="cs-section" aria-labelledby="cs-problem">
+        <h2 id="cs-problem">The problem</h2>
+        <p>{{ cs.problem }}</p>
+      </section>
+
+      {% if cs.architecture %}
+      <section class="cs-section" aria-labelledby="cs-arch">
+        <h2 id="cs-arch">Architecture and data flow</h2>
+        <ol class="flow">
+          {% for step in cs.architecture %}
+          <li class="flow-step"><div><h3>{{ step.label }}</h3>{% if step.detail %}<p>{{ step.detail }}</p>{% endif %}</div></li>
+          {% endfor %}
+        </ol>
+      </section>
+      {% endif %}
+
+      {% if cs.decisions %}
+      <section class="cs-section" aria-labelledby="cs-decisions">
+        <h2 id="cs-decisions">Technical decisions and trade-offs</h2>
+        <ul class="cs-list">{% for d in cs.decisions %}<li>{{ d }}</li>{% endfor %}</ul>
+      </section>
+      {% endif %}
+
+      {% if cs.testing %}
+      <section class="cs-section" aria-labelledby="cs-testing">
+        <h2 id="cs-testing">Testing and evaluation</h2>
+        <ul class="cs-list">{% for t in cs.testing %}<li>{{ t }}</li>{% endfor %}</ul>
+      </section>
+      {% endif %}
+
+      {% if project.metrics or cs.results %}
+      <section class="cs-section" aria-labelledby="cs-results">
+        <h2 id="cs-results">Results</h2>
+        {% if cs.results %}<ul class="cs-list" style="margin-bottom:1.5rem">{% for r in cs.results %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+        {% if project.metrics %}
+        <table class="metric-table">
+          <caption class="visually-hidden">Measured results and where they come from</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col">Value</th><th scope="col">Source in repository</th></tr></thead>
+          <tbody>
+            {% for m in project.metrics %}<tr><td>{{ m.label }}</td><td>{{ m.value }}</td><td>{{ m.evidence }}</td></tr>{% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      {% if cs.limitations %}
+      <section class="cs-section" aria-labelledby="cs-limits">
+        <h2 id="cs-limits">Limitations and next steps</h2>
+        <ul class="cs-list">{% for l in cs.limitations %}<li>{{ l }}</li>{% endfor %}</ul>
+      </section>
+      {% endif %}
+
+      <nav class="cs-nav" aria-label="More case studies">
+        {% if prev_project %}<a href="/projects/{{ prev_project.id }}"><small>Previous</small><span>{{ prev_project.title }}</span></a>{% endif %}
+        {% if next_project %}<a href="/projects/{{ next_project.id }}"><small>Next</small><span>{{ next_project.title }}</span></a>{% endif %}
+      </nav>
+    </div>
+
+    <aside class="cs-aside" aria-label="Project facts">
+      <div class="cs-facts">
+        <dl>
+          <div><dt>Stack</dt><dd><ul class="tag-list">{% for t in project.tech %}<li class="tag">{{ t }}</li>{% endfor %}</ul></dd></div>
+          <div><dt>Status</dt><dd>{{ project.status_label }}</dd></div>
+          <div><dt>Repository</dt><dd><a class="inline" style="color:var(--accent)" href="{{ project.github_url }}" target="_blank" rel="noopener">{{ project.github_url | replace("https://github.com/", "") }}</a></dd></div>
+          {% if project.demo_url %}<div><dt>Demo</dt><dd>{{ project.demo_label }}.{% if project.demo_note %} {{ project.demo_note }}{% endif %}{% if project.demo_kind == "live-app" %} Hosted on a free tier, so the first load can take up to a minute.{% endif %}</dd></div>{% endif %}
+        </dl>
+      </div>
+    </aside>
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% from "_icons.html" import icon %}<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page_title }}</title>
+  <meta name="description" content="{{ page_description }}">
+  <meta name="author" content="{{ profile.name }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="theme-color" content="#0a0b0d">
+
+  <meta property="og:type" content="{{ og_type | default('website') }}">
+  <meta property="og:site_name" content="{{ profile.name }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_description }}">
+  <meta property="og:image" content="{{ og_image_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_description }}">
+  <meta name="twitter:image" content="{{ og_image_url }}">
+
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/static/css/site.css?v={{ asset_version }}">
+  <script>document.documentElement.classList.remove("no-js");</script>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" data-header>
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="{{ profile.name }}, home">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span class="brand-text">
+          <span class="brand-name">{{ profile.name }}</span>
+          <span class="brand-role">{{ profile.role_line }}</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+        <span class="visually-hidden">Menu</span>
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Primary" data-nav>
+        <ul class="nav-list">
+          {% set p = nav_prefix | default('') %}
+          <li><a class="nav-link" href="{{ p }}#about" data-section-link="about">About</a></li>
+          <li><a class="nav-link" href="{{ p }}#projects" data-section-link="projects">Projects</a></li>
+          <li><a class="nav-link" href="{{ p }}#experience" data-section-link="experience">Experience</a></li>
+          <li><a class="nav-link" href="{{ p }}#skills" data-section-link="skills">Skills</a></li>
+          <li><a class="nav-link" href="{{ p }}#credentials" data-section-link="credentials">Credentials</a></li>
+          <li class="nav-cta"><a class="btn btn-secondary btn-sm" href="{{ p }}#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; {{ year }} {{ profile.name }}. Built with FastAPI and plain HTML, CSS and JavaScript.</p>
+      <ul class="footer-links">
+        <li><a href="{{ profile.links.github.url }}" rel="me noopener" target="_blank">GitHub</a></li>
+        <li><a href="{{ profile.links.linkedin.url }}" rel="me noopener" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:{{ profile.email }}">Email</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" data-back-to-top>
+    {{ icon("arrow-up") }}<span class="visually-hidden">Back to top</span>
+  </button>
+  <div class="toast" role="status" aria-live="polite" data-toast></div>
+
+  <script src="/static/js/site.js?v={{ asset_version }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

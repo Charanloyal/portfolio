@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SentinelShield - Real-Time Financial Fraud Detection Engine & Drift Tracker</title>
+  <title>SentinelShield - Fraud Monitoring Simulation</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Chart.js -->
@@ -25,9 +25,9 @@
     </div>
     <div class="system-status">
       <div class="status-indicator live"></div>
-      <span class="status-label">Kafka Stream Active</span>
+      <span class="status-label">Simulated stream running</span>
       <span class="status-divider">|</span>
-      <span class="env-badge">Production Engine</span>
+      <span class="env-badge">Browser simulation · synthetic data</span>
     </div>
   </header>
 
@@ -72,7 +72,7 @@
       <div class="panel-header">
         <div class="panel-title">
           <span class="icon">📟</span>
-          <h2>Kafka Live Consumer Stream</h2>
+          <h2>Simulated Transaction Stream</h2>
         </div>
         <div class="stream-actions">
           <button class="btn btn-secondary btn-sm" id="btn-pause-stream">Pause Feed</button>
@@ -149,7 +149,7 @@
         </div>
         <div class="distribution-legend">
           <span class="legend-item"><span class="color-dot baseline"></span>Baseline</span>
-          <span class="legend-item"><span class="color-dot current"></span>Production Stream</span>
+          <span class="legend-item"><span class="color-dot current"></span>Current Stream</span>
         </div>
       </div>
       <div class="chart-wrapper">
@@ -188,7 +188,7 @@
   </main>
 
   <footer class="app-footer">
-    <p>SentinelShield Financial Cybersecurity Pipeline | IIT Madras Summer Intern Portfolio</p>
+    <p>SentinelShield fraud-monitoring simulation. Transactions and scores are generated in your browser; no data leaves the page. <a href="/" style="color:inherit">Back to portfolio</a></p>
   </footer>
 
   <script src="app.js"></script>
