@@ -17,21 +17,28 @@
         <span><strong>{{ profile.name }}</strong> · {{ profile.location }}</span>
       </p>
       <h1 class="hero-title" id="hero-title">{{ profile.headline | safe }}</h1>
+      {% if profile.target_roles %}
+      <p class="hero-roles"><span class="hero-roles-label">Open to</span>
+        {% for r in profile.target_roles %}<span class="hero-role">{{ r }}</span>{% endfor %}
+      </p>
+      {% endif %}
       <p class="hero-intro">{{ profile.intro }}</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#projects">Explore projects {{ icon("arrow-right") }}</a>
         {% if resume_url %}
-        <a class="btn btn-secondary" href="{{ resume_url }}" target="_blank" rel="noopener">{{ icon("file") }} View resume</a>
+        <a class="btn btn-secondary" href="{{ resume_url }}" {% if resume_url.startswith('/') %}download{% else %}target="_blank" rel="noopener"{% endif %}>{{ icon("file") }} Download resume</a>
         {% endif %}
+        <a class="btn btn-secondary" href="#contact">{{ icon("mail") }} Contact</a>
         <span class="hero-social">
-          <a class="icon-link" href="{{ profile.links.github.url }}" target="_blank" rel="me noopener">{{ icon("github", "GitHub profile") }}</a>
-          <a class="icon-link" href="{{ profile.links.linkedin.url }}" target="_blank" rel="me noopener">{{ icon("linkedin", "LinkedIn profile") }}</a>
+          <a class="icon-link" href="{{ profile.links.github.url }}" target="_blank" rel="me noopener">{{ icon("github", "GitHub profile (opens in a new tab)") }}</a>
+          <a class="icon-link" href="{{ profile.links.linkedin.url }}" target="_blank" rel="me noopener">{{ icon("linkedin", "LinkedIn profile (opens in a new tab)") }}</a>
         </span>
       </div>
       <dl class="hero-facts">
         <div class="hero-fact"><dt>Public projects</dt><dd>{{ stats.projects }}</dd></div>
         <div class="hero-fact"><dt>Live demos</dt><dd>{{ stats.live }}</dd></div>
         <div class="hero-fact"><dt>Internships</dt><dd>{{ stats.internships }}</dd></div>
+        {% if stats.graduation %}<div class="hero-fact"><dt>Graduating</dt><dd>{{ stats.graduation }}</dd></div>{% endif %}
         <div class="hero-fact"><dt>Now</dt><dd>{{ stats.now }}</dd></div>
       </dl>
     </div>
@@ -88,13 +95,14 @@
     <div class="section-head">
       <span class="eyebrow">Selected work</span>
       <h2 class="section-title" id="projects-title">Featured projects</h2>
-      <p class="section-lead">Picked for technical depth and how much of the work can be checked: tests, code and running demos. Each one has a case study covering the architecture, trade-offs and limits.</p>
+      <p class="section-lead">Six projects across data engineering, ML, AI and backend work. Each card states the problem, the approach and what was measured or tested; the case study covers the architecture, trade-offs and limits. Projects built on generated or fictional data are marked <span class="data-flag">Synthetic data</span>.</p>
     </div>
     <div class="featured-grid">
       {% for p in featured %}
       <div class="reveal">{{ project_card(p, variant="featured", heading="h3", eager=loop.first) }}</div>
       {% endfor %}
     </div>
+    <p class="featured-more"><a class="btn btn-ghost" href="#all-projects">Browse all {{ all_projects | length }} projects {{ icon("arrow-right") }}</a></p>
   </div>
 </section>
 
@@ -111,7 +119,15 @@
       <div class="search-field">
         <label class="visually-hidden" for="project-search">Search projects</label>
         {{ icon("search") }}
-        <input class="input" id="project-search" type="search" placeholder="Search by name or technology, e.g. Kafka" autocomplete="off" data-gallery-search>
+        <input class="input" id="project-search" type="search" placeholder="Name or technology, e.g. Kafka" autocomplete="off" spellcheck="false" enterkeyhint="search" aria-describedby="project-search-hint" data-gallery-search>
+        <span class="visually-hidden" id="project-search-hint">Results update as you type.</span>
+      </div>
+      <div class="sort-field">
+        <label for="project-status">Status</label>
+        <select class="select" id="project-status" data-gallery-status-filter>
+          <option value="all">All</option>
+          {% for sid, label, _desc, n in statuses %}<option value="{{ sid }}">{{ label }} ({{ n }})</option>{% endfor %}
+        </select>
       </div>
       <div class="sort-field">
         <label for="project-sort">Sort</label>
@@ -129,6 +145,16 @@
       <button class="chip" type="button" aria-pressed="false" data-filter="{{ cid }}">{{ label }} <span class="chip-count">{{ n }}</span></button>
       {% endfor %}
     </div>
+
+    <details class="status-legend">
+      <summary>What the status labels mean</summary>
+      <dl>
+        {% for sid, label, desc, _n in statuses %}
+        <div><dt><span class="badge badge--{{ sid }}">{{ label }}</span></dt><dd>{{ desc }}</dd></div>
+        {% endfor %}
+        <div><dt><span class="data-flag">Synthetic data</span></dt><dd>Built and evaluated on generated or fictional data. Results show the method works, not how it performs on production data.</dd></div>
+      </dl>
+    </details>
 
     <p class="gallery-status" aria-live="polite" data-gallery-status>Showing all {{ all_projects | length }} projects.</p>
 
@@ -188,7 +214,7 @@
           {% for s in g.skills %}
           <li>
             {% if s.count %}
-            <button class="skill" type="button" data-skill="{{ s.name }}">{{ s.name }} <span class="skill-count" aria-label="{{ s.count }} projects">{{ s.count }}</span></button>
+            <button class="skill" type="button" data-skill="{{ s.name }}">{{ s.name }} <span class="skill-count" aria-hidden="true">{{ s.count }}</span><span class="visually-hidden">, {{ s.count }} {{ "project" if s.count == 1 else "projects" }}</span></button>
             {% else %}
             <span class="skill">{{ s.name }}</span>
             {% endif %}
@@ -213,31 +239,47 @@
         <h3>Education</h3>
         {% for ed in profile.education %}
         <p class="big">{{ ed.degree }}</p>
-        <p style="margin-bottom:.25rem">{{ ed.school }}{% if ed.location %}, {{ ed.location }}{% endif %}</p>
-        {% if ed.period %}<p style="margin-bottom:.25rem">{{ ed.period }}</p>{% endif %}
+        <p class="cred-line">{{ ed.school }}{% if ed.location %}, {{ ed.location }}{% endif %}</p>
+        {% if ed.period %}<p class="cred-line">{{ ed.period }}</p>{% endif %}
         {% if ed.detail %}<p>{{ ed.detail }}</p>{% endif %}
         {% endfor %}
-      </div>
-      <div class="cred-card reveal">
-        <h3>Certifications</h3>
+        {% if profile.achievements %}
+        <h3 class="cred-subhead">Achievements</h3>
         <ul class="cred-list">
-          {% for c in profile.certifications %}<li>{{ c.name }}<span class="issuer">{{ c.issuer }}</span></li>{% endfor %}
-        </ul>
-      </div>
-      <div class="cred-card reveal">
-        <h3>Achievements</h3>
-        <ul class="cred-list" style="margin-bottom:1.5rem">
           {% for a in profile.achievements %}
           <li>{% if a.url %}<a class="inline" href="{{ a.url }}" target="_blank" rel="noopener">{{ a.title }}</a>{% else %}{{ a.title }}{% endif %}<span class="issuer">{{ a.detail }}</span></li>
           {% endfor %}
         </ul>
+        {% endif %}
+      </div>
+      {% macro cred_items(items) -%}
+      <ul class="cred-list">
+        {% for c in items %}<li>{% if c.url %}<a class="inline" href="{{ c.url }}" target="_blank" rel="noopener">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}<span class="issuer">{{ c.issuer }}</span></li>{% endfor %}
+      </ul>
+      {%- endmacro %}
+      {% if profile.exam_certifications %}
+      <div class="cred-card reveal">
+        <h3>Certifications</h3>
+        <p class="cred-note">Vendor certification exams.</p>
+        {{ cred_items(profile.exam_certifications) }}
+      </div>
+      {% endif %}
+      {% if profile.other_credential_groups or profile.simulations %}
+      <div class="cred-card reveal">
+        {% for kind, label, items in profile.other_credential_groups %}
+        <h3 {% if not loop.first %}class="cred-subhead"{% endif %}>{{ label }}</h3>
+        {% if kind == "professional-certificate" %}<p class="cred-note">Multi-course online programmes, not proctored exams.</p>{% endif %}
+        {{ cred_items(items) }}
+        {% endfor %}
         {% if profile.simulations %}
-        <h3>Virtual job simulations</h3>
+        <h3 {% if profile.other_credential_groups %}class="cred-subhead"{% endif %}>Virtual job simulations</h3>
+        <p class="cred-note">Short self-paced online task programmes. Not employment.</p>
         <ul class="cred-list">
           {% for s in profile.simulations %}<li>{{ s.name }}<span class="issuer">{{ s.issuer }}</span></li>{% endfor %}
         </ul>
         {% endif %}
       </div>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -248,7 +290,7 @@
     <div class="contact reveal">
       <div>
         <span class="eyebrow">Contact</span>
-        <h2 class="section-title" id="contact-title">Hiring for data, ML or backend work?</h2>
+        <h2 class="section-title" id="contact-title">Hiring for data, ML, AI or backend work?</h2>
         <p class="section-lead">Email is the fastest way to reach me. I'm happy to walk through any of these projects in more depth.</p>
       </div>
       <div class="contact-actions">
@@ -268,7 +310,7 @@
           <span class="arrow">{{ icon("external") }}</span>
         </a>
         {% if resume_url %}
-        <a class="contact-row" href="{{ resume_url }}" target="_blank" rel="noopener">
+        <a class="contact-row" href="{{ resume_url }}" {% if resume_url.startswith('/') %}download{% else %}target="_blank" rel="noopener"{% endif %}>
           <span class="contact-row-main">{{ icon("file") }}<span class="contact-row-text"><small>Resume</small><span>Download PDF</span></span></span>
           <span class="arrow">{{ icon("external") }}</span>
         </a>

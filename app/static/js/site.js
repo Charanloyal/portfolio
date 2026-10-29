@@ -105,6 +105,7 @@
     const items = $$(".gallery-item", grid);
     const search = $("[data-gallery-search]", gallery);
     const sortSel = $("[data-gallery-sort]", gallery);
+    const statusSel = $("[data-gallery-status-filter]", gallery);
     const chips = $$("[data-filter]", gallery);
     const status = $("[data-gallery-status]", gallery);
     const empty = $("[data-gallery-empty]", gallery);
@@ -117,7 +118,12 @@
       return chip ? chip.firstChild.textContent.trim() : id;
     };
 
-    const state = { filter: "all", query: "", sort: "featured", expanded: false };
+    const statusLabel = (id) => {
+      const opt = statusSel && Array.from(statusSel.options).find((o) => o.value === id);
+      return opt ? opt.textContent.replace(/\s*\(\d+\)$/, "").toLowerCase() : id;
+    };
+
+    const state = { filter: "all", status: "all", query: "", sort: "featured", expanded: false };
 
     const comparators = {
       featured: (a, b) => (+a.dataset.rank - +b.dataset.rank) || b.dataset.updated.localeCompare(a.dataset.updated),
@@ -129,13 +135,15 @@
       const tokens = state.query.toLowerCase().split(/\s+/).filter(Boolean);
       const matches = items
         .filter((el) => state.filter === "all" || el.dataset.categories.split(" ").includes(state.filter))
+        .filter((el) => state.status === "all" || el.dataset.status === state.status)
         .filter((el) => tokens.every((t) => el.dataset.search.includes(t)))
         .sort(comparators[state.sort]);
 
       const sorted = [...items].sort(comparators[state.sort]);
       sorted.forEach((el) => grid.appendChild(el));
 
-      const paginate = state.filter === "all" && !tokens.length && !state.expanded;
+      const unfiltered = state.filter === "all" && state.status === "all" && !tokens.length;
+      const paginate = unfiltered && !state.expanded;
       const shown = paginate ? matches.slice(0, PAGE_SIZE) : matches;
       const shownSet = new Set(shown);
       items.forEach((el) => { el.hidden = !shownSet.has(el); });
@@ -151,9 +159,10 @@
         let msg;
         if (!matches.length) msg = "No projects match.";
         else if (shown.length < matches.length) msg = `Showing ${shown.length} of ${matches.length} projects.`;
-        else if (state.filter === "all" && !tokens.length) msg = `Showing all ${total} projects.`;
+        else if (unfiltered) msg = `Showing all ${total} projects.`;
         else {
           const parts = [];
+          if (state.status !== "all") parts.push(`marked ${statusLabel(state.status)}`);
           if (state.filter !== "all") parts.push(`in ${chipLabel(state.filter)}`);
           if (tokens.length) parts.push(`matching "${state.query.trim()}"`);
           msg = `${matches.length} ${matches.length === 1 ? "project" : "projects"} ${parts.join(" ")}.`;
@@ -168,6 +177,10 @@
       searchTimer = setTimeout(() => { state.query = search.value; render(); }, 120);
     });
     sortSel.addEventListener("change", () => { state.sort = sortSel.value; render(); });
+    statusSel && statusSel.addEventListener("change", () => { state.status = statusSel.value; render(); });
+    search.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && search.value) { e.preventDefault(); search.value = ""; state.query = ""; render(); }
+    });
     chips.forEach((chip) => chip.addEventListener("click", () => { state.filter = chip.dataset.filter; render(); }));
     moreBtn.addEventListener("click", () => {
       const firstHidden = items.find((el) => el.hidden);
@@ -176,8 +189,12 @@
       const link = firstHidden && firstHidden.querySelector(".card-title a");
       link && link.focus({ preventScroll: false });
     });
+    function resetFilters() {
+      state.filter = "all"; state.status = "all"; state.query = ""; search.value = "";
+      if (statusSel) statusSel.value = "all";
+    }
     resetBtn.addEventListener("click", () => {
-      state.filter = "all"; state.query = ""; search.value = "";
+      resetFilters();
       render();
       search.focus();
     });
@@ -185,7 +202,7 @@
     /* Skill chips jump to the gallery filtered by that technology */
     $$("[data-skill]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        state.filter = "all";
+        resetFilters();
         state.query = btn.dataset.skill;
         search.value = btn.dataset.skill;
         render();

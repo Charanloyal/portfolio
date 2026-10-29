@@ -8,3 +8,6 @@ services:
         value: production
       - key: PORT
         value: 8000
+      # Optional override for profile.json resume_url. Set in the Render dashboard if needed.
+      - key: RESUME_URL
+        sync: false

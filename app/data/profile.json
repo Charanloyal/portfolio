@@ -1,18 +1,25 @@
 {
   "name": "Charan Kumar Reddy",
   "short_name": "Charan",
-  "role_line": "Data, ML and backend engineering",
+  "role_line": "Data, ML, AI and backend engineering",
   "headline": "I build data pipelines, <em>ML systems</em> and the services that run them.",
-  "intro": "B.Tech Data Science student and AI/ML intern at General Motors. My public work covers fine-tuned transformer classifiers, retrieval-augmented generation, an LLM gateway, CDC lakehouses and feature stores, with tests, evaluation reports and demos you can check.",
+  "target_roles": [
+    "Data Engineering",
+    "ML Engineering",
+    "AI Engineering",
+    "Backend Engineering"
+  ],
+  "intro": "B.Tech student in Electronics and Communication Engineering (Data Science) and AI/ML intern at General Motors. My public work covers CDC lakehouses, feature stores, evaluated ML and RAG systems and an LLM gateway, with tests, evaluation reports and demos you can check.",
   "about": [
     "I'm studying Electronics and Communication Engineering with a specialization in Data Science at SRM Institute of Science and Technology, and I'm currently interning at General Motors in Bengaluru.",
     "Most of what I build sits where data meets ML: RAG systems with citations and guardrails, text classifiers measured against honest baselines, an LLM gateway, CDC pipelines into a lakehouse and a feature store guarded by data contracts. I spend most of my time on the parts that decide whether a system can be trusted: evaluation, groundedness, idempotent writes, point-in-time correctness and tests that run in CI.",
     "When a simpler model beats a bigger one, I report it. When a number comes from synthetic data, the project says so."
   ],
   "location": "Bengaluru, India",
-  "open_to": "I'm looking for internships and early-career roles in data engineering, ML engineering and backend development, especially at fintech and data-heavy companies.",
+  "open_to": "I'm looking for internships and early-career roles in data engineering, ML engineering, AI engineering and backend development, especially at fintech and data-heavy companies.",
   "email": "charankumarreddy2028@gmail.com",
   "site_url": "https://personal-portfolio-hub-3z4y.onrender.com",
+  "resume_url": "https://drive.google.com/file/d/1WdwS-cfhYwjDMigkE3VQWP5TRUIQqMt5/view",
   "links": {
     "github": {
       "label": "github.com/Charanloyal",
@@ -46,7 +53,8 @@
       "degree": "B.Tech, Electronics and Communication Engineering (Data Science)",
       "school": "SRM Institute of Science and Technology",
       "location": "Chennai",
-      "detail": "CGPA 8.7 / 10"
+      "detail": "CGPA 8.7 / 10",
+      "period": "Expected May 2027"
     }
   ],
   "experience": [
@@ -102,59 +110,71 @@
       ]
     },
     {
-      "role": "Data Analytics Intern",
-      "org": "Bluestock Fintech",
-      "period": "May 2025 – Jun 2025",
+      "role": "Data Science Intern",
+      "org": "Skill Intern",
+      "period": "Oct 2024 – Dec 2024",
       "location": "Remote",
       "bullets": [
-        "Optimized 15+ SQL queries and built Python ETL pipelines that automated weekly reporting across 200+ financial instruments, cutting analyst turnaround by 30%."
+        "Built AeroTest, a browser tool for planning and reading A/B tests: pre-experiment sample-size calculation, two-proportion z-tests, sample-ratio-mismatch checks and ROI projection, with a notebook working through the same statistics in SciPy and statsmodels.",
+        "Built ChurnIntel, a browser demo that scores customer churn risk with a logistic formula and shows each feature's contribution, answers keyword-matched questions over 100 in-memory customer records, and estimates retention-campaign ROI."
       ]
     }
   ],
   "certifications": [
     {
       "name": "AWS Certified Developer – Associate",
-      "issuer": "Amazon Web Services"
+      "issuer": "Amazon Web Services",
+      "kind": "certification"
     },
     {
       "name": "AWS Certified Cloud Practitioner",
-      "issuer": "Amazon Web Services"
+      "issuer": "Amazon Web Services",
+      "kind": "certification"
     },
     {
       "name": "Associate Cloud Engineer",
-      "issuer": "Google Cloud"
+      "issuer": "Google Cloud",
+      "kind": "certification"
     },
     {
       "name": "Cloud Digital Leader",
-      "issuer": "Google Cloud"
+      "issuer": "Google Cloud",
+      "kind": "certification"
     },
     {
       "name": "Azure Developer Associate",
-      "issuer": "Microsoft"
+      "issuer": "Microsoft",
+      "kind": "certification"
     },
     {
       "name": "Azure Fundamentals",
-      "issuer": "Microsoft"
+      "issuer": "Microsoft",
+      "kind": "certification"
     },
     {
       "name": "Oracle Cloud Infrastructure certification",
-      "issuer": "Oracle"
+      "issuer": "Oracle",
+      "kind": "certification"
     },
     {
       "name": "Data Engineering Professional Certificate",
-      "issuer": "IBM"
+      "issuer": "IBM",
+      "kind": "professional-certificate"
     },
     {
       "name": "Data Analytics Professional Certificate",
-      "issuer": "Google"
+      "issuer": "Google",
+      "kind": "professional-certificate"
     },
     {
       "name": "Full Stack Professional Certificate",
-      "issuer": "Meta"
+      "issuer": "Meta",
+      "kind": "professional-certificate"
     },
     {
       "name": "Data Science certification",
-      "issuer": "IIT Madras"
+      "issuer": "IIT Madras",
+      "kind": "other"
     }
   ],
   "simulations": [

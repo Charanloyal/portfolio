@@ -61,6 +61,23 @@ class CaseStudy(BaseModel):
     limitations: list[str] = []
 
 
+STATUS_DESCRIPTIONS: dict[str, str] = {
+    "complete": "Built to its stated scope and runs end to end.",
+    "in-progress": "Under active development; parts are not finished yet.",
+    "experimental": "A prototype or exploration, not a finished system.",
+    "learning": "A small project built to learn a tool or technique.",
+}
+
+
+class Brief(BaseModel):
+    """One-line summaries for featured cards; the case study holds the full detail."""
+
+    problem: str
+    approach: str
+    # Shown only when a project has no measured metrics: outcomes asserted by tests in the repo.
+    outcomes: list[str] = []
+
+
 class Project(BaseModel):
     id: str
     title: str
@@ -71,6 +88,8 @@ class Project(BaseModel):
     secondary_categories: list[CategoryId] = []
     tech: list[str]
     status: Status
+    synthetic_data: bool = False
+    brief: Optional[Brief] = None
     featured_rank: Optional[int] = None
     demo_url: Optional[str] = None
     demo_kind: Optional[DemoKind] = None
@@ -105,6 +124,10 @@ class Project(BaseModel):
         return STATUS_LABELS[self.status]
 
     @property
+    def status_description(self) -> str:
+        return STATUS_DESCRIPTIONS[self.status]
+
+    @property
     def demo_label(self) -> Optional[str]:
         return DEMO_LABELS[self.demo_kind] if self.demo_url and self.demo_kind else None
 
@@ -135,9 +158,21 @@ class Education(BaseModel):
     detail: str = ""
 
 
+CredentialKind = Literal["certification", "professional-certificate", "other"]
+
+CREDENTIAL_GROUPS: dict[str, str] = {
+    "certification": "Certifications",
+    "professional-certificate": "Professional certificates",
+    "other": "Other certificates",
+}
+
+
 class Credential(BaseModel):
     name: str
     issuer: str
+    # certification = proctored vendor exam; professional-certificate = multi-course online programme.
+    kind: CredentialKind = "certification"
+    url: Optional[str] = None
 
 
 class Achievement(BaseModel):
@@ -167,12 +202,15 @@ class Profile(BaseModel):
     short_name: str
     role_line: str
     headline: str
+    target_roles: list[str] = []
     intro: str
     about: list[str]
     location: str
     open_to: str
     email: str
     site_url: str
+    # Public link to the resume PDF; the RESUME_URL environment variable overrides it.
+    resume_url: Optional[str] = None
     links: dict[str, Link]
     education: list[Education]
     experience: list[Experience]
@@ -181,6 +219,15 @@ class Profile(BaseModel):
     achievements: list[Achievement] = []
     focus: list[Achievement] = []
     skills: list[SkillGroup]
+
+    @property
+    def exam_certifications(self) -> list[Credential]:
+        return [c for c in self.certifications if c.kind == "certification"]
+
+    @property
+    def other_credential_groups(self) -> list[tuple[str, str, list[Credential]]]:
+        return [(kind, label, items) for kind, label in CREDENTIAL_GROUPS.items() if kind != "certification"
+                for items in [[c for c in self.certifications if c.kind == kind]] if items]
 
 
 @lru_cache(maxsize=1)
@@ -216,9 +263,20 @@ def category_counts() -> list[tuple[str, str, int]]:
     return out
 
 
+def status_counts() -> list[tuple[str, str, str, int]]:
+    projects = load_projects()
+    out = []
+    for sid, label in STATUS_LABELS.items():
+        n = sum(1 for p in projects if p.status == sid)
+        if n:
+            out.append((sid, label, STATUS_DESCRIPTIONS[sid], n))
+    return out
+
+
 def search_text(p: Project) -> str:
     """Must match the data-search attribute the gallery script filters on."""
-    return f"{p.title} {p.summary} {' '.join(p.tech)} {p.category_label}".lower()
+    extra = " synthetic data" if p.synthetic_data else ""
+    return f"{p.title} {p.summary} {' '.join(p.tech)} {p.category_label} {p.status_label}{extra}".lower()
 
 
 def projects_using(skill: str) -> list[Project]:
