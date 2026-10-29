@@ -4,10 +4,36 @@
 {%- if p.case_study -%}/projects/{{ p.id }}{%- else -%}{{ p.github_url }}{%- endif -%}
 {%- endmacro %}
 
+{% macro project_meta(p) -%}
+<div class="card-meta">
+  <span class="badge badge--{{ p.status }}" title="{{ p.status_description }}">{{ p.status_label }}</span>
+  {% if p.synthetic_data %}<span class="data-flag" title="Built and evaluated on generated or fictional data, not production data">Synthetic data</span>{% endif %}
+  {% if p.demo_url %}<span class="live-dot"><span aria-hidden="true">● </span>{{ p.demo_label }}</span>{% endif %}
+  <span>Updated <time datetime="{{ p.updated }}">{{ p.updated | month_year }}</time></span>
+</div>
+{%- endmacro %}
+
+{% macro project_actions(p, variant) -%}
+<div class="card-foot">
+  {% if p.case_study %}
+  <a class="btn {{ 'btn-secondary' if variant == 'featured' else 'btn-ghost' }} btn-sm" href="/projects/{{ p.id }}">Case study {{ icon("arrow-right") }}<span class="visually-hidden">: {{ p.title }}</span></a>
+  {% endif %}
+  <a class="btn btn-ghost btn-sm" href="{{ p.github_url }}" target="_blank" rel="noopener">
+    {{ icon("github") }} Code<span class="visually-hidden"> for {{ p.title }} on GitHub (opens in a new tab)</span>
+  </a>
+  {% if p.demo_url %}
+  <a class="btn btn-ghost btn-sm" href="{{ p.demo_url }}" {% if p.demo_url.startswith('http') %}target="_blank" rel="noopener"{% endif %}>
+    {{ icon("external") }} {{ p.demo_label }}<span class="visually-hidden"> of {{ p.title }}{% if p.demo_url.startswith('http') %} (opens in a new tab){% endif %}</span>
+  </a>
+  {% endif %}
+</div>
+{%- endmacro %}
+
 {% macro project_card(p, variant="gallery", heading="h3", eager=False) -%}
-<article class="card {{ 'gallery-item' if variant == 'gallery' }}"
+<article class="card {{ 'gallery-item' if variant == 'gallery' else 'card--featured' }}"
   {% if variant == "gallery" -%}
   data-categories="{{ p.all_categories | join(' ') }}"
+  data-status="{{ p.status }}"
   data-search="{{ p | search_text }}"
   data-updated="{{ p.updated }}"
   data-rank="{{ p.featured_rank if p.featured_rank is not none else 999 }}"
@@ -24,41 +50,45 @@
     {% endif %}
   </div>
   <div class="card-body">
-    <div class="card-meta">
-      <span class="badge badge--{{ p.status }}">{{ p.status_label }}</span>
-      {% if p.demo_url %}<span class="live-dot">● {{ p.demo_label }}</span>{% endif %}
-      <span>Updated <time datetime="{{ p.updated }}">{{ p.updated | month_year }}</time></span>
-    </div>
+    {{ project_meta(p) }}
     <{{ heading }} class="card-title">
       <a href="{{ project_link(p) }}" {% if not p.case_study %}target="_blank" rel="noopener"{% endif %}>{{ p.title }}</a>
     </{{ heading }}>
-    <p class="card-summary">{{ p.summary }}</p>
 
+    {% if variant == "featured" and p.brief %}
+    <dl class="card-brief">
+      <div><dt>Problem</dt><dd>{{ p.brief.problem }}</dd></div>
+      <div><dt>Approach</dt><dd>{{ p.brief.approach }}</dd></div>
+    </dl>
+    <div class="card-results">
+      <p class="card-results-title">{{ "Measured results" if p.metrics else "Tested outcomes" }}</p>
+      {% if p.metrics %}
+      <dl class="card-metrics">
+        {% for m in p.metrics[:2] %}
+        <div class="card-metric"><dt>{{ m.label }}</dt><dd>{{ m.value }}</dd></div>
+        {% endfor %}
+      </dl>
+      {% else %}
+      <ul class="card-outcomes">{% for o in p.brief.outcomes[:2] %}<li>{{ o }}</li>{% endfor %}</ul>
+      <p class="card-results-note">No benchmark numbers are published for this project yet.</p>
+      {% endif %}
+    </div>
+    {% else %}
+    <p class="card-summary">{{ p.summary }}</p>
     {% if variant == "featured" and p.metrics %}
     <dl class="card-metrics">
-      {% for m in p.metrics[:3] %}
+      {% for m in p.metrics[:2] %}
       <div class="card-metric"><dt>{{ m.label }}</dt><dd>{{ m.value }}</dd></div>
       {% endfor %}
     </dl>
     {% endif %}
+    {% endif %}
 
     <ul class="tag-list" aria-label="Technologies">
-      {% for t in p.tech[: (8 if variant == 'featured' else 5)] %}<li class="tag">{{ t }}</li>{% endfor %}
+      {% for t in p.tech[: (7 if variant == 'featured' else 5)] %}<li class="tag">{{ t }}</li>{% endfor %}
     </ul>
 
-    <div class="card-foot">
-      {% if p.case_study and variant == "featured" %}
-      <a class="btn btn-secondary btn-sm" href="/projects/{{ p.id }}">Case study {{ icon("arrow-right") }}</a>
-      {% endif %}
-      <a class="btn btn-ghost btn-sm" href="{{ p.github_url }}" target="_blank" rel="noopener">
-        {{ icon("github") }} Code<span class="visually-hidden"> for {{ p.title }} on GitHub</span>
-      </a>
-      {% if p.demo_url %}
-      <a class="btn btn-ghost btn-sm" href="{{ p.demo_url }}" {% if p.demo_url.startswith('http') %}target="_blank" rel="noopener"{% endif %}>
-        {{ icon("external") }} {{ p.demo_label }}<span class="visually-hidden"> of {{ p.title }}</span>
-      </a>
-      {% endif %}
-    </div>
+    {{ project_actions(p, variant) }}
   </div>
 </article>
 {%- endmacro %}

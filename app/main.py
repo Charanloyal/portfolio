@@ -23,6 +23,7 @@ from app.content import (
     project_by_id,
     projects_using,
     search_text,
+    status_counts,
 )
 
 APP_DIR = Path(__file__).parent
@@ -31,7 +32,7 @@ RESUME_FILE = STATIC_DIR / "resume.pdf"
 START_TIME = time.time()
 
 SITE_URL = os.getenv("SITE_URL", "https://personal-portfolio-hub-3z4y.onrender.com").rstrip("/")
-# Optional: an external resume link (for example a shared Google Drive PDF). Takes priority over app/static/resume.pdf.
+# Optional: overrides profile.json resume_url and app/static/resume.pdf.
 RESUME_URL_OVERRIDE = os.getenv("RESUME_URL", "").strip() or None
 
 HERO_PROJECT_IDS = ["lakeflow", "featurehub-dataguard", "vehicle-telemetry-anomaly-detection", "neural-gateway"]
@@ -102,6 +103,8 @@ async def security_headers(request: Request, call_next):
 def resume_url() -> Optional[str]:
     if RESUME_URL_OVERRIDE:
         return RESUME_URL_OVERRIDE
+    if load_profile().resume_url:
+        return load_profile().resume_url
     return "/static/resume.pdf" if RESUME_FILE.is_file() else None
 
 
@@ -164,6 +167,7 @@ async def serve_portfolio(request: Request):
         featured=featured_projects(),
         all_projects=projects,
         categories=category_counts(),
+        statuses=status_counts(),
         skill_groups=_skill_groups(),
         hero_nodes=HERO_NODES,
         hero_projects=hero_projects,
@@ -172,6 +176,7 @@ async def serve_portfolio(request: Request):
             "projects": len(projects),
             "live": sum(1 for p in projects if p.demo_kind == "live-app"),
             "internships": len(profile.experience),
+            "graduation": next((e.period.removeprefix("Expected ") for e in profile.education if e.period), None),
             "now": f"Intern at {current.org}" if current else "Open to roles",
         },
     )

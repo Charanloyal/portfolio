@@ -47,8 +47,10 @@ async def test_home_seo_metadata(client):
 async def test_resume_button_hidden_without_file(client, monkeypatch, tmp_path):
     monkeypatch.setattr(main, "RESUME_FILE", tmp_path / "missing.pdf")
     monkeypatch.setattr(main, "RESUME_URL_OVERRIDE", None)
+    monkeypatch.setattr(load_profile(), "resume_url", None)
     html = (await client.get("/")).text
-    assert "View resume" not in html
+    assert "Download resume" not in html
+    assert "resume.pdf" not in html
 
 
 async def test_resume_button_shown_when_file_exists(client, monkeypatch, tmp_path):
@@ -56,9 +58,87 @@ async def test_resume_button_shown_when_file_exists(client, monkeypatch, tmp_pat
     pdf.write_bytes(b"%PDF-1.4")
     monkeypatch.setattr(main, "RESUME_FILE", pdf)
     monkeypatch.setattr(main, "RESUME_URL_OVERRIDE", None)
+    monkeypatch.setattr(load_profile(), "resume_url", None)
     html = (await client.get("/")).text
-    assert "View resume" in html
-    assert 'href="/static/resume.pdf"' in html
+    assert "Download resume" in html
+    assert 'href="/static/resume.pdf" download' in html
+
+
+async def test_profile_resume_url_is_used_by_default(client, monkeypatch):
+    monkeypatch.setattr(main, "RESUME_URL_OVERRIDE", None)
+    url = load_profile().resume_url
+    assert url and url.startswith("https://"), "profile.json should set a public resume_url"
+    html = (await client.get("/")).text
+    assert f'href="{url}" target="_blank" rel="noopener"' in html
+
+
+async def test_resume_url_override_opens_in_new_tab(client, monkeypatch, tmp_path):
+    url = "https://example.com/charan-resume.pdf"
+    monkeypatch.setattr(main, "RESUME_FILE", tmp_path / "missing.pdf")
+    monkeypatch.setattr(main, "RESUME_URL_OVERRIDE", url)
+    html = (await client.get("/")).text
+    assert f'href="{url}" target="_blank" rel="noopener"' in html
+    assert html.count(f'href="{url}"') >= 3  # hero, header nav and contact section
+    case_study = (await client.get("/projects/lakeflow")).text
+    assert f'href="{url}"' in case_study
+
+
+async def test_hero_has_primary_actions(client):
+    html = (await client.get("/")).text
+    hero = html.split('id="about"')[0]
+    assert 'href="#projects"' in hero
+    assert 'href="#contact"' in hero
+    for role in load_profile().target_roles:
+        assert role in hero
+
+
+def test_featured_projects_are_the_six_priorities():
+    assert [p.id for p in featured_projects()] == [
+        "lakeflow",
+        "featurehub-dataguard",
+        "ticketlens",
+        "drivedocs",
+        "neural-gateway",
+        "vehicle-telemetry-anomaly-detection",
+    ]
+    for p in featured_projects():
+        assert p.brief and p.brief.problem and p.brief.approach, p.id
+        # A card shows either measured metrics or tested outcomes, never an empty results block.
+        assert p.metrics or p.brief.outcomes, p.id
+
+
+async def test_synthetic_data_projects_are_labelled(client):
+    html = (await client.get("/")).text
+    synthetic = [p for p in load_projects() if p.synthetic_data]
+    assert synthetic
+    for p in synthetic:
+        assert "synthetic" in p.summary.lower() or "fictional" in p.summary.lower(), p.id
+        card = html.split(f'data-search="{p.title.lower()}')[1].split("</article>")[0]
+        assert "Synthetic data" in card, p.id
+        page = await client.get(f"/projects/{p.id}")
+        if page.status_code == 200:
+            assert "Synthetic data" in page.text, p.id
+
+
+async def test_status_filter_lists_every_status_in_use(client):
+    html = (await client.get("/")).text
+    assert "data-gallery-status-filter" in html
+    for status in {p.status for p in load_projects()}:
+        assert f'<option value="{status}">' in html, status
+        assert f'data-status="{status}"' in html, status
+
+
+async def test_credentials_are_grouped_by_kind(client):
+    html = (await client.get("/")).text
+    profile = load_profile()
+    section = html.split('id="credentials"')[1].split('id="contact"')[0]
+    assert "Certifications" in section
+    if any(c.kind == "professional-certificate" for c in profile.certifications):
+        assert "Professional certificates" in section
+    if profile.simulations:
+        assert "Virtual job simulations" in section and "Not employment" in section
+    for c in profile.certifications:
+        assert c.name in section
 
 
 async def test_projects_api_lists_catalogue(client):

@@ -11,11 +11,12 @@
         <span aria-hidden="true">/</span>
         <span aria-current="page">{{ project.title }}</span>
       </nav>
-      <p class="card-meta" style="margin-bottom:1rem">
+      <div class="card-meta cs-meta">
         <span class="badge badge--{{ project.status }}">{{ project.status_label }}</span>
+        {% if project.synthetic_data %}<span class="data-flag">Synthetic data</span>{% endif %}
         <span>{{ project.category_label }}</span>
         <span>Updated <time datetime="{{ project.updated }}">{{ project.updated | month_year }}</time></span>
-      </p>
+      </div>
       <h1 class="cs-title">{{ project.title }}</h1>
       <p class="cs-summary">{{ project.summary }}</p>
       <div class="cs-actions">
@@ -33,7 +34,7 @@
   <div class="container cs-layout">
     <div>
       {% if project.image %}
-      <figure class="card-media" style="border:1px solid var(--border); border-radius: var(--radius-lg); margin:0 0 2rem;">
+      <figure class="card-media cs-figure">
         <img src="{{ project.image }}" alt="{{ project.image_alt or ('Screenshot of ' ~ project.title) }}" width="1280" height="720" loading="eager" onerror="this.closest('figure').remove()">
       </figure>
       {% endif %}
@@ -71,7 +72,7 @@
       {% if project.metrics or cs.results %}
       <section class="cs-section" aria-labelledby="cs-results">
         <h2 id="cs-results">Results</h2>
-        {% if cs.results %}<ul class="cs-list" style="margin-bottom:1.5rem">{% for r in cs.results %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+        {% if cs.results %}<ul class="cs-list cs-results">{% for r in cs.results %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
         {% if project.metrics %}
         <table class="metric-table">
           <caption class="visually-hidden">Measured results and where they come from</caption>
@@ -101,10 +102,16 @@
       <div class="cs-facts">
         <dl>
           <div><dt>Stack</dt><dd><ul class="tag-list">{% for t in project.tech %}<li class="tag">{{ t }}</li>{% endfor %}</ul></dd></div>
-          <div><dt>Status</dt><dd>{{ project.status_label }}</dd></div>
-          <div><dt>Repository</dt><dd><a class="inline" style="color:var(--accent)" href="{{ project.github_url }}" target="_blank" rel="noopener">{{ project.github_url | replace("https://github.com/", "") }}</a></dd></div>
+          <div><dt>Status</dt><dd>{{ project.status_label }}. {{ project.status_description }}</dd></div>
+          {% if project.synthetic_data %}<div><dt>Data</dt><dd>Synthetic or fictional. Results show the method works, not how it performs on production data.</dd></div>{% endif %}
+          <div><dt>Repository</dt><dd><a class="inline cs-repo" href="{{ project.github_url }}" target="_blank" rel="noopener">{{ project.github_url | replace("https://github.com/", "") }}</a></dd></div>
           {% if project.demo_url %}<div><dt>Demo</dt><dd>{{ project.demo_label }}.{% if project.demo_note %} {{ project.demo_note }}{% endif %}{% if project.demo_kind == "live-app" %} Hosted on a free tier, so the first load can take up to a minute.{% endif %}</dd></div>{% endif %}
         </dl>
+      </div>
+      <div class="cs-facts cs-cta">
+        <p>Questions about {{ project.title }}? I'm happy to walk through the design and the code.</p>
+        <a class="btn btn-secondary btn-sm" href="mailto:{{ profile.email }}?subject={{ ('About ' ~ project.title) | urlencode }}">{{ icon("mail") }} Email me</a>
+        {% if resume_url %}<a class="btn btn-ghost btn-sm" href="{{ resume_url }}" {% if resume_url.startswith('/') %}download{% else %}target="_blank" rel="noopener"{% endif %}>{{ icon("file") }} Resume</a>{% endif %}
       </div>
     </aside>
   </div>

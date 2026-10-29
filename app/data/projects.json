@@ -23,7 +23,16 @@
         "Apache Airflow"
       ],
       "status": "complete",
-      "featured_rank": 5,
+      "synthetic_data": false,
+      "brief": {
+        "problem": "Change data capture runs on at-least-once delivery, so redelivered, late or out-of-order row changes can duplicate or corrupt lakehouse tables.",
+        "approach": "Debezium streams PostgreSQL changes through Kafka into Spark Structured Streaming, which decodes them against a contract and applies LSN-guarded MERGEs into Iceberg; malformed records go to a dead-letter queue.",
+        "outcomes": [
+          "An integration test injects a crash between the Iceberg commit and the offset commit and asserts the replay writes no duplicate rows.",
+          "CI starts the full stack in Docker Compose and runs the integration and end-to-end suites on pushes to main and on pull requests."
+        ]
+      },
+      "featured_rank": 1,
       "demo_url": "https://lakeflow-demo.onrender.com/lakeflow/",
       "demo_kind": "recorded-run",
       "demo_note": "A read-only replay of a CI run; the full stack runs locally with Docker or in Codespaces.",
@@ -115,7 +124,12 @@
         "Streamlit"
       ],
       "status": "complete",
-      "featured_rank": 6,
+      "synthetic_data": true,
+      "brief": {
+        "problem": "Feature pipelines fail silently: a schema change, a burst of nulls or a training join that picks up future values can reach a model unnoticed.",
+        "approach": "Data contracts, schema diffing and Great Expectations gates run before features are written to Redis; point-in-time joins build training sets, and a failed gate emits an OpenLineage event and files an incident."
+      },
+      "featured_rank": 2,
       "demo_url": null,
       "demo_kind": null,
       "demo_note": null,
@@ -128,14 +142,14 @@
           "evidence": "featurehub/benchmarks/final_results.json redis_lookup_latency.p50_ms, redis_lookup_latency.p99_ms (local laptop, 1,000 requests)"
         },
         {
-          "label": "Prediction API",
-          "value": "6.62 ms p99 at 228.5 req/s",
-          "evidence": "featurehub/benchmarks/final_results.json http_prediction_api_latency.p99_ms, requests_per_second"
-        },
-        {
           "label": "Great Expectations validation",
           "value": "~355k rows/s on 100k rows",
           "evidence": "dataguard/benchmarks/final_quality_results.json benchmarks[2].rows_per_second (355453.31)"
+        },
+        {
+          "label": "Prediction API",
+          "value": "6.62 ms p99 at 228.5 req/s",
+          "evidence": "featurehub/benchmarks/final_results.json http_prediction_api_latency.p99_ms, requests_per_second"
         },
         {
           "label": "Registered features",
@@ -222,7 +236,12 @@
         "Docker"
       ],
       "status": "complete",
-      "featured_rank": 7,
+      "synthetic_data": true,
+      "brief": {
+        "problem": "Some telemetry faults are slow drifts that stay inside the fleet's normal range and only show against a vehicle's own history, so detection needs per-vehicle state that survives micro-batches and replays.",
+        "approach": "Point and per-vehicle window models are trained with scikit-learn and XGBoost, exported to ONNX, scored in pandas or PySpark micro-batch streaming with carried state, and served through FastAPI."
+      },
+      "featured_rank": 6,
       "demo_url": "https://vehicle-telemetry-anomaly-detection.onrender.com/",
       "demo_kind": "live-app",
       "demo_note": "Trained and evaluated on synthetic telemetry.",
@@ -331,7 +350,12 @@
         "Docker"
       ],
       "status": "complete",
-      "featured_rank": 1,
+      "synthetic_data": false,
+      "brief": {
+        "problem": "Routing IT tickets by ITIL category from free text is ambiguous, the classes are imbalanced, and tickets can contain personal data.",
+        "approach": "Trains TF-IDF + Logistic Regression, a Keras CNN and DistilBERT + LoRA on the same data and scores them on one held-out set, then serves the winning TF-IDF model through FastAPI with PII scrubbing and confidence-gated human review."
+      },
+      "featured_rank": 3,
       "demo_url": "https://ticketlens.onrender.com/",
       "demo_kind": "live-app",
       "demo_note": null,
@@ -344,14 +368,14 @@
           "evidence": "reports/model_comparison.json models.tfidf_benchmark.macro_f1 (3,563 test tickets)"
         },
         {
-          "label": "Keras CNN macro-F1",
-          "value": "0.8095",
-          "evidence": "reports/model_comparison.json models.keras.macro_f1"
-        },
-        {
           "label": "DistilBERT + LoRA macro-F1",
           "value": "0.7790",
           "evidence": "reports/model_comparison.json models.transformer.macro_f1"
+        },
+        {
+          "label": "Keras CNN macro-F1",
+          "value": "0.8095",
+          "evidence": "reports/model_comparison.json models.keras.macro_f1"
         },
         {
           "label": "Served TF-IDF macro-F1 (full train split)",
@@ -435,7 +459,12 @@
         "pypdf"
       ],
       "status": "complete",
-      "featured_rank": 2,
+      "synthetic_data": true,
+      "brief": {
+        "problem": "Answering questions over a vehicle manual needs text and diagrams, citations to real pages, and protection against personal data and injected instructions in the documents.",
+        "approach": "MiniLM text and CLIP image embeddings in FAISS feed a LangChain tool-calling agent; answers carry verified file and page citations, behind prompt-injection and PII guardrails."
+      },
+      "featured_rank": 4,
       "demo_url": "https://drivedocs-3xr4.onrender.com",
       "demo_kind": "live-app",
       "demo_note": "Uses an offline planner, so the public demo does not call an LLM.",
@@ -448,14 +477,14 @@
           "evidence": "reports/evaluation_report.json summary.recall_at_k"
         },
         {
-          "label": "Groundedness (39-question set)",
-          "value": "1.0",
-          "evidence": "reports/evaluation_report.json summary.groundedness"
-        },
-        {
           "label": "Citation precision (file + page)",
           "value": "0.924",
           "evidence": "reports/evaluation_report.json summary.citation_precision"
+        },
+        {
+          "label": "Groundedness (39-question set)",
+          "value": "1.0",
+          "evidence": "reports/evaluation_report.json summary.groundedness"
         },
         {
           "label": "Attack success (23 cases)",
@@ -540,6 +569,7 @@
         "pytest"
       ],
       "status": "complete",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,
@@ -624,7 +654,16 @@
         "Docker Compose"
       ],
       "status": "complete",
-      "featured_rank": 4,
+      "synthetic_data": false,
+      "brief": {
+        "problem": "A gateway in front of several LLM providers has to enforce per-tenant quotas across replicas, avoid paying twice for equivalent prompts, and keep answering when a provider slows down or fails.",
+        "approach": "FastAPI with a Redis Lua token-bucket rate limiter, an embedding-similarity response cache, EWMA latency routing and circuit breakers; responses stream over SSE and audit events go to Kafka off the request path.",
+        "outcomes": [
+          "A fault-injection header trips a provider's circuit breaker and traffic moves to the other provider.",
+          "Runs end to end in standalone mode with mocked providers, which is how the public demo is deployed."
+        ]
+      },
+      "featured_rank": 5,
       "demo_url": "https://neural-gateway-core.onrender.com/",
       "demo_kind": "live-app",
       "demo_note": "LLM providers are simulated unless API keys are configured.",
@@ -711,6 +750,7 @@
         "TypeScript"
       ],
       "status": "in-progress",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,
@@ -743,7 +783,8 @@
         "Docker"
       ],
       "status": "complete",
-      "featured_rank": 3,
+      "synthetic_data": false,
+      "featured_rank": null,
       "demo_url": "https://agent-forge-to4e.onrender.com",
       "demo_kind": "live-app",
       "demo_note": "Answers are extractive; no LLM is called.",
@@ -829,6 +870,7 @@
         "Pandas"
       ],
       "status": "complete",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,
@@ -857,6 +899,7 @@
         "Docker"
       ],
       "status": "complete",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,
@@ -888,6 +931,7 @@
         "MongoDB"
       ],
       "status": "complete",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": "https://full-stack-integration-7m7z.onrender.com/",
       "demo_kind": "live-app",
@@ -916,6 +960,7 @@
         "Docker"
       ],
       "status": "experimental",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": "https://multi-agent-llm-code-generator.onrender.com",
       "demo_kind": "live-app",
@@ -943,6 +988,7 @@
         "Plotly"
       ],
       "status": "experimental",
+      "synthetic_data": true,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,
@@ -970,6 +1016,7 @@
         "Docker"
       ],
       "status": "experimental",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,
@@ -1000,6 +1047,7 @@
         "SciPy"
       ],
       "status": "experimental",
+      "synthetic_data": true,
       "featured_rank": null,
       "demo_url": "/fraud-detector/",
       "demo_kind": "browser-simulation",
@@ -1028,6 +1076,7 @@
         "Pandas"
       ],
       "status": "experimental",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": "/ab-testing/",
       "demo_kind": "browser-calculator",
@@ -1054,6 +1103,7 @@
         "Pandas"
       ],
       "status": "experimental",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": "https://charanloyal.github.io/Data-Science-Projects/churn-predictive-agent/",
       "demo_kind": "browser-simulation",
@@ -1080,6 +1130,7 @@
         "Matplotlib"
       ],
       "status": "learning",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,
@@ -1107,6 +1158,7 @@
         "Binance Futures Testnet API"
       ],
       "status": "experimental",
+      "synthetic_data": false,
       "featured_rank": null,
       "demo_url": null,
       "demo_kind": null,

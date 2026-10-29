@@ -25,7 +25,11 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
+  {# Non-blocking web fonts: the system fallback renders first, then swaps. Inter is loaded as a variable font so weight 550 renders. #}
+  {% set font_css = "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400..700&display=swap" %}
+  <link rel="preload" as="style" href="{{ font_css }}">
+  <link rel="stylesheet" href="{{ font_css }}" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="{{ font_css }}"></noscript>
   <link rel="stylesheet" href="/static/css/site.css?v={{ asset_version }}">
   <script>document.documentElement.classList.remove("no-js");</script>
   {% block head %}{% endblock %}
@@ -56,6 +60,9 @@
           <li><a class="nav-link" href="{{ p }}#experience" data-section-link="experience">Experience</a></li>
           <li><a class="nav-link" href="{{ p }}#skills" data-section-link="skills">Skills</a></li>
           <li><a class="nav-link" href="{{ p }}#credentials" data-section-link="credentials">Credentials</a></li>
+          {% if resume_url %}
+          <li><a class="nav-link" href="{{ resume_url }}" {% if resume_url.startswith('/') %}download{% else %}target="_blank" rel="noopener"{% endif %}>Resume</a></li>
+          {% endif %}
           <li class="nav-cta"><a class="btn btn-secondary btn-sm" href="{{ p }}#contact">Contact</a></li>
         </ul>
       </nav>
