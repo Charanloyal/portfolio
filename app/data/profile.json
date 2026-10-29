@@ -1,0 +1,319 @@
+{
+  "name": "Charan Kumar Reddy",
+  "short_name": "Charan",
+  "role_line": "Data, ML and backend engineering",
+  "headline": "I build data pipelines, <em>ML systems</em> and the services that run them.",
+  "intro": "B.Tech Data Science student and AI/ML intern at General Motors. My public work covers fine-tuned transformer classifiers, retrieval-augmented generation, an LLM gateway, CDC lakehouses and feature stores, with tests, evaluation reports and demos you can check.",
+  "about": [
+    "I'm studying Electronics and Communication Engineering with a specialization in Data Science at SRM Institute of Science and Technology, and I'm currently interning at General Motors in Bengaluru.",
+    "Most of what I build sits where data meets ML: RAG systems with citations and guardrails, text classifiers measured against honest baselines, an LLM gateway, CDC pipelines into a lakehouse and a feature store guarded by data contracts. I spend most of my time on the parts that decide whether a system can be trusted: evaluation, groundedness, idempotent writes, point-in-time correctness and tests that run in CI.",
+    "When a simpler model beats a bigger one, I report it. When a number comes from synthetic data, the project says so."
+  ],
+  "location": "Bengaluru, India",
+  "open_to": "I'm looking for internships and early-career roles in data engineering, ML engineering and backend development, especially at fintech and data-heavy companies.",
+  "email": "charankumarreddy2028@gmail.com",
+  "site_url": "https://personal-portfolio-hub-3z4y.onrender.com",
+  "links": {
+    "github": {
+      "label": "github.com/Charanloyal",
+      "url": "https://github.com/Charanloyal"
+    },
+    "linkedin": {
+      "label": "linkedin.com/in/b-charan-kumar-reddy",
+      "url": "https://www.linkedin.com/in/b-charan-kumar-reddy/"
+    },
+    "leetcode": {
+      "label": "leetcode.com/u/charan_red",
+      "url": "https://leetcode.com/u/charan_red/"
+    }
+  },
+  "focus": [
+    {
+      "title": "Data that arrives twice, late or broken",
+      "detail": "Deduplication, ordering guards and dead-letter handling in streaming pipelines, as in LakeFlow."
+    },
+    {
+      "title": "Models that are evaluated honestly",
+      "detail": "Leak-free features, held-out test sets, and reporting the baseline when it wins, as in TicketLens."
+    },
+    {
+      "title": "Services that behave under load",
+      "detail": "Rate limiting, caching, circuit breakers and work queues, as in NeuralGateway and txn-pipeline."
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech, Electronics and Communication Engineering (Data Science)",
+      "school": "SRM Institute of Science and Technology",
+      "location": "Chennai",
+      "detail": "CGPA 8.7 / 10"
+    }
+  ],
+  "experience": [
+    {
+      "role": "AI/ML Student Intern",
+      "org": "General Motors",
+      "period": "Jul 2026 – Present",
+      "location": "Bengaluru, India",
+      "current": true,
+      "bullets": [
+        "Building AI/ML and Python automation for engineering workflows in Siemens NX.",
+        "Automated die face creation for hood, fender, roof and door panels, cutting it from 18 hours to 5 minutes per panel.",
+        "Built a tool that checks and scores CAD surface quality on die faces, now used by 7 engineers on the team.",
+        "Saves the team about 47 hours of manual work a month."
+      ]
+    },
+    {
+      "role": "Full Stack Developer Intern",
+      "org": "IIT Madras",
+      "period": "Jun 2026",
+      "location": "Chennai, India",
+      "bullets": [
+        "Built 10+ REST APIs and Docker CI/CD, cutting integration defects by 35% and deployment time by 50%."
+      ]
+    },
+    {
+      "role": "Software Engineer Intern",
+      "org": "The Developers Arena",
+      "period": "Feb 2026 – May 2026",
+      "location": "Hyderabad, India",
+      "bullets": [
+        "Automated Python classification of 50+ Jira/ServiceNow tickets a week, cutting manual effort by 40%."
+      ]
+    },
+    {
+      "role": "Machine Learning Intern",
+      "org": "Technex, IIT (BHU) Varanasi",
+      "period": "Sep 2025 – Dec 2025",
+      "location": "Remote",
+      "bullets": [
+        "Raised F1-score by 18% on 50,000+ records through PyTorch and scikit-learn tuning with 5-fold cross-validation.",
+        "Trained 5 ML models to 88% cross-validated accuracy, guarded by automated regression test suites."
+      ]
+    },
+    {
+      "role": "AI & ML Engineer Intern (promoted)",
+      "org": "Labmentix",
+      "period": "Jul 2025 – Sep 2025",
+      "location": "Remote",
+      "bullets": [
+        "Benchmarked and cut LLM inference latency by 36% (2.5 s to 1.6 s) using INT8 quantization and prompt caching.",
+        "Delivered a FastAPI log-analysis service using SSE-streaming multi-agent RAG, making diagnostics 60% faster."
+      ]
+    },
+    {
+      "role": "Data Analytics Intern",
+      "org": "Bluestock Fintech",
+      "period": "May 2025 – Jun 2025",
+      "location": "Remote",
+      "bullets": [
+        "Optimized 15+ SQL queries and built Python ETL pipelines that automated weekly reporting across 200+ financial instruments, cutting analyst turnaround by 30%."
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Developer – Associate",
+      "issuer": "Amazon Web Services"
+    },
+    {
+      "name": "AWS Certified Cloud Practitioner",
+      "issuer": "Amazon Web Services"
+    },
+    {
+      "name": "Associate Cloud Engineer",
+      "issuer": "Google Cloud"
+    },
+    {
+      "name": "Cloud Digital Leader",
+      "issuer": "Google Cloud"
+    },
+    {
+      "name": "Azure Developer Associate",
+      "issuer": "Microsoft"
+    },
+    {
+      "name": "Azure Fundamentals",
+      "issuer": "Microsoft"
+    },
+    {
+      "name": "Oracle Cloud Infrastructure certification",
+      "issuer": "Oracle"
+    },
+    {
+      "name": "Data Engineering Professional Certificate",
+      "issuer": "IBM"
+    },
+    {
+      "name": "Data Analytics Professional Certificate",
+      "issuer": "Google"
+    },
+    {
+      "name": "Full Stack Professional Certificate",
+      "issuer": "Meta"
+    },
+    {
+      "name": "Data Science certification",
+      "issuer": "IIT Madras"
+    }
+  ],
+  "simulations": [
+    {
+      "name": "Virtual job simulation",
+      "issuer": "Goldman Sachs"
+    },
+    {
+      "name": "Virtual job simulation",
+      "issuer": "JPMorgan Chase & Co."
+    },
+    {
+      "name": "Virtual job simulation",
+      "issuer": "Deloitte"
+    }
+  ],
+  "achievements": [
+    {
+      "title": "550+ problems solved on LeetCode",
+      "detail": "Top 5.83% globally · charan_red",
+      "url": "https://leetcode.com/u/charan_red/"
+    }
+  ],
+  "skills": [
+    {
+      "group": "GenAI and NLP",
+      "items": [
+        {
+          "name": "LLMs",
+          "match": false
+        },
+        {
+          "name": "Transformer architectures",
+          "match": false
+        },
+        {
+          "name": "Fine-tuning (LoRA / PEFT)",
+          "match": false
+        },
+        {
+          "name": "Prompt engineering",
+          "match": false
+        },
+        {
+          "name": "RAG: hybrid BM25 + vector, reranking",
+          "match": false
+        },
+        {
+          "name": "Agent-based architectures",
+          "match": false
+        },
+        {
+          "name": "Multimodal AI (CLIP)",
+          "match": false
+        },
+        {
+          "name": "INT8 quantization",
+          "match": false
+        }
+      ]
+    },
+    {
+      "group": "ML frameworks",
+      "items": [
+        "Python",
+        "PyTorch",
+        "TensorFlow",
+        "Hugging Face Transformers",
+        "PEFT",
+        "LangChain",
+        "LangGraph",
+        "scikit-learn",
+        "XGBoost",
+        {
+          "name": "Deep learning",
+          "match": false
+        }
+      ]
+    },
+    {
+      "group": "Evaluation and responsible AI",
+      "items": [
+        {
+          "name": "Benchmarking: F1, precision/recall, Recall@k, latency",
+          "match": false
+        },
+        {
+          "name": "Groundedness scoring",
+          "match": false
+        },
+        {
+          "name": "Hallucination and failure analysis",
+          "match": false
+        },
+        "SHAP",
+        {
+          "name": "AI security tests: prompt injection, PII",
+          "match": false
+        }
+      ]
+    },
+    {
+      "group": "Data and vector databases",
+      "items": [
+        "FAISS",
+        "Qdrant",
+        "PySpark",
+        "Apache Kafka",
+        "PostgreSQL",
+        "Redis",
+        {
+          "name": "SQL",
+          "match": false
+        }
+      ]
+    },
+    {
+      "group": "Data pipelines",
+      "items": [
+        "Debezium",
+        "Apache Iceberg",
+        "Trino",
+        "Apache Airflow",
+        "Great Expectations",
+        "Celery",
+        "gRPC"
+      ]
+    },
+    {
+      "group": "Cloud and MLOps",
+      "items": [
+        {
+          "name": "AWS",
+          "match": false
+        },
+        {
+          "name": "GCP",
+          "match": false
+        },
+        {
+          "name": "Azure",
+          "match": false
+        },
+        "Docker",
+        "FastAPI",
+        {
+          "name": "REST APIs",
+          "match": false
+        },
+        {
+          "name": "GitHub Actions CI/CD",
+          "match": false
+        },
+        "Prometheus",
+        {
+          "name": "Git",
+          "match": false
+        }
+      ]
+    }
+  ]
+}

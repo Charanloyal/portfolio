@@ -1,84 +1,83 @@
-# Charan Kumar Reddy — Developer Portfolio Hub v2.0
+# Charan Kumar Reddy · Portfolio
 
-[![Test Suite](https://img.shields.io/badge/pytest-5%20passed%20(100%25)-brightgreen.svg)](tests/)
-[![Python](https://img.shields.io/badge/Python-3.11%20--%203.14-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-v0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
-[![Design System](https://img.shields.io/badge/UI-Obsidian%20Gold%20Glassmorphic-gold.svg)](#)
-[![Live Site](https://img.shields.io/badge/Live%20Portfolio-personal--portfolio--hub-blue.svg)](https://personal-portfolio-hub-3z4y.onrender.com/)
+Personal portfolio for data engineering, machine learning and backend roles.
 
-High-performance Developer Portfolio Hub website for **Charan Kumar Reddy** (Distributed Systems & AI/ML Engineer), showcasing production-grade distributed consensus engines, autonomous multi-agent state machines, verifiable CDC data lakehouses and high-throughput backend microservices.
+**Live site:** https://personal-portfolio-hub-3z4y.onrender.com/
 
----
+The site is a small FastAPI app that renders server-side HTML from two JSON files, with plain CSS and JavaScript on top. Every project card links to its GitHub repository, demo buttons appear only for demos that have been checked, and any number shown on a project traces back to a results file committed in that repository.
 
-## 🏛️ Featured Production Systems & Git Projects
+## What's on the site
 
-| # | System / Repository | Primary Architecture & Stack | Key Highlights / Live Demos |
-|---|---------------------|------------------------------|-----------------------------|
-| **1** | [**RaftKV**](https://github.com/Charanloyal/raftkv) | Python 3.11+, Raft Algorithm, gRPC, Protobuf, SQLite WAL | Production-grade distributed consensus KV store with snapshotting and Prometheus `/metrics`. |
-| **2** | [**Agent Orchestration System (AOS)**](https://github.com/Charanloyal/Agent-Orchestration-System-) | FastAPI, React, TS, Vite, PostgreSQL 17, Alembic | Evidence-backed research with human gatekeeper approval and 4 typed agents. |
-| **3** | [**FeatureHub + DataGuard**](https://github.com/Charanloyal/featurehub-dataguard) | Redis, PySpark, FastAPI, Great Expectations, OpenLineage | Self-defending ML feature store with zero PIT leak & automated CI schema diffing. **276 passed tests (100%)**. |
-| **4** | [**NeuralGateway**](https://github.com/Charanloyal/neural-gateway) | FastAPI, Redis Lua Token Buckets, Kafka 7.5, Prometheus | Multi-tenant LLM routing with circuit breakers & live command center. |
-| **5** | [**AgentForge**](https://github.com/Charanloyal/agent-forge) | LangGraph, Qdrant Vector DB, BM25, Cross-Encoder | Agentic RAG with cyclic multi-hop reflection and deterministic scoring harness. |
-| **6** | [**LakeFlow**](https://github.com/Charanloyal/lakeflow) | PostgreSQL WAL, Debezium, Kafka KRaft, Spark 3.5, Iceberg, Trino | Sub-second CDC lakehouse with LSN-guarded idempotent MERGE. |
-| **7** | [**OctoScale**](https://github.com/Charanloyal/octoscale-url-shortener) | FastAPI, Redis ZSET Sliding Window, PostgreSQL, Structlog | Sustains **10,000+ Req/Sec** with atomic Base62 counter generation. |
-| **8** | [**AgentCodex**](https://github.com/Charanloyal/multi-agent-llm-code-generator) | FastAPI, TF-IDF RAG, SSE Streaming, Asyncio Queue | Cooperative Synthesis + Critique loop with **0.04s query cache**. |
-| **9** | [**SmartRecovery**](https://github.com/Charanloyal/Smart-Loan-Recovery-System-with-Machine-Learning-) | FastAPI, Scikit-Learn, XGBoost, Chart.js Metrics | Dual-stage scoring: **F1: 88.73%** default risk & **R²: 0.6813** recovery forecast. |
-| **10** | [**Real-Time Fraud Detector**](https://github.com/Charanloyal/Data-Science-Projects/tree/main/realtime-fraud-detector) | PySpark Structured Streaming, Apache Kafka, Random Forest | Built-in interactive simulator classifying anomalous card transactions. |
-| **11** | [**txn-pipeline**](https://github.com/Charanloyal/txn-pipeline) | FastAPI, Celery Distributed Workers, Redis, PostgreSQL 16 | Distributed asynchronous event pipeline with Gemini AI classification. |
-| **12** | [**A/B Testing Platform**](https://github.com/Charanloyal/Data-Science-Projects/tree/main/ab-testing-platform) | SciPy, Pandas, Hypothesis Testing Suite | Built-in interactive statistical platform calculating Z-scores & confidence intervals. |
-| **13** | [**J.P. Morgan Workspace Task Board**](https://github.com/Charanloyal/Full-Stack-Integration) | React 18, TypeScript, Socket.io, Zustand, Express, PostgreSQL | Real-time corporate Kanban board with instant WebSocket sync. |
+- **Featured projects**, each with a case study covering the problem, architecture and data flow, design decisions, testing, measured results and limitations.
+- **All projects**: every relevant public repository, with category filters, text search, sorting and a "show all" control. It works without JavaScript.
+- **Experience, skills and credentials**, generated from `app/data/profile.json`. Each skill chip shows how many projects use or mention it and filters the gallery when selected.
+- **Contact** through email, LinkedIn and GitHub. There is no contact form, because nothing would deliver its messages.
+- Two in-browser demos served from this repo: an A/B testing calculator (`/ab-testing/`) and a fraud-monitoring simulation on synthetic data (`/fraud-detector/`).
 
----
+## Project structure
 
-## 🎨 UI/UX & Glassmorphic Design System
-- **Obsidian Dark & Champagne Gold Theme**: Curated dark palette (`#05070d`) with radial color nebulae (Gold, Electric Cyan, Amethyst, Emerald).
-- **Interactive Particle Constellation**: Pure HTML5 Canvas particle field connecting nodes with gold/cyan threads and reacting to cursor proximity.
-- **CharanOS v2.4 Interactive Terminal**: Mac-style glass CLI console supporting commands (`projects`, `status`, `skills`, `timeline`, `latest`, `contact`).
-- **Instant Search & Category Filters**: Real-time filtering across titles, technologies, and architecture keywords.
-- **Deep-Dive Architecture Spec Modal**: Displays system data flows, design decisions, and benchmark specifications.
-- **Live GitHub Sync**: Real-time GitHub profile stats (`@Charanloyal`) with language distribution breakdown.
+```
+app/
+  main.py              FastAPI routes: pages, JSON API, sitemap, robots.txt, 404 handling
+  content.py           Pydantic models and loaders for the content files
+  data/
+    projects.json      Project catalogue (one entry per project, plus case studies)
+    profile.json       Name, intro, experience, education, certifications, skills
+  templates/           base.html, index.html, project.html (case study), 404.html, partials
+  static/
+    css/site.css       Design tokens and all styles
+    js/site.js         Navigation, gallery filtering, copy-to-clipboard (progressive enhancement)
+    projects/          Project screenshots (WebP)
+    og-image.png       1200×630 link-preview image
+scripts/
+  refresh_catalogue.py Updates project dates from the GitHub API and lists repos not yet in the catalogue
+tests/                 pytest suite
+```
 
----
+## Editing content
 
-## ⚙️ Running Locally
+Everything shown on the site lives in `app/data/`. Templates don't need changes for content updates.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Charanloyal/portfolio.git
-   cd portfolio
-   ```
+- **Add a project:** add an object to `app/data/projects.json`. The required fields are validated on startup by `app/content.py`. Set `featured_rank` (1, 2, 3 …) and a `case_study` to feature it.
+- **Metrics:** each entry in `metrics` needs an `evidence` string naming the committed file the number comes from. Numbers without evidence don't belong on the site.
+- **Demos:** set both `demo_url` and `demo_kind` (`live-app`, `recorded-run`, `browser-simulation` or `browser-calculator`). Temporary tunnel URLs (`trycloudflare.com`) are rejected.
+- **Skills:** each item in `profile.json` `skills` is either a tool name (`"FastAPI"`), which gets a project count and filters the gallery, or `{"name": "Prompt engineering", "match": false}` for concepts that shouldn't be counted.
+- **Keep notes out of the data files:** this repository is public, so anything in `app/data/` can be read on GitHub even when the site doesn't show it.
+- **Resume:** put a PDF at `app/static/resume.pdf`, or set the `RESUME_URL` environment variable. The resume buttons appear only when one of these is present.
+- **Refresh dates:** `python scripts/refresh_catalogue.py` (or `--check` for a dry run).
 
-2. **Run with Python venv:**
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate      # On Windows
-   # source .venv/bin/activate  # On macOS/Linux
-   pip install -r requirements.txt
-   uvicorn app.main:app --reload --port 8000
-   ```
+## Running locally
 
-3. **Or run with Docker Compose:**
-   ```bash
-   docker-compose up --build
-   ```
+```bash
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate     # macOS / Linux
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
 
-4. **Access the application:**
-   Open [http://localhost:8000](http://localhost:8000) in your web browser.
+Open http://localhost:8000. With Docker: `docker-compose up --build`.
 
----
+## Tests
 
-## 🧪 Testing & Verification
-
-Run the full automated test suite:
 ```bash
 pytest
 ```
-*Current test suite: 5 passed in 0.07s (100% pass rate).*
 
----
+The suite renders every page and checks:
+- the API, sitemap, robots.txt, 404 handling and security headers;
+- that every catalogue project and GitHub link appears;
+- that featured projects have case studies and every metric has evidence;
+- that the public data files contain no private notes;
+- that skill counts match the gallery search;
+- that previously removed, unsupported claims don't reappear.
 
-## 📬 Contact & Coordinates
-- **Email**: [charan.workmaill@gmail.com](mailto:charan.workmaill@gmail.com)
-- **LinkedIn**: [b-charan-kumar-reddy](https://www.linkedin.com/in/b-charan-kumar-reddy-132a36292/)
-- **GitHub**: [@Charanloyal](https://github.com/Charanloyal)
-  
+## Deployment
+
+Render builds the `Dockerfile` (see `render.yaml`). The container runs `uvicorn app.main:app` on `$PORT`. The site needs no build step, database or secrets. Optional environment variables are documented in `.env.example`.
+
+## Contact
+
+- Email: [charankumarreddy2028@gmail.com](mailto:charankumarreddy2028@gmail.com)
+- LinkedIn: [b-charan-kumar-reddy](https://www.linkedin.com/in/b-charan-kumar-reddy/)
+- GitHub: [@Charanloyal](https://github.com/Charanloyal)

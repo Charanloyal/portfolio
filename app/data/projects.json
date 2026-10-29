@@ -1,0 +1,1122 @@
+{
+  "generated_from": "GitHub audit of public repos, 2026-10-29",
+  "projects": [
+    {
+      "id": "lakeflow",
+      "title": "LakeFlow",
+      "repo": "lakeflow",
+      "github_url": "https://github.com/Charanloyal/lakeflow",
+      "summary": "CDC pipeline from PostgreSQL through Debezium, Kafka and Spark Structured Streaming into Iceberg, with LSN-guarded idempotent merges, a DLQ, a FastAPI and Next.js control plane, and CI that runs the full stack.",
+      "category": "data-engineering",
+      "secondary_categories": [
+        "backend"
+      ],
+      "tech": [
+        "PostgreSQL",
+        "Debezium",
+        "Apache Kafka",
+        "Apache Spark",
+        "Apache Iceberg",
+        "Trino",
+        "FastAPI",
+        "Next.js",
+        "Apache Airflow"
+      ],
+      "status": "complete",
+      "featured_rank": 5,
+      "demo_url": "https://lakeflow-demo.onrender.com/lakeflow/",
+      "demo_kind": "recorded-run",
+      "demo_note": "A read-only replay of a CI run; the full stack runs locally with Docker or in Codespaces.",
+      "docs_url": null,
+      "updated": "2026-10-13",
+      "metrics": [],
+      "image": "/static/projects/lakeflow.webp",
+      "image_alt": "LakeFlow control plane overview: change events per second, end-to-end freshness, consumer lag and component health",
+      "case_study": {
+        "problem": "Change data capture into a lakehouse runs on at-least-once delivery: Kafka redelivers, connectors restart, and a streaming job can crash after writing a table but before committing its offsets. Updates to the same row can arrive late or out of order, and malformed records or schema changes must not stop the stream or corrupt tables. Each of these guarantees has to be checked against a running stack, not assumed.",
+        "architecture": [
+          {
+            "label": "PostgreSQL CDC source",
+            "detail": "PostgreSQL 16 logical replication (pgoutput, slot lakeflow_cdc) is read by Debezium 2.7 running on Kafka Connect, which publishes one change event per row change."
+          },
+          {
+            "label": "Kafka topics as code",
+            "detail": "Kafka 3.9 in KRaft mode with messages keyed by primary key and 3 partitions per CDC topic; topics are created from a config file with broker auto-creation disabled, plus a separate replay topic for DLQ replays."
+          },
+          {
+            "label": "Contract decoder",
+            "detail": "A single pure-Python decoder in libs/lakeflow_core validates each event against versioned JSON Schema 2020-12 contracts, HMAC-pseudonymizes or drops PII fields, and computes a content-derived event_id."
+          },
+          {
+            "label": "Spark streaming sink",
+            "detail": "Spark 3.5 Structured Streaming (foreachBatch) appends unseen events to Iceberg bronze, MERGEs the batch-latest change per key into silver guarded by source LSN, writes rejects to an Iceberg DLQ table, and upserts a per-batch commit record."
+          },
+          {
+            "label": "Iceberg on MinIO",
+            "detail": "Iceberg tables stored on MinIO and registered in an Iceberg REST catalog backed by PostgreSQL, so Spark and Trino read and write the same snapshots."
+          },
+          {
+            "label": "Query and control plane",
+            "detail": "Trino 476 serves queries; a FastAPI control plane and Next.js UI expose a per-event trace timeline, a recovery lab for fault injection, live quality checks, lineage and DLQ replay."
+          },
+          {
+            "label": "Maintenance and monitoring",
+            "detail": "Airflow 2.10 DAGs run Iceberg optimize, snapshot expiry, orphan-file removal, quality checks, DLQ replay and backfill through Trino; Prometheus alert rules and a Grafana dashboard cover the stream."
+          }
+        ],
+        "decisions": [
+          "Treats delivery as at-least-once and makes the sink idempotent instead of claiming exactly-once: event_id is a SHA-256 over table, key, LSN, transaction id, operation and row images, so a redelivered event gets the same id and bronze only appends ids it has not seen (ADR-0003). The cost is that each batch reads the bronze partitions and silver keys it touches.",
+          "Applies a silver MERGE only when the incoming source LSN is greater than the stored one, and turns deletes into tombstone rows that keep their LSN, so a replayed or late older update cannot overwrite or resurrect a row. Consumers must filter on is_deleted, and correctness depends on a strictly increasing per-row ordering key.",
+          "Keys Kafka records by primary key with a fixed partition count and makes topic init fail if a topic's partitions differ from the config, because adding partitions remaps keys and breaks per-row ordering (ADR-0001). A single hot key cannot be parallelised, and raising throughput needs a planned repartition.",
+          "Lays out silver as bucket(4, pk) with merge-on-read and bronze as days(source_ts) with a Parquet bloom filter on event_id (ADR-0002). Micro-batches write small delete files cheaply, but reads pay the merge cost until scheduled compaction runs.",
+          "Enforces BACKWARD_TRANSITIVE contract compatibility at load time and in CI and sends violations to the DLQ with reason codes while the stream continues; one Python validator is shared by the Spark UDF, the API and the tests so they cannot disagree, at the cost of Python UDF serialization (ADR-0004).",
+          "Benchmarks only the running stack with a seeded workload and stores every raw sample with environment metadata, and the README deliberately publishes no numbers because they depend on hardware (ADR-0005)."
+        ],
+        "testing": [
+          "130 pytest functions plus 9 Playwright UI tests: unit tests for the decoder, contracts, delivery semantics and maintenance logic, FastAPI tests with fake dependencies, and PySpark sink tests run inside the Spark runtime image.",
+          "Integration tests run in CI against the Docker Compose data plane (PostgreSQL, Debezium, Kafka, Spark, Iceberg, Trino) with no mocks, covering redelivered events, out-of-order updates, malformed records, a crash after the Iceberg commit, a connector restart and contract drift.",
+          "A full-stack CI job adds Airflow DAG integrity checks, API, Airflow and observability end-to-end scenarios, a benchmark run against CI thresholds, and Playwright tests against the running UI.",
+          "Prometheus configuration and alert rules are unit-tested with promtool, and contracts are validated as JSON Schema 2020-12 in CI.",
+          "The Debezium incremental-snapshot backfill tests are marked xfail until CI proves them."
+        ],
+        "results": [
+          "CI starts the data plane and the full stack in Docker Compose and runs the integration and end-to-end suites on pushes to main and on pull requests.",
+          "Integration tests assert that a crash injected between the Iceberg commit and the offset commit is replayed without duplicate rows, with the replay recorded in the batch commit table.",
+          "The public demo is a read-only recording of API responses captured during a CI end-to-end run and published to GitHub Pages, mirrored on Render."
+        ],
+        "limitations": [
+          "Single-node setup: Spark runs local[2], MinIO and Kafka are single nodes (replication factor 1), and there is no TLS, SSO or multi-tenant isolation.",
+          "No benchmark results are committed (benchmarks/results holds only .gitkeep), so there are no published throughput or freshness figures.",
+          "Debezium incremental-snapshot backfill is implemented but experimental; its end-to-end tests are expected failures.",
+          "The guarantee is an effectively-once outcome, not exactly-once delivery; Kafka Connect exactly-once source support is left as an option.",
+          "Roadmap items not yet done: soak tests under sustained load, Kubernetes deployment, TLS and OIDC, and OpenLineage events."
+        ]
+      }
+    },
+    {
+      "id": "featurehub-dataguard",
+      "title": "FeatureHub + DataGuard",
+      "repo": "featurehub-dataguard",
+      "github_url": "https://github.com/Charanloyal/featurehub-dataguard",
+      "summary": "Feature store plus data-reliability layer: contracts, schema diffing and Great Expectations gates run before features reach Redis, with point-in-time training joins and incident tracking. Synthetic data.",
+      "category": "data-engineering",
+      "secondary_categories": [
+        "ai-ml"
+      ],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "Redis",
+        "PostgreSQL",
+        "Apache Airflow",
+        "Great Expectations",
+        "pandas",
+        "scikit-learn",
+        "Streamlit"
+      ],
+      "status": "complete",
+      "featured_rank": 6,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-10-06",
+      "metrics": [
+        {
+          "label": "Redis online lookup",
+          "value": "0.77 ms p50 / 1.62 ms p99",
+          "evidence": "featurehub/benchmarks/final_results.json redis_lookup_latency.p50_ms, redis_lookup_latency.p99_ms (local laptop, 1,000 requests)"
+        },
+        {
+          "label": "Prediction API",
+          "value": "6.62 ms p99 at 228.5 req/s",
+          "evidence": "featurehub/benchmarks/final_results.json http_prediction_api_latency.p99_ms, requests_per_second"
+        },
+        {
+          "label": "Great Expectations validation",
+          "value": "~355k rows/s on 100k rows",
+          "evidence": "dataguard/benchmarks/final_quality_results.json benchmarks[2].rows_per_second (355453.31)"
+        },
+        {
+          "label": "Registered features",
+          "value": "122",
+          "evidence": "featurehub/benchmarks/final_results.json feature_metrics.total_registered_features; featurehub/feature_definitions/definitions.py"
+        }
+      ],
+      "image": "/static/projects/featurehub-dataguard.webp",
+      "image_alt": "FeatureHub and DataGuard dashboard showing feature counts, data contracts, pipelines and quality checks",
+      "case_study": {
+        "problem": "ML feature pipelines tend to fail without raising errors: an upstream schema change, a burst of nulls, or a training join that picks up feature values from after the label time can all reach a model unnoticed. Catching these needs contracts, compatibility checks and quality gates in front of feature materialization, point-in-time correct joins for training data, and a record of what failed and where.",
+        "architecture": [
+          {
+            "label": "Synthetic source data",
+            "detail": "scripts/seed_data.py generates synthetic customers, accounts, merchants and transactions; PostgreSQL 16 stores contracts, pipeline runs and incidents."
+          },
+          {
+            "label": "Feature computation",
+            "detail": "A pandas engine computes windowed aggregates for the feature definitions in featurehub/feature_definitions/definitions.py and writes them to a Parquet offline store."
+          },
+          {
+            "label": "DataGuard gates",
+            "detail": "YAML contracts in dataguard/contracts are validated, a schema diff engine classifies changes as SAFE, WARNING or BREAKING, and Great Expectations 1.x suites check nulls, ranges, row counts and freshness."
+          },
+          {
+            "label": "Lineage and incidents",
+            "detail": "Runs emit OpenLineage-format START, COMPLETE and FAIL events (Pydantic models) with column lineage; failures open incidents in PostgreSQL with severity, owner and a deduplicating failure signature."
+          },
+          {
+            "label": "Online materialization",
+            "detail": "Only when all gates pass are feature vectors written to a Redis 7.2 online store under featurehub:<entity>:<id> keys; on failure the offline and Redis writes are skipped."
+          },
+          {
+            "label": "Serving and orchestration",
+            "detail": "FastAPI exposes online feature lookup and a /predict endpoint backed by a scikit-learn RandomForest; Airflow 2.9 DAGs orchestrate the pipelines and a Streamlit dashboard presents the platform."
+          }
+        ],
+        "decisions": [
+          "Builds training sets with pandas merge_asof in the backward direction, so each observation only joins feature values at or before its timestamp, then asserts no leakage (raising DataLeakageError) and nulls features older than a TTL; this runs in memory on one machine.",
+          "Classifies contract changes with explicit rules (adding a nullable column or widening integer to bigint is SAFE, tightening nullability or narrowing float to integer is BREAKING) and runs a GitHub Actions gate on contract-related paths that blocks merges on BREAKING changes.",
+          "Places DataGuard in front of materialization as a circuit breaker: a failed contract, schema or quality stage skips the offline and Redis writes, so the last validated features in Redis are not overwritten by suspect data.",
+          "Deduplicates incidents with a SHA-256 signature over dataset, pipeline, check, expectation type and column, so a repeating failure maps to the already open incident instead of creating a new one.",
+          "Uses Redis for online lookups and PostgreSQL for contracts, runs and incidents (docs/DECISIONS.md), trading RAM for in-memory point lookups. The Redis client falls back to an in-process dictionary when no server is reachable, which keeps tests running but is not shared across processes.",
+          "Chose Streamlit over a React or Next.js front end for development speed, accepting that Streamlit re-executes the script on each interaction (docs/DECISIONS.md)."
+        ],
+        "testing": [
+          "About 280 pytest functions across featurehub, dataguard, the integration layer and the dashboard clients, covering the point-in-time join, contract registry, schema diff and type compatibility, the Great Expectations runner, lineage, incidents, Airflow DAG definitions and CI gating.",
+          "A CI workflow seeds data, computes offline features, runs the point-in-time leakage tests as a separate step, then runs the main test suites.",
+          "A pull-request workflow runs scripts/ci_contract_gate.py against the base branch when contract, schema, quality or CI code changes, followed by the CI gating tests.",
+          "PostgreSQL-backed tests live in separate *_postgres files and need a live database; the CI workflows do not start a PostgreSQL service. Docker Compose configuration is validated in CI."
+        ],
+        "results": [
+          "Benchmark results for Redis lookups, the prediction API and Great Expectations are committed as JSON together with the OS, CPU, Python and Redis versions used.",
+          "The documented schema-breaking experiment blocks every breaking scenario in its scenario set and approves the safe ones.",
+          "The integrated flow shows a failed gate emitting an OpenLineage FAIL event and filing an incident instead of writing features to Redis."
+        ],
+        "limitations": [
+          "All data is synthetic, generated by scripts/seed_data.py.",
+          "Latency benchmarks come from one local Windows laptop with Redis over loopback and a single client (concurrency 1); networked deployments would add latency.",
+          "Feature computation, quality suites and materialization run on one machine with pandas and PyArrow, not a distributed engine.",
+          "The incident-triage time reduction is documented as an unverified design goal, not a measured result.",
+          "The public demo mode exposes deterministic demo entities rather than the full stack, and there is no SSO or role-based access control."
+        ]
+      }
+    },
+    {
+      "id": "vehicle-telemetry-anomaly-detection",
+      "title": "Vehicle Telemetry Anomaly Detection",
+      "repo": "Real-Time-Vehicle-Telemetry-Anomaly-Detection-Edge-ML-Optimization",
+      "github_url": "https://github.com/Charanloyal/Real-Time-Vehicle-Telemetry-Anomaly-Detection-Edge-ML-Optimization",
+      "summary": "Anomaly detection on synthetic vehicle telemetry: point and per-vehicle window models, ONNX export, PySpark or pandas micro-batch streaming with carried state, and FastAPI serving.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "data-engineering"
+      ],
+      "tech": [
+        "Python",
+        "scikit-learn",
+        "XGBoost",
+        "ONNX Runtime",
+        "PySpark",
+        "pandas",
+        "FastAPI",
+        "Docker"
+      ],
+      "status": "complete",
+      "featured_rank": 7,
+      "demo_url": "https://vehicle-telemetry-anomaly-detection.onrender.com/",
+      "demo_kind": "live-app",
+      "demo_note": "Trained and evaluated on synthetic telemetry.",
+      "docs_url": null,
+      "updated": "2026-10-28",
+      "metrics": [
+        {
+          "label": "Window RF (synthetic test)",
+          "value": "F1 0.962 / PR-AUC 0.992",
+          "evidence": "reports/model_evaluation.json results.random_forest_window.metrics.f1 (0.9622), .average_precision (0.9924)"
+        },
+        {
+          "label": "ONNX RF single-event",
+          "value": "0.042 ms p50",
+          "evidence": "reports/benchmark_results.json models[random_forest].single_event.onnx_runtime.p50_ms"
+        },
+        {
+          "label": "Streaming run",
+          "value": "100,500 events; 1,000 quarantined; 500 dupes dropped",
+          "evidence": "reports/streaming_summary.md (Input events, Invalid events, Duplicates dropped)"
+        },
+        {
+          "label": "Unoptimized pipeline single-event",
+          "value": "36.15 ms p50",
+          "evidence": "reports/benchmark_results.json models[random_forest].single_event.baseline.p50_ms"
+        }
+      ],
+      "image": null,
+      "image_alt": null,
+      "case_study": {
+        "problem": "Vehicle telemetry faults come in two kinds: spikes visible in one reading, and slow drifts that stay inside the fleet's normal range and only show up against a vehicle's own history. Detecting drifts needs per-vehicle state that survives micro-batch boundaries, crashes and replays, and edge-style serving needs low per-event latency without changing the model's decisions.",
+        "architecture": [
+          {
+            "label": "Synthetic telemetry generator",
+            "detail": "data_generator.py runs a seeded vehicle simulation with five single-event fault types and two gradual drift types, and writes streaming JSON Lines files with injected malformed events and duplicates."
+          },
+          {
+            "label": "Features and training",
+            "detail": "Point features from a single reading and causal per-vehicle EWMA window features feed RandomForest and XGBoost models per feature set, plus an unsupervised IsolationForest baseline, using vehicle-grouped splits and validation-tuned thresholds."
+          },
+          {
+            "label": "ONNX export",
+            "detail": "Selected models are exported to ONNX at training time with skl2onnx and onnxmltools and checked for score parity against the native models."
+          },
+          {
+            "label": "Micro-batch streaming",
+            "detail": "A PySpark Structured Streaming engine or a pandas fallback reads files, validates and quarantines bad events, de-duplicates on event_id, scores with the window model while carrying per-vehicle state, and writes atomic per-batch sinks with checkpoints."
+          },
+          {
+            "label": "FastAPI serving",
+            "detail": "FastAPI serves /predict, /predict-batch and /predict-stream with scikit-learn/XGBoost or ONNX Runtime; /predict-stream returns per-vehicle state for the client to send back."
+          },
+          {
+            "label": "Benchmark and reports",
+            "detail": "benchmark.py compares a pandas baseline path, a NumPy feature path, the optimized native path and ONNX Runtime, and evaluation, benchmark and streaming reports are committed under reports/."
+          }
+        ],
+        "decisions": [
+          "Summarises each vehicle's history in five numbers (EWMA values and a count), so one implementation serves training, streaming and the API, and chunked processing with carried state matches a full pass exactly (tested). The EWMAs are event-indexed, so irregular sampling would need time-based decay.",
+          "Keeps /predict-stream stateless on the server: the client sends back the state returned with each response, so any instance can serve any request; state is capped at 1,000 vehicles per stream.",
+          "Writes sink files atomically and names them by batch id, and the local engine commits its processed-file list only after outputs are written, so a batch replayed after a crash overwrites its own output and reproduces the same scores. De-duplication covers each micro-batch, not across batches.",
+          "Splits train, validation and test by vehicle_id with GroupShuffleSplit and uses only the validation split for early stopping, thresholds and model selection, so no vehicle appears in more than one split.",
+          "Builds features straight into a NumPy matrix and avoids per-call DataFrame construction and joblib thread-pool start-up; ONNX Runtime runs with one intra-op thread as an edge-like setting. The measured trade-offs are kept: native multi-threaded XGBoost beats single-threaded ONNX on large batches, and ONNX session creation for the forest is slower than joblib.load.",
+          "Runs Spark scoring and window state on the driver inside foreachBatch so both engines share the same code; this suits a single node but would need executor-side state for a cluster."
+        ],
+        "testing": [
+          "87 pytest test functions (the README reports 109 collected tests) covering config, the generator, window-feature invariants, preprocessing and every validation rule, prediction parity (optimized vs reference, ONNX vs native), all API endpoints and streaming.",
+          "Streaming tests cover crash replay reproducing scores, recovery and incremental file pickup, an empty Spark batch keeping state, and Spark-versus-pandas parity.",
+          "CI runs ruff, ruff format and mypy in strict mode, then the tests on Ubuntu with Python 3.11, Java 17 and PySpark, and fails if any test is skipped so the Spark file-source test always runs.",
+          "A Docker CI job builds the API image, runs it with Render-like limits (ONNX Runtime, 512 MB, half a CPU, one inference thread) and runs deploy_smoke_test.py against it."
+        ],
+        "results": [
+          "On the synthetic test split the window model catches gradual faults that the per-event model largely misses, most clearly battery degradation, and raises fewer false alarms.",
+          "The committed streaming run quarantined exactly the injected malformed events and dropped exactly the injected duplicates.",
+          "ONNX Runtime decisions agree with the native models on every test-split event in the committed benchmark parity check.",
+          "The PySpark file-source and checkpoint path runs in Linux CI and is compared against the pandas engine."
+        ],
+        "limitations": [
+          "All data is synthetic; faults are clean spikes and linear drifts, and the models have never seen real telemetry.",
+          "The Kafka source is not implemented; streaming reads files only.",
+          "No watermark-based reordering of late events, and no cross-batch de-duplication.",
+          "Benchmarks come from one developer laptop with normal background load; the free Render instance is slower.",
+          "Dockerfile.spark is not built in CI, and the public demo has no authentication or rate limiting beyond request validation."
+        ]
+      }
+    },
+    {
+      "id": "ticketlens",
+      "title": "TicketLens",
+      "repo": "ticketlens",
+      "github_url": "https://github.com/Charanloyal/ticketlens",
+      "summary": "ITIL ticket classifier comparing TF-IDF + Logistic Regression, a Keras CNN and DistilBERT + LoRA on one held-out set; serves the TF-IDF model via FastAPI with PII scrubbing and confidence-gated routing.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "backend"
+      ],
+      "tech": [
+        "Python",
+        "scikit-learn",
+        "TensorFlow/Keras",
+        "PyTorch",
+        "Hugging Face Transformers",
+        "PEFT (LoRA)",
+        "SHAP",
+        "FastAPI",
+        "Docker"
+      ],
+      "status": "complete",
+      "featured_rank": 1,
+      "demo_url": "https://ticketlens.onrender.com/",
+      "demo_kind": "live-app",
+      "demo_note": null,
+      "docs_url": "https://ticketlens.onrender.com/docs",
+      "updated": "2026-10-27",
+      "metrics": [
+        {
+          "label": "TF-IDF + LR macro-F1",
+          "value": "0.8352",
+          "evidence": "reports/model_comparison.json models.tfidf_benchmark.macro_f1 (3,563 test tickets)"
+        },
+        {
+          "label": "Keras CNN macro-F1",
+          "value": "0.8095",
+          "evidence": "reports/model_comparison.json models.keras.macro_f1"
+        },
+        {
+          "label": "DistilBERT + LoRA macro-F1",
+          "value": "0.7790",
+          "evidence": "reports/model_comparison.json models.transformer.macro_f1"
+        },
+        {
+          "label": "Served TF-IDF macro-F1 (full train split)",
+          "value": "0.8782",
+          "evidence": "reports/model_comparison.json models.baseline.macro_f1 (model_name 'Served TF-IDF (all data, model only)', train_samples 16622)"
+        }
+      ],
+      "image": "/static/projects/ticketlens.webp",
+      "image_alt": "TicketLens triage workbench with a ticket being classified and PII scrubbing enabled",
+      "case_study": {
+        "problem": "Routing IT tickets by ITIL category from free text is ambiguous: Incident and Problem tickets share most of their vocabulary, classes are imbalanced, and tickets can contain personal data. Comparing model families is only meaningful if they are trained on the same data and scored on the same held-out set, and a deployed classifier needs a way to hand uncertain tickets to a person instead of silently misrouting them.",
+        "architecture": [
+          {
+            "label": "Ingestion and governance",
+            "detail": "Downloads the Tobi-Bueck/customer-support-tickets dataset from Hugging Face, keeps English tickets, regex-redacts emails, phone numbers and IPs, de-duplicates on text and makes one stratified 70/15/15 split with a fixed seed."
+          },
+          {
+            "label": "Three model families",
+            "detail": "TF-IDF + Logistic Regression (scikit-learn), a Keras CNN (TextVectorization, Embedding, Conv1D) and DistilBERT fine-tuned with LoRA via PEFT, all trained on the same training subset."
+          },
+          {
+            "label": "Shared evaluation and audit",
+            "detail": "Every model is scored on the same held-out test tickets for macro-F1, per-class precision and recall and confusion matrices, plus error analysis, SHAP LinearExplainer attributions and a bias check by class balance and ticket length."
+          },
+          {
+            "label": "Inference service",
+            "detail": "A FastAPI /predict endpoint applies PII scrubbing, optional ITIL keyword cues, non-English detection and a 0.80 confidence gate, then attaches a resolver queue from configs/routing.yaml."
+          },
+          {
+            "label": "Packaging",
+            "detail": "A lightweight TF-IDF image matches the Render free-plan deployment; a separate DistilBERT + LoRA image downloads the adapter from the GitHub release produced by the benchmark workflow."
+          }
+        ],
+        "decisions": [
+          "Trains the three architectures on the same 7,000-ticket subset and scores them on the identical test split; the subset size is set by the CPU budget for fine-tuning DistilBERT, which limits how far the transformer result can be read.",
+          "Serves TF-IDF + Logistic Regression rather than the transformer: it had the highest macro-F1 of the three on the shared test set and fits Render's 512 MB free plan, while the DistilBERT container needs about 430 MB at idle and ships as a separate image.",
+          "Adds an ITIL keyword-cue layer on the served model that lowers macro-F1 slightly on the in-distribution test split but raises accuracy on a small hand-written holdout; it can be turned off with inference.itil_cue_weight: 0.",
+          "Gates auto-routing at 0.80 confidence and forces Needs Review for low-confidence or non-English tickets, trading auto-routing coverage for precision on the tickets that are routed automatically.",
+          "Uses a LoRA adapter on the attention q/v projections only (r=8) after an all-linear-layer variant with a class-balanced loss overfit after the first epoch.",
+          "Runs the Render build's download, corpus preparation and training as separate processes to keep peak memory low, and fails the build if the dataset cannot be downloaded instead of training on the test fixture."
+        ],
+        "testing": [
+          "50 pytest test functions (the README reports 66 tests) covering text cleaning, PII redaction, schema and leakage checks, API health, auth, validation and prediction, ITIL cues, language detection and the fixed benchmark split.",
+          "CI replays the Render build on Python 3.11 with serving-only dependencies, asserts the heavy ML stack is not installed, fails if any build step exceeds 512 MB, then runs the tests, boots the server, smoke-tests /health and /predict and fails if its RSS reaches 400 MB.",
+          "CI also builds both Docker images and checks that the transformer image serves the fine-tuned model.",
+          "A manually triggered benchmark workflow trains all models on CPU, evaluates them on the shared test set, runs SHAP and the bias audit and the full test suite, and publishes the models as a GitHub release."
+        ],
+        "results": [
+          "TF-IDF + Logistic Regression beat both the Keras CNN and DistilBERT + LoRA on macro-F1 on the shared test set; the transformer ranked last there.",
+          "On the small hand-written holdout the ranking reverses and DistilBERT transfers best, which the README labels as indicative only.",
+          "Incident versus Problem confusion accounts for most errors for every model, and SHAP shows the two classes share top terms such as 'problem' and 'issue'.",
+          "At the confidence threshold, auto-accepted tickets are more precise than overall accuracy, so ambiguous tickets go to human review."
+        ],
+        "limitations": [
+          "The dataset is CC BY-NC 4.0 (non-commercial), its tickets have a long-form synthetic style, and the README notes its Incident and Problem labels are applied inconsistently.",
+          "The three-way comparison uses a 7,000-ticket CPU-budget subset; the hand-written evaluation sets are small.",
+          "The served model's higher macro-F1 comes from training on the full training split with augmentation, so it is not a like-for-like comparison with the three-way benchmark.",
+          "Latency figures were measured on a shared GitHub runner and are only relative, and the PII scrubbing covers emails, phone numbers and IP addresses only.",
+          "The bias check covers class balance and ticket length, not other attributes."
+        ]
+      }
+    },
+    {
+      "id": "drivedocs",
+      "title": "DriveDocs AI",
+      "repo": "drivedocs",
+      "github_url": "https://github.com/Charanloyal/drivedocs",
+      "summary": "Multimodal RAG assistant over a fictional car manual: MiniLM and CLIP embeddings in FAISS, a LangChain tool-calling agent, verified citations, and prompt-injection and PII guardrails.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "backend"
+      ],
+      "tech": [
+        "Python",
+        "LangChain",
+        "FAISS",
+        "ONNX Runtime",
+        "CLIP",
+        "MiniLM",
+        "FastAPI",
+        "pypdf"
+      ],
+      "status": "complete",
+      "featured_rank": 2,
+      "demo_url": "https://drivedocs-3xr4.onrender.com",
+      "demo_kind": "live-app",
+      "demo_note": "Uses an offline planner, so the public demo does not call an LLM.",
+      "docs_url": "https://drivedocs-3xr4.onrender.com/docs",
+      "updated": "2026-10-28",
+      "metrics": [
+        {
+          "label": "Recall@5 (39-question set)",
+          "value": "1.0",
+          "evidence": "reports/evaluation_report.json summary.recall_at_k"
+        },
+        {
+          "label": "Groundedness (39-question set)",
+          "value": "1.0",
+          "evidence": "reports/evaluation_report.json summary.groundedness"
+        },
+        {
+          "label": "Citation precision (file + page)",
+          "value": "0.924",
+          "evidence": "reports/evaluation_report.json summary.citation_precision"
+        },
+        {
+          "label": "Attack success (23 cases)",
+          "value": "0.0",
+          "evidence": "reports/evaluation_report.json security.summary.attack_success_rate"
+        }
+      ],
+      "image": "/static/projects/drivedocs.webp",
+      "image_alt": "DriveDocs AI workspace with example questions and system status for the text and image indexes",
+      "case_study": {
+        "problem": "Answering questions over a vehicle manual needs both text passages and diagrams, but text and image embeddings live in different vector spaces whose scores cannot be compared directly. Answers have to cite real pages, and the documents themselves can carry personal data or injected instructions that must not reach the user or an LLM.",
+        "architecture": [
+          {
+            "label": "Ingestion and redaction",
+            "detail": "pypdf parses PDFs page by page and extracts embedded figures, alongside Markdown, text and image files; text is chunked, PII is redacted and instruction-like sentences are flagged before anything is embedded."
+          },
+          {
+            "label": "Embeddings and indexes",
+            "detail": "MiniLM (384-d, int8 ONNX) embeds text and CLIP ViT-B/32 (512-d, 4-bit ONNX) embeds images on ONNX Runtime, stored in two separate FAISS IndexFlatIP indexes."
+          },
+          {
+            "label": "Input guardrails",
+            "detail": "Each question is screened for prompt-injection patterns and requests for personal data; injected clauses are removed and PII requests are refused before retrieval."
+          },
+          {
+            "label": "LangChain agent",
+            "detail": "A tool-calling loop over search_manual_text and search_manual_diagrams; the default planner is a deterministic offline LangChain chat model, with OpenAI or Gemini planners as optional extras."
+          },
+          {
+            "label": "Evidence and answer",
+            "detail": "Per-modality relevance thresholds and rank fusion select evidence, and the default generator writes extractive answers with [Source: file, Page N] tags."
+          },
+          {
+            "label": "Verification and output",
+            "detail": "A citation verifier checks each tag against the document registry, page and retrieved passage, output guardrails mask PII and injected text, and FastAPI returns the answer with the agent trace and a security report."
+          }
+        ],
+        "decisions": [
+          "Keeps text and image vectors in separate FAISS indexes with their own relevance thresholds and merges them by rank fusion, because CLIP and MiniLM similarity scales differ; on the bundled set rank fusion showed no gain over raw-score mixing and is kept because it does not compare incompatible scores.",
+          "Defaults to a deterministic offline planner and extractive answers, so the demo needs no API key and answers are quotations; the README notes an LLM planner generalises better to unusual phrasings.",
+          "Redacts PII at ingestion, before embedding, so it cannot be retrieved or sent to an LLM, and scrubs every response again; detection is pattern-based and misses names in free prose.",
+          "Removes any citation tag that does not match a registered document, an existing page and a retrieved passage; verification checks provenance and word overlap, not semantic entailment.",
+          "Runs quantized models on ONNX Runtime instead of PyTorch, builds the demo index at deploy time and unloads the CLIP vision tower when idle, to fit a 512 MB instance.",
+          "Searches anyway if an LLM planner answers without calling tools, so the returned answer is never the planner's own unverified prose."
+        ],
+        "testing": [
+          "155 pytest test functions (the README reports 207 tests) using mock embeddings and scripted LangChain chat models: agent planning and fallback, guardrail patterns and false positives, citation verification, ingestion hardening (malformed files, encodings, decompression bombs), FAISS persistence, and API errors, size limits and path traversal.",
+          "CI runs the unit and API suite, then downloads the real ONNX models, builds the demo index, runs the real-model tests and run_eval.py --strict, which fails on any QA or security regression.",
+          "The evaluation uses a 39-question QA set and a 23-case security suite (direct injection, indirect injection through a poisoned document, PII extraction and benign controls), both written by the author alongside the synthetic corpus."
+        ],
+        "results": [
+          "All QA and security cases pass in the committed evaluation report, after fixes made in response to an earlier run that failed several cases.",
+          "Location questions with no textual answer are answered by retrieving the engine-bay diagram through CLIP.",
+          "The public demo uses the offline planner and extractive answers and does not call an LLM."
+        ],
+        "limitations": [
+          "The evaluation sets are small and were written with the synthetic corpus; the first full run passed 33 of 39 QA and 13 of 23 security cases, so the scores are indicative only and say nothing about adaptive attackers.",
+          "Guardrails are pattern-based and do not catch every paraphrase.",
+          "No OCR: text inside scanned pages is not extracted, and CLIP reads only large labels.",
+          "Relevance thresholds were calibrated on the bundled corpus and need recalibration for other manuals.",
+          "Single process, no authentication, local filesystem storage and exact flat FAISS search; demo uploads are visible to everyone and lost on restart."
+        ]
+      }
+    },
+    {
+      "id": "raftkv",
+      "title": "RaftKV",
+      "repo": "raftkv",
+      "github_url": "https://github.com/Charanloyal/raftkv",
+      "summary": "Raft-based replicated key-value store in Python: leader election and log replication over gRPC, a SQLite-backed log, snapshot compaction with InstallSnapshot, client leader redirect, and a 5-node Docker Compose cluster.",
+      "category": "backend",
+      "secondary_categories": [
+        "cloud-infra"
+      ],
+      "tech": [
+        "Python",
+        "asyncio",
+        "gRPC",
+        "Protocol Buffers",
+        "SQLite",
+        "Docker Compose",
+        "pytest"
+      ],
+      "status": "complete",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-10-20",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": {
+        "problem": "A replicated key-value store has to agree on one order of writes across nodes that crash, restart and fall behind, without electing two leaders or losing committed entries. Persistent state must survive restarts, logs must be compacted without stranding slow followers, and clients need to find the current leader and retry without applying a write twice.",
+        "architecture": [
+          {
+            "label": "Client driver",
+            "detail": "RaftKVClient tries cluster nodes, follows NOT_LEADER replies using the returned leader hint, retries after short fixed delays, and tags each request with a client id and sequence number."
+          },
+          {
+            "label": "gRPC and Protobuf",
+            "detail": "proto/raft.proto defines the RequestVote, AppendEntries and InstallSnapshot RPCs and the client service; each node runs an async gRPC server."
+          },
+          {
+            "label": "Consensus engine",
+            "detail": "An asyncio engine with follower, candidate and leader roles, randomized election timeouts, periodic heartbeats, per-peer nextIndex and matchIndex, and majority-based commit index advancement."
+          },
+          {
+            "label": "Durable log",
+            "detail": "SQLite in WAL journal mode with synchronous=FULL stores the current term, vote, log entries and snapshot metadata."
+          },
+          {
+            "label": "State machine and snapshots",
+            "detail": "An in-memory key-value state machine applies committed entries and skips duplicate client sequence numbers; the log is compacted into snapshot.json at a size threshold and sent to lagging peers with InstallSnapshot."
+          },
+          {
+            "label": "Cluster and dashboard",
+            "detail": "Docker Compose defines a 5-node cluster on a bridge network, and web_demo.py serves a dashboard with kill and revive controls and a hand-built /metrics text endpoint."
+          }
+        ],
+        "decisions": [
+          "Persists Raft state in SQLite with WAL journaling and synchronous=FULL, giving crash-safe term, vote and log writes from the Python standard library at the cost of a sync on every commit.",
+          "Compacts the log into a JSON snapshot once it holds 50 entries and sends the full snapshot to followers that are behind it; the low threshold exercises compaction often but rewrites the whole state each time.",
+          "Records the highest applied sequence number per client id in the state machine, so a write retried after a leader change is not applied twice.",
+          "Has followers reject client calls with NOT_LEADER and a leader hint, and makes the client follow the hint, instead of proxying requests through followers.",
+          "Serves reads from the leader's local state machine after a role check, without a ReadIndex or lease round; reads stay cheap, but a deposed leader that has not yet stepped down could return stale data."
+        ],
+        "testing": [
+          "8 test functions in total: WAL metadata, append and truncate, and compaction; the engine's initial state and its RequestVote and AppendEntries handlers; a 5-node failover test; and a 5-node fault-injection sequence.",
+          "The cluster tests run 5 nodes as asyncio tasks in one process on loopback ports and simulate crashes by cancelling a node's task, checking re-election of a different leader, writes through client redirection, writes with two nodes stopped, and reads after the stopped nodes rejoin.",
+          "CI compiles the Protobuf definitions, runs pytest, and runs benchmark.py; the benchmark step does not start a cluster, so it is not a performance measurement."
+        ],
+        "results": [
+          "In the in-process five-node tests a new leader is elected after the leader's task is cancelled, writes succeed with two nodes stopped, and the expected values are read back after those nodes rejoin.",
+          "A Docker Compose file and Dockerfile package the same node code as a five-node container cluster, and the web dashboard can stop and restart nodes interactively."
+        ],
+        "limitations": [
+          "The test suite is thin (8 functions); there is no dedicated test of InstallSnapshot to a lagging follower, and partitions are simulated by stopping nodes rather than cutting network links.",
+          "No benchmark results are committed; the throughput figures in the README are sample output without a backing result file.",
+          "Sub-second re-election is a stated target; the failover test polls for a new leader but does not enforce a one-second bound.",
+          "Reads are not linearizable across a leader change, there is no cluster membership change, and /metrics is a hand-written text endpoint in web_demo.py rather than a Prometheus client.",
+          "docs/ARCHITECTURE.md has drifted from the code (it states synchronous=NORMAL and 150 to 350 ms timeouts; the code uses synchronous=FULL and 150 to 300 ms)."
+        ]
+      }
+    },
+    {
+      "id": "neural-gateway",
+      "title": "NeuralGateway",
+      "repo": "neural-gateway",
+      "github_url": "https://github.com/Charanloyal/neural-gateway",
+      "summary": "LLM gateway prototype in FastAPI with a Redis Lua token-bucket rate limiter, an embedding-similarity response cache, EWMA latency routing, circuit breakers and Kafka audit events. Providers are mocked by default.",
+      "category": "backend",
+      "secondary_categories": [
+        "ai-ml",
+        "cloud-infra"
+      ],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "Redis",
+        "Lua",
+        "Apache Kafka",
+        "aiokafka",
+        "Prometheus",
+        "Docker Compose"
+      ],
+      "status": "complete",
+      "featured_rank": 4,
+      "demo_url": "https://neural-gateway-core.onrender.com/",
+      "demo_kind": "live-app",
+      "demo_note": "LLM providers are simulated unless API keys are configured.",
+      "docs_url": "https://neural-gateway-core.onrender.com/docs",
+      "updated": "2026-10-02",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": {
+        "problem": "A gateway in front of several LLM providers has to enforce per-tenant quotas across replicas, avoid paying twice for prompts that mean the same thing, and keep answering when one provider slows down or fails. It must do this while streaming tokens and writing an audit trail, without adding that work to the request path.",
+        "architecture": [
+          {
+            "label": "Ingress and rate limit",
+            "detail": "FastAPI /v1/chat/completions checks a per-tenant token bucket executed atomically as a Redis Lua script and returns 429 with Retry-After and X-RateLimit headers; an in-memory bucket is used when Redis is unavailable."
+          },
+          {
+            "label": "Similarity cache",
+            "detail": "The prompt is embedded with all-MiniLM-L6-v2 when sentence-transformers is installed, otherwise with a deterministic hashed projection, and compared by dot product against the tenant's cached entries in Redis (default threshold 0.88)."
+          },
+          {
+            "label": "EWMA routing",
+            "detail": "ProviderPool picks among providers whose breakers allow traffic with probability proportional to 1 / latency^1.5 over an EWMA of observed latency (alpha 0.25)."
+          },
+          {
+            "label": "Circuit breakers",
+            "detail": "Each provider has a CLOSED, OPEN and HALF_OPEN breaker (4 failures to open, 15 s recovery, 2 half-open successes to close), with failover to the other provider if the first fails before emitting a token."
+          },
+          {
+            "label": "SSE streaming",
+            "detail": "Tokens are streamed as server-sent events, and generation stops when request.is_disconnected() reports the client has gone (recorded as status 499)."
+          },
+          {
+            "label": "Audit and metrics",
+            "detail": "Audit events go through a bounded asyncio queue to an aiokafka producer (acks=all), or to a local log when Kafka is offline; Prometheus metrics cover requests, time to first token, tokens per second and estimated cost."
+          }
+        ],
+        "decisions": [
+          "Runs the token-bucket refill and decrement as one Redis Lua script, so quota checks are atomic in a single round trip and shared across replicas; the in-memory fallback is per process and not shared.",
+          "Routes by weighted random choice over inverse EWMA latency instead of always picking the fastest provider, so faster providers get more traffic while slower ones still receive some.",
+          "Pushes audit events onto a bounded queue drained by a background producer and drops the oldest event when the queue is full, putting request latency ahead of audit completeness.",
+          "Fails over to the secondary provider only if the primary fails before the first token, so a response is never stitched together from two providers; failures after streaming starts are not retried.",
+          "Stores normalized vectors per tenant in Redis hashes and scans all of a tenant's entries on lookup; this is simple and exact, but lookup cost grows linearly with cache size.",
+          "Falls back to a hashed token projection when sentence-transformers is missing (it is not in requirements.txt), keeping the image small at the cost of matching surface tokens rather than meaning."
+        ],
+        "testing": [
+          "3 pytest unit tests: in-memory rate limiter allow and deny with retry-after, circuit breaker transitions from CLOSED to OPEN to HALF_OPEN to CLOSED, and cache hit and miss around the similarity threshold.",
+          "test_gateway.py holds 5 more tests that call a live server at 127.0.0.1:8000 (health, streaming, cache hit, rate limit, metrics).",
+          "verify_suite.py drives the app in-process through FastAPI's TestClient: dashboard, health, non-streaming completion, cache hit, cache clear, circuit reset, stats and an SSE stream.",
+          "CI runs ruff, pytest and verify_suite.py on Python 3.11; locustfile.py exists for load tests, but no load-test results are committed."
+        ],
+        "results": [
+          "The gateway runs end to end in standalone mode with mock providers and in-memory rate limiting and cache, which is how the public demo is deployed.",
+          "Docker Compose starts the gateway with Redis, ZooKeeper-based Kafka (Confluent images) and Prometheus for the distributed mode.",
+          "A fault-injection header or dashboard control trips a provider's breaker, and traffic moves to the other provider."
+        ],
+        "limitations": [
+          "Providers are mocks by default; real OpenAI or Anthropic calls happen only when DEMO_MODE is off and API keys are set, and the public demo runs in simulated mode.",
+          "No performance numbers: every row of the README benchmark table is TBD.",
+          "Without sentence-transformers the cache matches on hashed tokens rather than meaning, and the Redis cache clear() uses a different key prefix from the one entries are written under.",
+          "In-memory fallbacks are per process, Redis is a single dependency, and the gateway's limits are not synchronised with provider-side quotas.",
+          "Test coverage is thin, and CI installs pytest without pytest-asyncio although the unit tests are async."
+        ]
+      }
+    },
+    {
+      "id": "agent-orchestration-system",
+      "title": "Agent Orchestration System",
+      "repo": "Agent-Orchestration-System-",
+      "github_url": "https://github.com/Charanloyal/Agent-Orchestration-System-",
+      "summary": "Research-report workflow where planner, researcher, writer and reviewer agents run on LangGraph behind human approval gates, with PostgreSQL-leased workers, OIDC auth and a React UI. Agents use deterministic fakes unless an LLM is configured.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "backend"
+      ],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "LangGraph",
+        "PostgreSQL",
+        "SQLAlchemy",
+        "Alembic",
+        "OpenTelemetry",
+        "React",
+        "TypeScript"
+      ],
+      "status": "in-progress",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-10-16",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "agent-forge",
+      "title": "AgentForge",
+      "repo": "agent-forge",
+      "github_url": "https://github.com/Charanloyal/agent-forge",
+      "summary": "LangGraph RAG pipeline: BM25 and Qdrant hybrid search fused with reciprocal rank fusion, cross-encoder reranking, cited answers and a groundedness check that loops back to retrieval. Answers are extractive; no LLM is called.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "backend"
+      ],
+      "tech": [
+        "Python",
+        "LangGraph",
+        "Qdrant",
+        "rank-bm25",
+        "FastAPI",
+        "PostgreSQL",
+        "SQLAlchemy",
+        "Docker"
+      ],
+      "status": "complete",
+      "featured_rank": 3,
+      "demo_url": "https://agent-forge-to4e.onrender.com",
+      "demo_kind": "live-app",
+      "demo_note": "Answers are extractive; no LLM is called.",
+      "docs_url": "https://agent-forge-to4e.onrender.com/docs",
+      "updated": "2026-10-02",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": {
+        "problem": "Retrieval-augmented answers fail quietly: keyword search misses paraphrases, vector search misses exact terms, and an answer can cite passages that do not actually support it. AgentForge treats retrieval relevance and groundedness as gates inside the pipeline rather than scores reported afterwards, and retries retrieval when a gate fails.",
+        "architecture": [
+          {
+            "label": "Query rewriting",
+            "detail": "Strips conversational prefixes and punctuation from the question; on a retry it relaxes the query to its longer keywords plus broadening terms."
+          },
+          {
+            "label": "Hybrid retrieval",
+            "detail": "Runs Qdrant dense search and an in-memory BM25 index (rank-bm25) in parallel, 15 candidates each, and merges them with reciprocal rank fusion (k = 60)."
+          },
+          {
+            "label": "Reranking",
+            "detail": "A cross-encoder (ms-marco-MiniLM-L-6-v2 when installed) rescores the fused top 10 and keeps up to 5 chunks above a 0.20 threshold."
+          },
+          {
+            "label": "Relevance gate",
+            "detail": "If no chunk survives or the top score is under 0.25, a LangGraph conditional edge routes back to the query rewriter."
+          },
+          {
+            "label": "Cited answer",
+            "detail": "Builds the answer from the first sentence of each surviving chunk with inline [n] citations and a citation index of chunk ids, document ids and scores."
+          },
+          {
+            "label": "Groundedness check",
+            "detail": "Splits the answer into statements and scores each against the cited chunks with the cross-encoder; under 0.60 faithfulness it loops back for another retrieval, up to 2 cycles."
+          },
+          {
+            "label": "Evaluation and traces",
+            "detail": "Computes context precision, faithfulness and answer relevance, and stores a per-step execution trace with latencies through SQLAlchemy in PostgreSQL or SQLite."
+          }
+        ],
+        "decisions": [
+          "Fuses sparse and dense results with reciprocal rank fusion, which uses only ranks, so BM25 scores and cosine similarities never need to be calibrated against each other.",
+          "Places the relevance and groundedness gates in the LangGraph state machine as conditional edges, so weak evidence triggers another retrieval instead of only lowering a reported score. Retries are capped at two to bound latency.",
+          "Answers extractively instead of calling an LLM, which keeps the pipeline deterministic and free to run, at the cost of fluency: answers are stitched-together source sentences.",
+          "Falls back to a hashing embedder, a heuristic reranker, in-memory vector storage and SQLite when sentence-transformers, Qdrant or PostgreSQL are unavailable, so tests and the free-tier demo run without heavy dependencies. Quality in that mode is not representative of the full models."
+        ],
+        "testing": [
+          "18 pytest functions covering the API, BM25 and fusion retrieval, the graph nodes and the groundedness evaluator.",
+          "There is no CI workflow in the repository yet."
+        ],
+        "results": [
+          "Every answer returns its citations, a per-claim groundedness score and a step-by-step trace with timings.",
+          "The live demo and its API docs run on Render."
+        ],
+        "limitations": [
+          "No LLM: the generation step extracts sentences, so it cannot paraphrase or combine facts across sources.",
+          "The README's benchmark table (precision, recall and hallucination rate on 500 queries) has no committed dataset, script or results, so it is not quoted here.",
+          "sentence-transformers is not in requirements.txt, so a default install uses the hashing embedder and heuristic reranker.",
+          "Query rewriting is rule-based rather than model-based, and there is no CI."
+        ]
+      }
+    },
+    {
+      "id": "txn-pipeline",
+      "title": "txn-pipeline",
+      "repo": "txn-pipeline",
+      "github_url": "https://github.com/Charanloyal/txn-pipeline",
+      "summary": "Asynchronous CSV transaction processing: FastAPI queues jobs to Celery over Redis, workers clean the data, flag anomalies with rules, categorize with Gemini and store results in PostgreSQL. Built as a backend internship take-home assignment.",
+      "category": "backend",
+      "secondary_categories": [
+        "data-engineering",
+        "ai-ml"
+      ],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "Celery",
+        "Redis",
+        "PostgreSQL",
+        "SQLAlchemy",
+        "Alembic",
+        "Google Gemini API",
+        "Pandas"
+      ],
+      "status": "complete",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-06-29",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "octoscale-url-shortener",
+      "title": "OctoScale",
+      "repo": "Octoscale-URL-Shortener",
+      "github_url": "https://github.com/Charanloyal/Octoscale-URL-Shortener",
+      "summary": "URL shortener on FastAPI with Redis INCR and Base62 short codes, a PostgreSQL fallback, cached redirects, sliding-window rate limiting on Redis sorted sets and background click analytics.",
+      "category": "backend",
+      "secondary_categories": [],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Redis",
+        "SQLAlchemy",
+        "Docker"
+      ],
+      "status": "complete",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-09-24",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "full-stack-integration",
+      "title": "Collaborative Workspace Board",
+      "repo": "Full-Stack-Integration",
+      "github_url": "https://github.com/Charanloyal/Full-Stack-Integration",
+      "summary": "Real-time Kanban board with team chat: Express and Socket.io backend, Prisma with SQLite for tasks, MongoDB for chat, Redis caching, and a React frontend using Zustand and TanStack Query. Built during an IIT Madras summer internship curriculum.",
+      "category": "backend",
+      "secondary_categories": [],
+      "tech": [
+        "TypeScript",
+        "React",
+        "Express",
+        "Socket.io",
+        "Zustand",
+        "TanStack Query",
+        "Prisma",
+        "SQLite",
+        "MongoDB"
+      ],
+      "status": "complete",
+      "featured_rank": null,
+      "demo_url": "https://full-stack-integration-7m7z.onrender.com/",
+      "demo_kind": "live-app",
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-07-09",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "agentcodex",
+      "title": "AgentCodex",
+      "repo": "Multi-agent-llm-code-generator",
+      "github_url": "https://github.com/Charanloyal/Multi-agent-llm-code-generator",
+      "summary": "Prototype interface for a synthesis-and-critique coding agent: FastAPI streams agent steps over Server-Sent Events and returns code from keyword-matched templates with an in-memory cache. The agent steps are simulated; no LLM is called.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "backend"
+      ],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "Jinja2",
+        "Docker"
+      ],
+      "status": "experimental",
+      "featured_rank": null,
+      "demo_url": "https://multi-agent-llm-code-generator.onrender.com",
+      "demo_kind": "live-app",
+      "demo_note": "Agent steps are simulated.",
+      "docs_url": null,
+      "updated": "2026-07-11",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "smart-loan-recovery",
+      "title": "Smart Loan Recovery",
+      "repo": "Smart-Loan-Recovery-System-with-Machine-Learning-",
+      "github_url": "https://github.com/Charanloyal/Smart-Loan-Recovery-System-with-Machine-Learning-",
+      "summary": "Generates 1,000 synthetic loan records, segments borrowers with K-Means and trains a Random Forest to flag high-risk borrowers and suggest a recovery strategy for each segment.",
+      "category": "data-science",
+      "secondary_categories": [],
+      "tech": [
+        "Python",
+        "scikit-learn",
+        "Pandas",
+        "Matplotlib",
+        "Plotly"
+      ],
+      "status": "experimental",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-09-13",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "multi-agent-llm-orchestration",
+      "title": "Multi-Agent LLM Orchestration",
+      "repo": "Multi-Agent-LLM-Orchestration",
+      "github_url": "https://github.com/Charanloyal/Multi-Agent-LLM-Orchestration",
+      "summary": "Early design for an Anthropic-based multi-agent pipeline (task decomposition, retrieval, synthesis, critique, token budgeting and an evaluation harness) behind a FastAPI entry point. Incomplete: some imported modules are not in the repo.",
+      "category": "ai-ml",
+      "secondary_categories": [],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "Anthropic API",
+        "SQLite",
+        "Docker"
+      ],
+      "status": "experimental",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-05-08",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "realtime-fraud-detector",
+      "title": "SentinelShield Fraud Monitor",
+      "repo": "Data-Science-Projects",
+      "github_url": "https://github.com/Charanloyal/Data-Science-Projects/tree/main/realtime-fraud-detector",
+      "summary": "Browser dashboard that simulates a card-transaction stream with an Isolation-Forest-style anomaly score and a drift chart, plus a notebook exploring Isolation Forest, SMOTE and KS drift tests on synthetic data.",
+      "category": "data-science",
+      "secondary_categories": [
+        "ai-ml"
+      ],
+      "tech": [
+        "JavaScript",
+        "Chart.js",
+        "Python",
+        "scikit-learn",
+        "imbalanced-learn",
+        "SciPy"
+      ],
+      "status": "experimental",
+      "featured_rank": null,
+      "demo_url": "/fraud-detector/",
+      "demo_kind": "browser-simulation",
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-09-20",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "ab-testing-platform",
+      "title": "AeroTest A/B Testing Calculator",
+      "repo": "Data-Science-Projects",
+      "github_url": "https://github.com/Charanloyal/Data-Science-Projects/tree/main/ab-testing-platform",
+      "summary": "Browser tool for planning and reading A/B tests: sample-size calculation, two-proportion z-test, sample-ratio-mismatch check and ROI projection, plus a notebook working through the same statistics in SciPy and statsmodels.",
+      "category": "data-science",
+      "secondary_categories": [],
+      "tech": [
+        "JavaScript",
+        "Chart.js",
+        "Python",
+        "SciPy",
+        "statsmodels",
+        "Pandas"
+      ],
+      "status": "experimental",
+      "featured_rank": null,
+      "demo_url": "/ab-testing/",
+      "demo_kind": "browser-calculator",
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-09-20",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "churn-predictive-agent",
+      "title": "ChurnIntel",
+      "repo": "Data-Science-Projects",
+      "github_url": "https://github.com/Charanloyal/Data-Science-Projects/tree/main/churn-predictive-agent",
+      "summary": "Browser demo that scores customer churn risk with a fixed logistic formula, answers keyword-matched questions over 100 in-memory customer records and estimates retention-campaign ROI.",
+      "category": "data-science",
+      "secondary_categories": [],
+      "tech": [
+        "JavaScript",
+        "Python",
+        "scikit-learn",
+        "Pandas"
+      ],
+      "status": "experimental",
+      "featured_rank": null,
+      "demo_url": "https://charanloyal.github.io/Data-Science-Projects/churn-predictive-agent/",
+      "demo_kind": "browser-simulation",
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-09-20",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "loan-approval-application",
+      "title": "Loan Approval Prediction",
+      "repo": "Loan-approval-Apllication",
+      "github_url": "https://github.com/Charanloyal/Loan-approval-Apllication",
+      "summary": "Small scikit-learn project comparing classifiers, including logistic regression and random forest, for loan approval on a 30-row sample dataset, with helper modules and unit tests.",
+      "category": "data-science",
+      "secondary_categories": [],
+      "tech": [
+        "Python",
+        "scikit-learn",
+        "Pandas",
+        "Matplotlib"
+      ],
+      "status": "learning",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2026-09-13",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    },
+    {
+      "id": "binance-futures-testnet-bot",
+      "title": "Binance Futures Testnet Bot",
+      "repo": "Binance-AI-Trading-Bot-",
+      "github_url": "https://github.com/Charanloyal/Binance-AI-Trading-Bot-",
+      "summary": "Command-line bot that places market, limit and other order types on the Binance Futures testnet using python-binance, with symbol validation and logging.",
+      "category": "other",
+      "secondary_categories": [
+        "backend"
+      ],
+      "tech": [
+        "Python",
+        "python-binance",
+        "Binance Futures Testnet API"
+      ],
+      "status": "experimental",
+      "featured_rank": null,
+      "demo_url": null,
+      "demo_kind": null,
+      "demo_note": null,
+      "docs_url": null,
+      "updated": "2025-11-03",
+      "metrics": [],
+      "image": null,
+      "image_alt": null,
+      "case_study": null
+    }
+  ]
+}

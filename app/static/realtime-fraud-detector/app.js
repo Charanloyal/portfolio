@@ -270,7 +270,7 @@ function initCharts() {
           pointRadius: 0
         },
         {
-          label: 'Production Stream',
+          label: 'Current Stream',
           data: currentData,
           borderColor: '#00f2fe',
           backgroundColor: 'rgba(0, 242, 254, 0.15)',
