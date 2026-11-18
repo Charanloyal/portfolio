@@ -80,4 +80,4 @@ The site was previously a FastAPI app on Render. `public/404.html` redirects tha
 
 - Email: [charan.workmaill@gmail.com](mailto:charan.workmaill@gmail.com) · [charankumarreddy2028@gmail.com](mailto:charankumarreddy2028@gmail.com)
 - LinkedIn: [b-charan-kumar-reddy](https://www.linkedin.com/in/b-charan-kumar-reddy)
-- GitHub: [@Charanloyal](https://github.com/Charanloyal)
+- GitHub: [@Charanloyal](https://github.com/charan-reddy-dev)
