@@ -1438,23 +1438,27 @@
       "title": "ChurnIntel",
       "repo": "Data-Science-Projects",
       "github_url": "https://github.com/charan-reddy-dev/Data-Science-Projects/tree/main/churn-predictive-agent",
-      "summary": "Browser demo that scores customer churn risk with a fixed logistic formula, answers keyword-matched questions over 100 in-memory customer records and estimates retention-campaign ROI.",
+      "summary": "Schema-grounded text-to-SQL copilot over a churn database: live schema introspection, Gemini / OpenAI-compatible generation with a rule-based fallback, and a three-layer read-only SQL sandbox. A LightGBM churn model writes per-customer SHAP risk drivers back into the database for the copilot to query.",
       "category": "data-science",
       "secondary_categories": [],
       "tech": [
-        "JavaScript",
         "Python",
+        "SQLite",
+        "sqlparse",
+        "LightGBM",
+        "SHAP",
         "scikit-learn",
-        "Pandas"
+        "httpx",
+        "pytest"
       ],
       "status": "experimental",
-      "synthetic_data": false,
+      "synthetic_data": true,
       "brief": {
-        "problem": "Retention teams need to know which customers are likely to churn, why, and whether an incentive campaign pays for itself, without writing SQL for every question.",
-        "approach": "A browser app scores churn risk with a logistic model and shows each feature's contribution, maps natural-language questions to SQL over an in-memory customer table, and simulates campaign ROI; a notebook trains Random Forest and Gradient Boosting models.",
+        "problem": "LLM-written SQL can destroy data or answer the wrong question, and retention teams need to know who will churn and why.",
+        "approach": "Live schema introspection, LLM or rule-based SQL generation with bound parameters, a three-layer read-only sandbox, and a LightGBM churn model whose SHAP drivers the copilot can query.",
         "outcomes": [
-          "Per-feature contribution breakdown explains every risk score (contract type, tenure, support calls, charges).",
-          "Retention simulator estimates recovered lifetime value, campaign cost, net savings and ROI for a targeted segment."
+          "All 22 attack queries blocked, all 8 legitimate controls allowed, database unchanged after the suite.",
+          "Churn test ROC-AUC 0.8271 against an oracle ceiling of 0.8513 on synthetic data."
         ]
       },
       "featured_rank": null,
@@ -1462,48 +1466,67 @@
       "demo_kind": "browser-simulation",
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-09-20",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "SQL attacks blocked / legitimate controls allowed",
+          "value": "22/22 · 8/8",
+          "evidence": "churn-predictive-agent/benchmarks/results.json sql_safety.direct_sql_blocked, control_queries_allowed; database_unchanged true"
+        },
+        {
+          "label": "Text-to-SQL execution accuracy (offline planner)",
+          "value": "15/15 dev · 9/10 held-out",
+          "evidence": "churn-predictive-agent/benchmarks/results.json text_to_sql.development_set.correct, heldout_set.correct; questions written by the author"
+        },
+        {
+          "label": "Churn ROC-AUC, test split (oracle ceiling 0.8513)",
+          "value": "0.8271",
+          "evidence": "churn-predictive-agent/benchmarks/results.json churn_model.test.lightgbm.roc_auc, churn_model.oracle_test.roc_auc; synthetic data, 1,200 test customers"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "A churn score is only actionable if the team can see why a customer is at risk, slice the customer base without an analyst, and check that a retention offer costs less than the revenue it saves.",
+        "problem": "Analysts want answers from customer data without writing SQL, but letting an LLM write SQL against a production database risks destructive or injected statements and silently wrong answers. Retention teams also need to know which customers will churn and why.",
         "architecture": [
           {
-            "label": "Modeling notebook",
-            "detail": "Pandas, scikit-learn Random Forest and Gradient Boosting models explore churn drivers and business impact."
+            "label": "Synthetic churn database",
+            "detail": "6,000 subscribers with 12 months of usage, support tickets and payments up to a 2025-12-31 snapshot; churn is cancellation in the following 90 days."
           },
           {
-            "label": "Risk scorer",
-            "detail": "A client-side logistic function over tenure, monthly charges, support calls and contract type returns a probability, shown on a radial risk gauge."
+            "label": "Schema grounding",
+            "detail": "Tables, keys, row counts, data-dictionary descriptions and distinct categorical values are introspected live and given to the LLM; the offline planner builds its vocabulary from the same catalogue."
           },
           {
-            "label": "Contribution breakdown",
-            "detail": "SHAP-style list of the features pushing each score up or down."
+            "label": "Generation",
+            "detail": "Gemini or any OpenAI-compatible endpoint returns JSON {sql, params}; if it is rejected or fails, a rule-based planner builds a small query IR and renders parameterised SQL."
           },
           {
-            "label": "SQL copilot simulator",
-            "detail": "Keyword-matched natural-language questions are mapped to SQL and run over 100 in-memory customer records, with the SQL, result table and a summary shown."
+            "label": "Read-only sandbox",
+            "detail": "A sqlparse validator (one SELECT, no DML/DDL/ATTACH/PRAGMA), the SQLite authorizer (allow-listed tables and functions) and a read-only connection with a timeout and row cap."
           },
           {
-            "label": "Campaign simulator",
-            "detail": "Estimates recovered LTV, campaign cost, net savings and ROI for incentives sent to high-risk segments."
+            "label": "Churn model",
+            "detail": "LightGBM selected by 5-fold CV against a logistic baseline; cross-fitted scores, risk tiers and top-3 TreeSHAP drivers per customer are written to the database."
           }
         ],
         "decisions": [
-          "Uses a fixed, interpretable logistic formula in the browser so every score can be explained term by term without a model server.",
-          "Simulates the SQL copilot with keyword matching instead of calling an LLM, keeping the demo deterministic and free to run.",
-          "Pairs prediction with an ROI simulator so the output is a decision, not just a probability."
+          "Treats LLM output as untrusted: it passes the same sandbox as everything else and falls back to the planner when rejected.",
+          "Binds every literal from the question as a parameter instead of splicing it into SQL.",
+          "Layers the authorizer and a read-only connection under the static check, so a validator bypass still cannot write.",
+          "Adds a held-out question set written before the planner was run on it, and reports its one silent wrong answer."
         ],
         "testing": [
-          "Manual verification in the browser demo; no automated test suite."
+          "61 pytest tests: attack and control queries, authorizer and read-only bypass checks, timeouts, mocked Gemini and OpenAI-compatible responses, malicious-LLM fallback, and SHAP checked against LightGBM's own TreeSHAP.",
+          "Evaluation script rebuilds the database, trains the model, runs 25 questions and the safety suite, and confirms the tables are unchanged."
         ],
         "results": [
-          "Public browser demo covering scoring, explanation, question answering and campaign ROI."
+          "22/22 attack queries and 22/22 malicious-LLM outputs blocked, 8/8 legitimate controls allowed, 5/5 write requests refused, database unchanged.",
+          "Churn LightGBM test ROC-AUC 0.8271 vs 0.8187 for logistic regression; the High tier (10% of customers) holds 40% of churners."
         ],
         "limitations": [
-          "The browser scorer is a hand-set logistic formula, not the trained notebook model.",
-          "The SQL copilot is keyword-matched, not an LLM, and runs over 100 in-memory records."
+          "Synthetic data, and the offline planner is narrow: it answered the held-out question 'Which region has the highest churn rate?' with the overall rate.",
+          "No live-LLM evaluation yet; the browser demo is still a client-side simulation."
         ]
       }
     },

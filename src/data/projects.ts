@@ -39,7 +39,7 @@ const SHOWCASE: ShowcaseEntry[] = [
   { id: 'drivedocs', tracks: ['ai', 'data'], tagline: 'Multimodal RAG with verified citations and guardrails' },
   { id: 'lakeflow', tracks: ['data', 'systems'], tagline: 'Idempotent CDC pipeline into an Iceberg lakehouse' },
   { id: 'ab-testing-platform', tracks: ['data'], tagline: 'Experiment sizing, SRM guardrail and significance engine', title: 'AeroTest' },
-  { id: 'churn-predictive-agent', tracks: ['data', 'ai'], tagline: 'Explainable churn risk scoring and retention ROI' },
+  { id: 'churn-predictive-agent', tracks: ['data', 'ai'], tagline: 'Text-to-SQL copilot with a read-only SQL sandbox and SHAP churn drivers' },
   { id: 'neural-gateway', tracks: ['ai', 'systems'], tagline: 'Fault-tolerant multi-provider LLM gateway' },
   { id: 'smart-loan-recovery', tracks: ['data'], tagline: 'Leak-free PD × LGD × EAD expected-loss pipeline', title: 'Smart Loan Recovery' },
   { id: 'featurehub-dataguard', tracks: ['data'], tagline: 'Feature store guarded by data contracts' },
