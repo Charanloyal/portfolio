@@ -4,13 +4,24 @@ export interface ImpactMetric {
   source: string;
 }
 
+export interface RoleMetric {
+  value: string;
+  label: string;
+}
+
 export interface Role {
   role: string;
   org: string;
-  period: string;
+  /** Year and month the role started, YYYY-MM. */
+  start: string;
+  /** Year and month the role ended, YYYY-MM; omitted for a current role. */
+  end?: string;
   location: string;
+  domain: string;
   current?: boolean;
+  impact: RoleMetric[];
   bullets: string[];
+  stack: string[];
 }
 
 export interface SkillGroup {
@@ -31,12 +42,12 @@ export const githubUrl = `https://github.com/${githubUser}`;
 export const profile = {
   name: 'B. Charan Kumar Reddy',
   shortName: 'Charan',
-  headline: 'Software & AI/ML Engineer',
-  focus: 'Distributed Systems, LLM Architecture & Data Pipelines',
+  headline: 'Distributed Systems & AI Infrastructure Engineer',
+  focus: 'SDE · FDE · AI-Infra',
   subheadline:
-    'Building low-latency AI infrastructure, fault-tolerant distributed backends, and high-throughput data systems.',
-  availability: 'Open to SWE, SDE & AI/ML Roles',
-  targetRoles: ['Software Engineering (SWE / SDE)', 'AI / ML Engineering', 'Data Engineering'],
+    'Engineering low-latency LLM inference pipelines, Raft-based distributed storage, and high-throughput backend systems.',
+  availability: 'Open to SDE-I / SWE-I, FDE & AI/ML Roles',
+  targetRoles: ['SDE-I / SWE-I', 'Forward Deployed Engineer (FDE)', 'AI / ML Engineering', 'Data Engineering'],
   location: 'Bengaluru, India',
   mobility: 'Open to relocation & remote',
   siteUrl: `https://${githubUser}.github.io/portfolio/`,
@@ -84,65 +95,136 @@ export const experience: Role[] = [
   {
     role: 'AI/ML Student Intern',
     org: 'General Motors Technical Center India',
-    period: 'Jul 2026 – Present',
+    start: '2026-07',
     location: 'Bengaluru, India',
+    domain: 'Manufacturing AI & Automation',
     current: true,
+    impact: [
+      { value: '18 h → 5 min', label: 'die-face creation per panel' },
+      { value: '7 engineers', label: 'using the CAD quality tool' },
+      { value: '~47 h/month', label: 'manual work saved' },
+    ],
     bullets: [
       'Build AI/ML and Python automation for Manufacturing Engineering workflows in Siemens NX.',
       'Automated die-face creation for hood, fender, roof and door panels, cutting it from 18 hours to 5 minutes per panel.',
       'Built a tool that checks and scores CAD surface quality on die faces, now used by 7 engineers on the team.',
       'Together these save the team about 47 hours of manual work a month.',
     ],
+    stack: ['Python', 'Siemens NX', 'CAD automation', 'Surface-quality analysis', 'AI/ML tooling'],
   },
   {
     role: 'Full Stack Developer Intern',
     org: 'IIT Madras',
-    period: 'Jun 2026',
+    start: '2026-06',
+    end: '2026-06',
     location: 'Chennai, India',
-    bullets: ['Built 10+ REST APIs and Docker CI/CD, cutting integration defects by 35% and deployment time by 50%.'],
+    domain: 'Full-Stack SDE',
+    impact: [
+      { value: '10+', label: 'REST APIs shipped' },
+      { value: '−35%', label: 'integration defects' },
+      { value: '−50%', label: 'deployment time' },
+    ],
+    bullets: [
+      'Built 10+ REST APIs and Docker CI/CD, cutting integration defects by 35% and deployment time by 50%.',
+      'Shipped a real-time task and chat board as a TypeScript monorepo with WebSockets, Redis caching and offline fallbacks.',
+    ],
+    stack: ['TypeScript', 'React', 'Express', 'WebSockets', 'Redis', 'Docker', 'GitHub Actions'],
   },
   {
     role: 'Software Engineer Intern',
     org: 'The Developers Arena',
-    period: 'Feb 2026 – May 2026',
+    start: '2026-02',
+    end: '2026-05',
     location: 'Hyderabad, India',
+    domain: 'Backend & Automation',
+    impact: [
+      { value: '50+/week', label: 'tickets auto-classified' },
+      { value: '−40%', label: 'manual triage effort' },
+    ],
     bullets: [
       'Automated Python classification of 50+ Jira/ServiceNow tickets a week, cutting manual triage effort by 40%.',
-      'Built modular backend services and REST APIs with automated tests, following production SDLC practices.',
+      'Developed modular backend services and REST APIs with automated CI testing, following production SDLC practices.',
     ],
+    stack: ['Python', 'REST APIs', 'Text classification', 'Jira', 'ServiceNow', 'CI testing'],
   },
   {
     role: 'Machine Learning Intern',
     org: 'Technex, IIT (BHU) Varanasi',
-    period: 'Sep 2025 – Dec 2025',
+    start: '2025-09',
+    end: '2025-12',
     location: 'Remote',
+    domain: 'Applied ML',
+    impact: [
+      { value: '+18%', label: 'F1-score on 50K+ records' },
+      { value: '88%', label: 'cross-validated accuracy' },
+    ],
     bullets: [
       'Raised F1-score by 18% on 50,000+ records through PyTorch and scikit-learn tuning with 5-fold cross-validation.',
       'Trained 5 ML models to 88% cross-validated accuracy, guarded by automated regression test suites.',
     ],
+    stack: ['PyTorch', 'scikit-learn', 'Cross-validation', 'Hyperparameter tuning', 'Regression tests'],
   },
   {
     role: 'AI & ML Engineer Intern (promoted)',
     org: 'Labmentix',
-    period: 'Jul 2025 – Sep 2025',
+    start: '2025-07',
+    end: '2025-09',
     location: 'Remote',
+    domain: 'LLM Inference & RAG',
+    impact: [
+      { value: '−36%', label: 'LLM latency (2.5 s → 1.6 s)' },
+      { value: '60% faster', label: 'log diagnostics' },
+    ],
     bullets: [
       'Cut LLM inference latency by 36% (2.5 s → 1.6 s) with INT8 quantization and prompt caching, benchmarked before and after.',
       'Delivered a FastAPI log-analysis service using SSE-streaming multi-agent RAG, making diagnostics 60% faster.',
+      'Built end-to-end ML models, feature engineering pipelines and automated inference workflows.',
     ],
+    stack: ['Python', 'INT8 quantization', 'Prompt caching', 'FastAPI', 'SSE streaming', 'Multi-agent RAG'],
   },
   {
     role: 'Data Science Intern',
     org: 'Skill Intern',
-    period: 'Oct 2024 – Dec 2024',
+    start: '2024-10',
+    end: '2024-12',
     location: 'Remote',
+    domain: 'Experimentation & Analytics',
+    impact: [],
     bullets: [
       'Built AeroTest, an A/B testing tool with power-based sample sizing, two-proportion z-tests, sample-ratio-mismatch checks and ROI projection.',
       'Built ChurnIntel, an explainable churn-risk demo with per-feature contributions and a retention-campaign ROI simulator.',
     ],
+    stack: ['Python', 'SciPy', 'statsmodels', 'JavaScript', 'Chart.js'],
   },
 ];
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function parseMonth(value: string): { year: number; month: number } {
+  const [year, month] = value.split('-').map(Number);
+  return { year: year ?? 0, month: (month ?? 1) - 1 };
+}
+
+/** "Jul 2026 – Present", "Jun 2026" or "Feb 2026 – May 2026". */
+export function formatPeriod(role: Pick<Role, 'start' | 'end'>): string {
+  const label = (v: string) => {
+    const { year, month } = parseMonth(v);
+    return `${MONTHS[month]} ${year}`;
+  };
+  if (!role.end) return `${label(role.start)} – Present`;
+  return role.start === role.end ? label(role.start) : `${label(role.start)} – ${label(role.end)}`;
+}
+
+/** Inclusive length of a role in months, e.g. "4 mos"; current roles count up to `now`. */
+export function formatTenure(role: Pick<Role, 'start' | 'end'>, now: Date = new Date()): string {
+  const start = parseMonth(role.start);
+  const end = role.end ? parseMonth(role.end) : { year: now.getFullYear(), month: now.getMonth() };
+  const months = Math.max(1, (end.year - start.year) * 12 + (end.month - start.month) + 1);
+  if (months < 12) return `${months} mo${months === 1 ? '' : 's'}`;
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  return `${years} yr${years === 1 ? '' : 's'}${rest ? ` ${rest} mo${rest === 1 ? '' : 's'}` : ''}`;
+}
 export const skills: SkillGroup[] = [
   {
     group: 'Languages',

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { STATUS_LABEL, TRACKS, moreProjects, showcase } from '../data/projects.ts';
+import { INITIAL_VISIBLE, STATUS_LABEL, TRACKS, moreProjects, showcase } from '../data/projects.ts';
 import type { Track } from '../data/types.ts';
 import { ArchitectureDialog } from './ArchitectureDialog.tsx';
 import { ProjectCard } from './ProjectCard.tsx';
@@ -20,13 +20,16 @@ function projectFromHash(): string | null {
 
 export function Projects() {
   const [filter, setFilter] = useState<Filter>('all');
+  const [expanded, setExpanded] = useState(false);
   const [openId, setOpenId] = useState<string | null>(projectFromHash);
   const trigger = useRef<HTMLElement | null>(null);
 
-  const visible = useMemo(
+  const matching = useMemo(
     () => (filter === 'all' ? showcase : showcase.filter((p) => p.tracks.includes(filter))),
     [filter],
   );
+  const visible = expanded ? matching : matching.slice(0, INITIAL_VISIBLE);
+  const hidden = matching.length - INITIAL_VISIBLE;
   const openProject = showcase.find((p) => p.id === openId) ?? null;
 
   useEffect(() => {
@@ -65,7 +68,10 @@ export function Projects() {
               type="button"
               className="filter-btn"
               aria-pressed={filter === t.id}
-              onClick={() => setFilter(t.id)}
+              onClick={() => {
+                setFilter(t.id);
+                setExpanded(false);
+              }}
             >
               {t.label}
               <span className="filter-count mono">{count}</span>
@@ -74,14 +80,28 @@ export function Projects() {
         })}
       </div>
       <p className="sr-only" aria-live="polite">
-        Showing {visible.length} projects
+        Showing {visible.length} of {matching.length} projects
       </p>
 
-      <div className="project-grid">
+      <div className="project-grid" id="project-grid">
         {visible.map((p) => (
           <ProjectCard key={p.id} project={p} onOpen={open} />
         ))}
       </div>
+
+      {hidden > 0 && (
+        <div className="show-more">
+          <button
+            type="button"
+            className="btn btn-ghost"
+            aria-expanded={expanded}
+            aria-controls="project-grid"
+            onClick={() => setExpanded((v) => !v)}
+          >
+            {expanded ? 'Show fewer projects' : `Show all ${matching.length} projects`}
+          </button>
+        </div>
+      )}
 
       <details className="more-repos glass">
         <summary>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TRACKS, catalogue, moreProjects, showcase } from '../src/data/projects.ts';
-import { experience, githubUser, impactMetrics, profile, skills } from '../src/data/profile.ts';
+import { experience, formatPeriod, formatTenure, githubUser, impactMetrics, profile, skills } from '../src/data/profile.ts';
 
 const GITHUB_PREFIX = `https://github.com/${githubUser}/`;
 
@@ -85,6 +85,31 @@ describe('profile', () => {
   it('lists experience with at least one outcome per role', () => {
     expect(experience.length).toBeGreaterThan(0);
     for (const role of experience) expect(role.bullets.length, role.org).toBeGreaterThan(0);
+  });
+
+  it('marks exactly one current role, without an end date', () => {
+    const current = experience.filter((r) => r.current);
+    expect(current).toHaveLength(1);
+    expect(current[0]?.end).toBeUndefined();
+  });
+
+  it('gives every role a domain, a tech stack and valid YYYY-MM dates', () => {
+    for (const role of experience) {
+      expect(role.domain, role.org).not.toBe('');
+      expect(role.stack.length, role.org).toBeGreaterThan(0);
+      for (const d of [role.start, role.end].filter(Boolean)) expect(d, role.org).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
+      if (role.end) expect(role.end >= role.start, role.org).toBe(true);
+    }
+  });
+
+  it('formats periods and tenure', () => {
+    expect(formatPeriod({ start: '2026-02', end: '2026-05' })).toBe('Feb 2026 – May 2026');
+    expect(formatPeriod({ start: '2026-06', end: '2026-06' })).toBe('Jun 2026');
+    expect(formatPeriod({ start: '2026-07' })).toBe('Jul 2026 – Present');
+    expect(formatTenure({ start: '2026-02', end: '2026-05' })).toBe('4 mos');
+    expect(formatTenure({ start: '2026-06', end: '2026-06' })).toBe('1 mo');
+    expect(formatTenure({ start: '2025-01', end: '2026-03' })).toBe('1 yr 3 mos');
+    expect(formatTenure({ start: '2026-07' }, new Date(2026, 10, 18))).toBe('5 mos');
   });
 
   it('has no duplicate skills within a group', () => {
