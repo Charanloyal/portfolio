@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found · B. Charan Kumar Reddy</title>
+    <script>
+      // GitHub Pages serves this file for unknown paths under /portfolio/.
+      // Map routes from the previous server-rendered site onto the static build.
+      (function () {
+        var base = '/portfolio/';
+        var path = location.pathname.replace(/^\/portfolio\/?/, '');
+        var project = path.match(/^projects\/([\w-]+)\/?$/);
+        var target = null;
+        if (project) target = base + '#projects/' + project[1];
+        else if (/^ab-testing\/?/.test(path)) target = base + 'demos/ab-testing/';
+        else if (/^fraud-detector\/?/.test(path)) target = base + 'demos/fraud-detector/';
+        if (target) location.replace(target);
+      })();
+    </script>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #06080f;
+        color: #e6e9f2;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        text-align: center;
+      }
+      code {
+        color: #67e8f9;
+      }
+      a {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: linear-gradient(120deg, #67e8f9, #818cf8);
+        color: #050816;
+        font-weight: 600;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><code>404</code></p>
+      <h1>This page doesn't exist.</h1>
+      <a href="/portfolio/">Back to the portfolio</a>
+    </main>
+  </body>
+</html>
