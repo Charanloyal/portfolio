@@ -1,16 +1,16 @@
 # B. Charan Kumar Reddy · Engineering Portfolio
 
-Software & AI/ML Engineer | Distributed Systems, LLM Architecture & Data Pipelines.
+Distributed Systems & AI Infrastructure Engineer (SDE / FDE / AI-Infra).
 
 **Live site:** https://charan-reddy-dev.github.io/portfolio/
 
-A static React + TypeScript site built with Vite and deployed to GitHub Pages by GitHub Actions. It is aimed at engineering screens for SWE / SDE, AI/ML and data engineering roles: an impact summary, an experience timeline, a role-filtered project showcase with architecture write-ups, a skills matrix, achievements and contact.
+A static React + TypeScript site built with Vite and deployed to GitHub Pages by GitHub Actions. It is aimed at engineering screens for SDE-I / SWE-I, Forward Deployed Engineer, AI/ML and data engineering roles at product companies and GCCs: an impact summary, an experience timeline, a role-filtered project showcase with architecture write-ups, a skills matrix, achievements and contact.
 
 ## What's on the site
 
 - **Hero:** availability badge, primary actions (Explore Architecture, View GitHub, Contact Me) and a copy-email button with toast feedback.
 - **Impact bar:** headline numbers, each with its source.
-- **Experience timeline:** six internships with measured outcomes, plus education.
+- **Experience timeline:** a glowing rail with a pulsing node for the current role, and two-column cards per internship: company, location, period, computed tenure and domain on the left; role, an impact strip of measured outcomes, engineering bullets and a tech-stack footer on the right. Roles are data in `src/data/profile.ts` (`start`/`end` as `YYYY-MM`).
 - **Project showcase:** filter tabs for *All*, *AI & Agents*, *Distributed Systems / SDE* and *Data & ML*. Each card follows problem → architecture → impact and opens an accessible **Architecture & system design** dialog with the data flow, key trade-offs, benchmarks (with the committed evidence file for each number), testing and known limitations. Dialogs are deep-linkable: `#projects/<id>`, for example [`#projects/lakeflow`](https://charan-reddy-dev.github.io/portfolio/#projects/lakeflow).
 - **Skills matrix, achievements, certifications and contact.**
 - Two in-browser demos served from this repo: the AeroTest A/B testing calculator (`/portfolio/demos/ab-testing/`) and a fraud-monitoring simulation on synthetic data (`/portfolio/demos/fraud-detector/`).
@@ -30,7 +30,7 @@ src/
     projects.ts            Showcase selection and order, role tracks, path helpers
     profile.ts             Identity, impact metrics, experience, skills, hackathons, certifications
     types.ts               Content types
-  styles/global.css        Design tokens and all styles (dark glassmorphism, responsive, reduced motion)
+  styles/global.css        Design tokens (Midnight Obsidian base, Electric Cyan / Emerald / Indigo accents) and all styles
 public/                    Copied as-is: avatar, favicon, og-image.png, project screenshots, demos, 404.html
 tests/content.test.ts      Content integrity tests (Vitest)
 .github/workflows/         deploy.yml (Pages) and ci.yml (pull requests)

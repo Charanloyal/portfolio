@@ -993,22 +993,23 @@
     },
     {
       "id": "full-stack-integration",
-      "title": "Collaborative Workspace Board",
+      "title": "Full-Stack Integration: Task & Chat Board",
       "repo": "Full-Stack-Integration",
       "github_url": "https://github.com/charan-reddy-dev/Full-Stack-Integration",
-      "summary": "Real-time Kanban board with team chat: Express and Socket.io backend, Prisma with SQLite for tasks, MongoDB for chat, Redis caching, and a React frontend using Zustand and TanStack Query. Built during an IIT Madras summer internship curriculum.",
+      "summary": "Collaborative task board and team chat built during the IIT Madras full-stack internship: a TypeScript monorepo with an Express REST and WebSocket server, React with Zustand and TanStack Query, Redis caching with an in-memory fallback, Docker images and CI.",
       "category": "backend",
       "secondary_categories": [],
       "tech": [
         "TypeScript",
         "React",
         "Express",
-        "Socket.io",
-        "Zustand",
+        "WebSockets",
         "TanStack Query",
+        "Zustand",
+        "Redis",
         "Prisma",
-        "SQLite",
-        "MongoDB"
+        "Docker",
+        "GitHub Actions"
       ],
       "status": "complete",
       "synthetic_data": false,
@@ -1021,7 +1022,54 @@
       "metrics": [],
       "image": null,
       "image_alt": null,
-      "case_study": null
+      "case_study": {
+        "problem": "Collaborative tools fail in visible ways: stale task lists after another user edits, chat that stops when a backing service restarts, and environments that work on one laptop only.",
+        "architecture": [
+          {
+            "label": "React client",
+            "detail": "Kanban board, chat window and analytics dashboard in TypeScript; TanStack Query owns server state and invalidates task queries on every mutation, and Zustand holds UI filters."
+          },
+          {
+            "label": "Express REST and WebSocket server",
+            "detail": "TypeScript controllers for tasks, auth, chat and admin, with auth guards, upload limits and validators as middleware."
+          },
+          {
+            "label": "Cache layer",
+            "detail": "redisService caches task listings and clears keys on any mutation; an in-memory Map takes over when Redis is unreachable."
+          },
+          {
+            "label": "Persistence",
+            "detail": "Prisma with SQLite for tasks and users; Mongoose for chat and audit trails with an automatic JSON-file fallback when MongoDB is offline."
+          },
+          {
+            "label": "Delivery",
+            "detail": "Multi-stage Dockerfiles for the API and the Nginx-served client, docker-compose with MongoDB and Redis, and a GitHub Actions pipeline."
+          }
+        ],
+        "decisions": [
+          "Invalidates query caches on every mutation instead of patching client state by hand, trading extra refetches for consistency.",
+          "Degrades to in-memory caching and file-based writes rather than failing requests when Redis or MongoDB is down.",
+          "Migrated the whole codebase to strict TypeScript so API contracts are checked at compile time on both sides."
+        ],
+        "testing": [
+          "GitHub Actions runs tests, type checks and builds for backend and frontend on every branch push."
+        ],
+        "results": [
+          "Deployed with live chat, subtasks, role-based admin audit logs and Recharts analytics for status, priority and workload."
+        ],
+        "limitations": [
+          "Built as an internship curriculum project; no load or latency measurements are published.",
+          "The file-based fallback is single-instance and is not reconciled back into MongoDB."
+        ]
+      },
+      "brief": {
+        "problem": "A team board with live chat has to keep task state consistent across users, stay usable when its cache or database is down, and ship as reproducible containers.",
+        "approach": "A TypeScript monorepo pairs an Express REST and WebSocket server with a React client using TanStack Query cache invalidation and a Zustand UI store, adds Redis caching with an in-memory fallback, and packages both sides as multi-stage Docker images tested in CI.",
+        "outcomes": [
+          "Chat and audit writes fall back to local JSON files when MongoDB is offline, so the app keeps working without its database.",
+          "CI type-checks, builds and tests both packages on every push."
+        ]
+      }
     },
     {
       "id": "agentcodex",
@@ -1078,22 +1126,66 @@
       "metrics": [],
       "image": null,
       "image_alt": null,
-      "case_study": null
+      "case_study": {
+        "problem": "Loan recovery teams have limited capacity, so borrowers need to be grouped and prioritised. This project explores segmentation and risk scoring on generated data; it does not have real repayment outcomes.",
+        "architecture": [
+          {
+            "label": "Synthetic data",
+            "detail": "src/generate_sample_data.py creates 1,000 borrower records with a fixed seed."
+          },
+          {
+            "label": "Segmentation",
+            "detail": "K-Means (k = 4) on 10 standardised numeric features."
+          },
+          {
+            "label": "Risk scoring",
+            "detail": "A random forest trained on an 80/20 stratified split predicts the high-risk flag (clusters 0 and 3) and outputs a 0 to 1 score."
+          },
+          {
+            "label": "Strategy mapping",
+            "detail": "Fixed thresholds on the score (0.50 and 0.75) assign each borrower a recovery strategy."
+          }
+        ],
+        "decisions": [
+          "Documents openly that the classifier re-learns the clustering, and that its 0.94 accuracy is not a default-prediction metric.",
+          "Keeps the pipeline reproducible with fixed seeds for data generation, clustering and the split."
+        ],
+        "testing": [
+          "No automated tests or cross-validation."
+        ],
+        "results": [
+          "Reproducible segmentation, scoring and strategy assignment with EDA and visualisations."
+        ],
+        "limitations": [
+          "Circular target: the model predicts cluster membership, not default or write-off.",
+          "Synthetic data, hard-coded segment names and unvalidated strategy thresholds."
+        ]
+      },
+      "brief": {
+        "problem": "Collection teams need to decide which borrowers to contact first and with which strategy.",
+        "approach": "K-Means segments 1,000 synthetic borrowers into 4 groups on 10 standardised features, a random forest scores membership of the two higher-risk segments, and fixed score thresholds map borrowers to recovery strategies.",
+        "outcomes": [
+          "Segment-to-strategy pipeline with EDA, Plotly visualisations and a step-by-step notebook.",
+          "The README documents that the risk label is cluster membership, not observed default, and what an outcome-based model would need."
+        ]
+      }
     },
     {
       "id": "multi-agent-llm-orchestration",
       "title": "Multi-Agent LLM Orchestration",
       "repo": "Multi-Agent-LLM-Orchestration",
       "github_url": "https://github.com/charan-reddy-dev/Multi-Agent-LLM-Orchestration",
-      "summary": "Early design for an Anthropic-based multi-agent pipeline (task decomposition, retrieval, synthesis, critique, token budgeting and an evaluation harness) behind a FastAPI entry point. Incomplete: some imported modules are not in the repo.",
+      "summary": "Containerized multi-agent system where an LLM-driven orchestrator routes work between decomposition, multi-hop retrieval, per-claim critique, synthesis and compression agents through a shared context, with typed tool failure contracts, token budgets and a self-improving evaluation loop gated by human approval.",
       "category": "ai-ml",
       "secondary_categories": [],
       "tech": [
         "Python",
         "FastAPI",
         "Anthropic API",
+        "SSE",
         "SQLite",
-        "Docker"
+        "tiktoken",
+        "Docker Compose"
       ],
       "status": "experimental",
       "synthetic_data": false,
@@ -1106,7 +1198,62 @@
       "metrics": [],
       "image": null,
       "image_alt": null,
-      "case_study": null
+      "case_study": {
+        "problem": "A research-style query may be ambiguous, need several retrieval hops, or contain a prompt injection or a false premise. A static chain of agents cannot adapt its route, a long run overflows the context window, and tool failures are easy to swallow. Prompt changes also need a way to be evaluated and approved before they ship.",
+        "architecture": [
+          {
+            "label": "FastAPI and SSE",
+            "detail": "POST /query streams agent activity in real time; traces, evaluation results and rewrite approvals have their own endpoints, and errors carry machine-readable codes."
+          },
+          {
+            "label": "Master orchestrator",
+            "detail": "Uses the LLM to pick the next agent from the pipeline state, never skips critique before synthesis, compresses before an agent nears its budget and stops after 8 routing steps."
+          },
+          {
+            "label": "Decomposition and retrieval",
+            "detail": "Ambiguous queries become typed sub-tasks with explicit dependencies; retrieval needs at least two chunk citations per answer and records which chunk supported each hop."
+          },
+          {
+            "label": "Critique and synthesis",
+            "detail": "Critique scores each claim (0 to 1) rather than whole outputs; synthesis resolves flagged contradictions and links every sentence to its source agent and chunk."
+          },
+          {
+            "label": "Tools with failure contracts",
+            "detail": "web_search, code_executor, data_lookup and self_reflection return typed timeout, empty and malformed results, with up to 2 retries on modified input and full call logging."
+          },
+          {
+            "label": "Evaluation and meta-agent",
+            "detail": "A harness scores 15 cases on 6 dimensions; a meta-agent proposes one rewrite for the worst prompt, stored as pending until a human approves it, then re-runs only failed cases."
+          }
+        ],
+        "decisions": [
+          "Routes with the LLM instead of a fixed chain so the path adapts to the query, accepting an extra model call of latency per step and capping the route at 8 steps.",
+          "Puts failure handling in code through typed tool contracts rather than in prompts, so timeouts, empty results and malformed output each take a defined path.",
+          "Triggers lossless compression of structured data (JSON, scores, IDs) at 85% of an agent budget and records violations instead of dropping them.",
+          "Never auto-applies a prompt rewrite: the meta-agent proposes, a human approves, and only previously failed cases are re-evaluated.",
+          "Builds the scoring dimensions from scratch so every score comes with a justification string."
+        ],
+        "testing": [
+          "Evaluation harness with 5 straightforward, 5 ambiguous and 5 adversarial cases (prompt injection, false premises, forced contradictions).",
+          "Scoring dimensions: answer correctness, citation accuracy, contradiction resolution, tool efficiency, budget compliance and critique agreement."
+        ],
+        "results": [
+          "Runs end to end with docker compose up and one API key; API docs, an SSE activity stream and a log interface are included."
+        ],
+        "limitations": [
+          "Retrieval uses word-overlap scoring rather than vector embeddings, web_search is a mock and NL-to-SQL is a lookup table.",
+          "Evaluation scores are keyword-based heuristics, so paraphrased correct answers can score as wrong.",
+          "The API has no authentication, and LLM routing adds a model call of latency to every step."
+        ]
+      },
+      "brief": {
+        "problem": "Fixed agent chains break on ambiguous or adversarial queries, overrun context windows, fail silently when a tool times out, and give no way to improve prompts safely.",
+        "approach": "An orchestrator asks the LLM which agent runs next under hard decision boundaries; agents share a schema-defined context, tools return typed failure contracts with bounded retries, a budget manager triggers compression at 85% of each token budget, and a meta-agent proposes prompt rewrites that a human must approve.",
+        "outcomes": [
+          "Evaluation harness of 15 cases (straightforward, ambiguous, adversarial) scored on 6 dimensions, each returning a score and a written justification.",
+          "Every routing decision, tool call (latency, retries, errors) and policy violation is traced and queryable per job."
+        ]
+      }
     },
     {
       "id": "realtime-fraud-detector",

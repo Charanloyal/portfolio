@@ -3,11 +3,11 @@ import { useCopy } from '../hooks/useToast.ts';
 import { ArrowRightIcon, CopyIcon, GitHubIcon, MailIcon, PinIcon } from './Icons.tsx';
 
 const WHOAMI: [string, string][] = [
-  ['role', 'Software & AI/ML Engineer'],
+  ['role', 'Distributed Systems & AI-Infra Engineer'],
   ['now', 'AI/ML Intern @ General Motors'],
   ['edu', 'B.Tech ECE (Data Science), SRM IST · 2027'],
   ['stack', 'Python · FastAPI · Kafka · Redis · LangGraph'],
-  ['focus', 'Consensus · CDC lakehouses · LLM infra'],
+  ['target', 'SDE-I · SWE-I · FDE · AI/ML · Data'],
 ];
 
 export function Hero() {
@@ -25,7 +25,7 @@ export function Hero() {
           <span className="hero-name">{profile.name}</span>
           <span className="hero-role">
             {profile.headline}
-            <span className="hero-focus"> | {profile.focus}</span>
+            <span className="hero-focus">{profile.focus}</span>
           </span>
         </h1>
 
