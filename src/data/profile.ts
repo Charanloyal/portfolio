@@ -25,6 +25,9 @@ export interface Hackathon {
   result?: string;
 }
 
+export const githubUser = __GITHUB_USER__;
+export const githubUrl = `https://github.com/${githubUser}`;
+
 export const profile = {
   name: 'B. Charan Kumar Reddy',
   shortName: 'Charan',
@@ -36,12 +39,12 @@ export const profile = {
   targetRoles: ['Software Engineering (SWE / SDE)', 'AI / ML Engineering', 'Data Engineering'],
   location: 'Bengaluru, India',
   mobility: 'Open to relocation & remote',
-  siteUrl: 'https://charanloyal.github.io/portfolio/',
+  siteUrl: `https://${githubUser}.github.io/portfolio/`,
   email: 'charan.workmaill@gmail.com',
   secondaryEmail: 'charankumarreddy2028@gmail.com',
   resumeUrl: 'https://drive.google.com/file/d/1WdwS-cfhYwjDMigkE3VQWP5TRUIQqMt5/view',
   links: {
-    github: 'https://github.com/Charanloyal',
+    github: githubUrl,
     linkedin: 'https://www.linkedin.com/in/b-charan-kumar-reddy',
     leetcode: 'https://leetcode.com/u/charan_red/',
   },

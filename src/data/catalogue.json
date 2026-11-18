@@ -5,7 +5,7 @@
       "id": "lakeflow",
       "title": "LakeFlow",
       "repo": "lakeflow",
-      "github_url": "https://github.com/Charanloyal/lakeflow",
+      "github_url": "https://github.com/charan-reddy-dev/lakeflow",
       "summary": "CDC pipeline from PostgreSQL through Debezium, Kafka and Spark Structured Streaming into Iceberg, with LSN-guarded idempotent merges, a DLQ, a FastAPI and Next.js control plane, and CI that runs the full stack.",
       "category": "data-engineering",
       "secondary_categories": [
@@ -106,7 +106,7 @@
       "id": "featurehub-dataguard",
       "title": "FeatureHub + DataGuard",
       "repo": "featurehub-dataguard",
-      "github_url": "https://github.com/Charanloyal/featurehub-dataguard",
+      "github_url": "https://github.com/charan-reddy-dev/featurehub-dataguard",
       "summary": "Feature store plus data-reliability layer: contracts, schema diffing and Great Expectations gates run before features reach Redis, with point-in-time training joins and incident tracking. Synthetic data.",
       "category": "data-engineering",
       "secondary_categories": [
@@ -219,7 +219,7 @@
       "id": "vehicle-telemetry-anomaly-detection",
       "title": "Vehicle Telemetry Anomaly Detection",
       "repo": "Real-Time-Vehicle-Telemetry-Anomaly-Detection-Edge-ML-Optimization",
-      "github_url": "https://github.com/Charanloyal/Real-Time-Vehicle-Telemetry-Anomaly-Detection-Edge-ML-Optimization",
+      "github_url": "https://github.com/charan-reddy-dev/Real-Time-Vehicle-Telemetry-Anomaly-Detection-Edge-ML-Optimization",
       "summary": "Anomaly detection on synthetic vehicle telemetry: point and per-vehicle window models, ONNX export, PySpark or pandas micro-batch streaming with carried state, and FastAPI serving.",
       "category": "ai-ml",
       "secondary_categories": [
@@ -332,7 +332,7 @@
       "id": "ticketlens",
       "title": "TicketLens",
       "repo": "ticketlens",
-      "github_url": "https://github.com/Charanloyal/ticketlens",
+      "github_url": "https://github.com/charan-reddy-dev/ticketlens",
       "summary": "ITIL ticket classifier comparing TF-IDF + Logistic Regression, a Keras CNN and DistilBERT + LoRA on one held-out set; serves the TF-IDF model via FastAPI with PII scrubbing and confidence-gated routing.",
       "category": "ai-ml",
       "secondary_categories": [
@@ -442,7 +442,7 @@
       "id": "drivedocs",
       "title": "DriveDocs AI",
       "repo": "drivedocs",
-      "github_url": "https://github.com/Charanloyal/drivedocs",
+      "github_url": "https://github.com/charan-reddy-dev/drivedocs",
       "summary": "Multimodal RAG assistant over a fictional car manual: MiniLM and CLIP embeddings in FAISS, a LangChain tool-calling agent, verified citations, and prompt-injection and PII guardrails.",
       "category": "ai-ml",
       "secondary_categories": [
@@ -553,7 +553,7 @@
       "id": "raftkv",
       "title": "RaftKV",
       "repo": "raftkv",
-      "github_url": "https://github.com/Charanloyal/raftkv",
+      "github_url": "https://github.com/charan-reddy-dev/raftkv",
       "summary": "Raft-based replicated key-value store in Python: leader election and log replication over gRPC, a SQLite-backed log, snapshot compaction with InstallSnapshot, client leader redirect, and a 5-node Docker Compose cluster.",
       "category": "backend",
       "secondary_categories": [
@@ -644,7 +644,7 @@
       "id": "neural-gateway",
       "title": "NeuralGateway",
       "repo": "neural-gateway",
-      "github_url": "https://github.com/Charanloyal/neural-gateway",
+      "github_url": "https://github.com/charan-reddy-dev/neural-gateway",
       "summary": "LLM gateway prototype in FastAPI with a Redis Lua token-bucket rate limiter, an embedding-similarity response cache, EWMA latency routing, circuit breakers and Kafka audit events. Providers are mocked by default.",
       "category": "backend",
       "secondary_categories": [
@@ -740,7 +740,7 @@
       "id": "agent-orchestration-system",
       "title": "Agent Orchestration System",
       "repo": "Agent-Orchestration-System-",
-      "github_url": "https://github.com/Charanloyal/Agent-Orchestration-System-",
+      "github_url": "https://github.com/charan-reddy-dev/Agent-Orchestration-System-",
       "summary": "Research-report workflow where planner, researcher, writer and reviewer agents run on LangGraph behind human approval gates, with PostgreSQL-leased workers, OIDC auth and a React UI. Agents use deterministic fakes unless an LLM is configured.",
       "category": "ai-ml",
       "secondary_categories": [
@@ -830,7 +830,7 @@
       "id": "agent-forge",
       "title": "AgentForge",
       "repo": "agent-forge",
-      "github_url": "https://github.com/Charanloyal/agent-forge",
+      "github_url": "https://github.com/charan-reddy-dev/agent-forge",
       "summary": "LangGraph RAG pipeline: BM25 and Qdrant hybrid search fused with reciprocal rank fusion, cross-encoder reranking, cited answers and a groundedness check that loops back to retrieval. Answers are extractive; no LLM is called.",
       "category": "ai-ml",
       "secondary_categories": [
@@ -912,45 +912,10 @@
       }
     },
     {
-      "id": "txn-pipeline",
-      "title": "txn-pipeline",
-      "repo": "txn-pipeline",
-      "github_url": "https://github.com/Charanloyal/txn-pipeline",
-      "summary": "Asynchronous CSV transaction processing: FastAPI queues jobs to Celery over Redis, workers clean the data, flag anomalies with rules, categorize with Gemini and store results in PostgreSQL. Built as a backend internship take-home assignment.",
-      "category": "backend",
-      "secondary_categories": [
-        "data-engineering",
-        "ai-ml"
-      ],
-      "tech": [
-        "Python",
-        "FastAPI",
-        "Celery",
-        "Redis",
-        "PostgreSQL",
-        "SQLAlchemy",
-        "Alembic",
-        "Google Gemini API",
-        "Pandas"
-      ],
-      "status": "complete",
-      "synthetic_data": false,
-      "featured_rank": null,
-      "demo_url": null,
-      "demo_kind": null,
-      "demo_note": null,
-      "docs_url": null,
-      "updated": "2026-06-29",
-      "metrics": [],
-      "image": null,
-      "image_alt": null,
-      "case_study": null
-    },
-    {
       "id": "octoscale-url-shortener",
       "title": "OctoScale",
       "repo": "Octoscale-URL-Shortener",
-      "github_url": "https://github.com/Charanloyal/Octoscale-URL-Shortener",
+      "github_url": "https://github.com/charan-reddy-dev/Octoscale-URL-Shortener",
       "summary": "URL shortener on FastAPI with Redis INCR and Base62 short codes, a PostgreSQL fallback, cached redirects, sliding-window rate limiting on Redis sorted sets and background click analytics.",
       "category": "backend",
       "secondary_categories": [],
@@ -1030,7 +995,7 @@
       "id": "full-stack-integration",
       "title": "Collaborative Workspace Board",
       "repo": "Full-Stack-Integration",
-      "github_url": "https://github.com/Charanloyal/Full-Stack-Integration",
+      "github_url": "https://github.com/charan-reddy-dev/Full-Stack-Integration",
       "summary": "Real-time Kanban board with team chat: Express and Socket.io backend, Prisma with SQLite for tasks, MongoDB for chat, Redis caching, and a React frontend using Zustand and TanStack Query. Built during an IIT Madras summer internship curriculum.",
       "category": "backend",
       "secondary_categories": [],
@@ -1062,7 +1027,7 @@
       "id": "agentcodex",
       "title": "AgentCodex",
       "repo": "Multi-agent-llm-code-generator",
-      "github_url": "https://github.com/Charanloyal/Multi-agent-llm-code-generator",
+      "github_url": "https://github.com/charan-reddy-dev/Multi-agent-llm-code-generator",
       "summary": "Prototype interface for a synthesis-and-critique coding agent: FastAPI streams agent steps over Server-Sent Events and returns code from keyword-matched templates with an in-memory cache. The agent steps are simulated; no LLM is called.",
       "category": "ai-ml",
       "secondary_categories": [
@@ -1091,7 +1056,7 @@
       "id": "smart-loan-recovery",
       "title": "Smart Loan Recovery",
       "repo": "Smart-Loan-Recovery-System-with-Machine-Learning-",
-      "github_url": "https://github.com/Charanloyal/Smart-Loan-Recovery-System-with-Machine-Learning-",
+      "github_url": "https://github.com/charan-reddy-dev/Smart-Loan-Recovery-System-with-Machine-Learning-",
       "summary": "Generates 1,000 synthetic loan records, segments borrowers with K-Means and trains a Random Forest to flag high-risk borrowers and suggest a recovery strategy for each segment.",
       "category": "data-science",
       "secondary_categories": [],
@@ -1119,7 +1084,7 @@
       "id": "multi-agent-llm-orchestration",
       "title": "Multi-Agent LLM Orchestration",
       "repo": "Multi-Agent-LLM-Orchestration",
-      "github_url": "https://github.com/Charanloyal/Multi-Agent-LLM-Orchestration",
+      "github_url": "https://github.com/charan-reddy-dev/Multi-Agent-LLM-Orchestration",
       "summary": "Early design for an Anthropic-based multi-agent pipeline (task decomposition, retrieval, synthesis, critique, token budgeting and an evaluation harness) behind a FastAPI entry point. Incomplete: some imported modules are not in the repo.",
       "category": "ai-ml",
       "secondary_categories": [],
@@ -1147,7 +1112,7 @@
       "id": "realtime-fraud-detector",
       "title": "SentinelShield Fraud Monitor",
       "repo": "Data-Science-Projects",
-      "github_url": "https://github.com/Charanloyal/Data-Science-Projects/tree/main/realtime-fraud-detector",
+      "github_url": "https://github.com/charan-reddy-dev/Data-Science-Projects/tree/main/realtime-fraud-detector",
       "summary": "Browser dashboard that simulates a card-transaction stream with an Isolation-Forest-style anomaly score and a drift chart, plus a notebook exploring Isolation Forest, SMOTE and KS drift tests on synthetic data.",
       "category": "data-science",
       "secondary_categories": [
@@ -1178,7 +1143,7 @@
       "id": "ab-testing-platform",
       "title": "AeroTest A/B Testing Calculator",
       "repo": "Data-Science-Projects",
-      "github_url": "https://github.com/Charanloyal/Data-Science-Projects/tree/main/ab-testing-platform",
+      "github_url": "https://github.com/charan-reddy-dev/Data-Science-Projects/tree/main/ab-testing-platform",
       "summary": "Browser tool for planning and reading A/B tests: sample-size calculation, two-proportion z-test, sample-ratio-mismatch check and ROI projection, plus a notebook working through the same statistics in SciPy and statsmodels.",
       "category": "data-science",
       "secondary_categories": [],
@@ -1254,7 +1219,7 @@
       "id": "churn-predictive-agent",
       "title": "ChurnIntel",
       "repo": "Data-Science-Projects",
-      "github_url": "https://github.com/Charanloyal/Data-Science-Projects/tree/main/churn-predictive-agent",
+      "github_url": "https://github.com/charan-reddy-dev/Data-Science-Projects/tree/main/churn-predictive-agent",
       "summary": "Browser demo that scores customer churn risk with a fixed logistic formula, answers keyword-matched questions over 100 in-memory customer records and estimates retention-campaign ROI.",
       "category": "data-science",
       "secondary_categories": [],
@@ -1275,7 +1240,7 @@
         ]
       },
       "featured_rank": null,
-      "demo_url": "https://charanloyal.github.io/Data-Science-Projects/churn-predictive-agent/",
+      "demo_url": "https://charan-reddy-dev.github.io/Data-Science-Projects/churn-predictive-agent/",
       "demo_kind": "browser-simulation",
       "demo_note": null,
       "docs_url": null,
@@ -1328,7 +1293,7 @@
       "id": "loan-approval-application",
       "title": "Loan Approval Prediction",
       "repo": "Loan-approval-Apllication",
-      "github_url": "https://github.com/Charanloyal/Loan-approval-Apllication",
+      "github_url": "https://github.com/charan-reddy-dev/Loan-approval-Apllication",
       "summary": "Small scikit-learn project comparing classifiers, including logistic regression and random forest, for loan approval on a 30-row sample dataset, with helper modules and unit tests.",
       "category": "data-science",
       "secondary_categories": [],
@@ -1355,7 +1320,7 @@
       "id": "binance-futures-testnet-bot",
       "title": "Binance Futures Testnet Bot",
       "repo": "Binance-AI-Trading-Bot-",
-      "github_url": "https://github.com/Charanloyal/Binance-AI-Trading-Bot-",
+      "github_url": "https://github.com/charan-reddy-dev/Binance-AI-Trading-Bot-",
       "summary": "Command-line bot that places market, limit and other order types on the Binance Futures testnet using python-binance, with symbol validation and logging.",
       "category": "other",
       "secondary_categories": [
@@ -1378,6 +1343,215 @@
       "image": null,
       "image_alt": null,
       "case_study": null
+    },
+    {
+      "id": "partsense",
+      "title": "PartSense",
+      "repo": "partsense",
+      "github_url": "https://github.com/charan-reddy-dev/partsense",
+      "summary": "Predictive-maintenance and warranty analytics: an XGBoost failure classifier with a tuned operating threshold, one-vs-rest failure-mode diagnosers, an Isolation Forest anomaly ranker, SHAP explanations and DuckDB warranty KPIs in a Dockerized Streamlit app.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "data-engineering"
+      ],
+      "tech": [
+        "Python",
+        "XGBoost",
+        "scikit-learn",
+        "SHAP",
+        "DuckDB",
+        "Streamlit",
+        "Docker",
+        "pytest"
+      ],
+      "status": "complete",
+      "synthetic_data": true,
+      "brief": {
+        "problem": "Component failures are rare (3.4% of parts), so a model can look accurate while missing most failures, and maintenance teams also need the failure mechanism and the warranty cost, not just a probability.",
+        "approach": "Physics-derived features (spindle power, thermal gradient, cumulative tool strain) feed an XGBoost classifier whose threshold is tuned on out-of-fold predictions for recall at a precision floor, with per-mode diagnosers, an Isolation Forest ranker, SHAP explanations and DuckDB SQL KPIs.",
+        "outcomes": [
+          "Recall of 91.2% (62 of 68 held-out failures) at a 50% precision floor.",
+          "An automated leakage audit aborts training if a failure-mode label or identifier reaches the feature pipeline."
+        ]
+      },
+      "featured_rank": null,
+      "demo_url": "https://partsense.onrender.com",
+      "demo_kind": "live-app",
+      "demo_note": "Free-tier hosting; the first request after idle can take 30 to 60 seconds.",
+      "docs_url": null,
+      "updated": "2026-11-01",
+      "metrics": [
+        {
+          "label": "XGBoost PR-AUC vs logistic baseline (3.4% positives)",
+          "value": "0.888 vs 0.430",
+          "evidence": "reports/metrics.json main_xgboost.discrimination.pr_auc (0.8882), baseline_logistic_regression.pr_auc (0.4297); 2,000-part held-out test split"
+        },
+        {
+          "label": "Recall at tuned threshold (precision floor 0.5)",
+          "value": "91.2% (62/68)",
+          "evidence": "reports/metrics.json main_xgboost.tuned_threshold_policy.recall (0.9118), precision (0.5041), threshold 0.3927"
+        },
+        {
+          "label": "ROC-AUC on held-out split",
+          "value": "0.9825",
+          "evidence": "reports/metrics.json main_xgboost.discrimination.roc_auc"
+        }
+      ],
+      "image": null,
+      "image_alt": null,
+      "case_study": {
+        "problem": "In aftersales, failures are rare and expensive. With 3.4% positives, accuracy and even ROC-AUC flatter weak models, so the operating point has to be chosen for recall at an acceptable precision. Teams also need to know which mechanism is failing, see why a part was flagged, and connect predictions to warranty spend.",
+        "architecture": [
+          {
+            "label": "Telemetry and leakage audit",
+            "detail": "UCI AI4I 2020 telemetry (10,000 rows) is schema-checked, and verify_zero_data_leakage() aborts with a DataLeakageError if identifiers or failure-mode labels enter the feature set."
+          },
+          {
+            "label": "Physics feature engineering",
+            "detail": "Spindle power (torque × angular speed), process-air temperature difference, cumulative tool strain (wear × torque) and one-hot product-quality variants."
+          },
+          {
+            "label": "Champion classifier",
+            "detail": "XGBoost with scale_pos_weight for the imbalance; the decision threshold (0.3927) is tuned on out-of-fold training predictions to maximise recall with precision of at least 0.5."
+          },
+          {
+            "label": "Failure-mode diagnosers and anomaly ranker",
+            "detail": "One-vs-rest XGBoost models for heat-dissipation, power, overstrain and tool-wear failures, plus an Isolation Forest fitted on normal parts only for inspection ranking."
+          },
+          {
+            "label": "Explainability and warranty KPIs",
+            "detail": "SHAP TreeExplainer waterfalls per prediction; a seeded synthetic parts, claims and sales layer in DuckDB serves 7 versioned SQL KPI queries."
+          },
+          {
+            "label": "Streamlit app in Docker",
+            "detail": "A multipage app (health monitor, batch scoring, warranty analytics, metrics) loads every number from reports/metrics.json and runs in a non-root, health-checked container."
+          }
+        ],
+        "decisions": [
+          "Reports PR-AUC alongside ROC-AUC because at 3.4% prevalence the logistic baseline's ROC-AUC of 0.94 hides a PR-AUC of 0.43.",
+          "Picks a recall-first operating threshold: recall rises from 89.7% to 91.2% and F1 falls from 0.72 to 0.65, accepting more false alarms because a missed failure costs more than an inspection.",
+          "Marks random electronic-noise failures (4 test cases) as not learnable instead of reporting a misleading score, and reports the weak tool-wear diagnoser (PR-AUC 0.06) as it is.",
+          "Fits the Isolation Forest on normal parts only and reports precision and recall at fixed inspection budgets (top 1% to 20%), which is how a maintenance team would use it.",
+          "Generates warranty tables from a fixed seed instead of using proprietary OEM data, so every KPI is reproducible."
+        ],
+        "testing": [
+          "31 pytest unit and smoke tests, run in CI.",
+          "The leakage audit runs before every training and inference pass."
+        ],
+        "results": [
+          "Held-out test split of 2,000 parts with 68 failures: XGBoost PR-AUC 0.888 vs 0.430 for logistic regression, and recall 91.2% at precision 50.4% with the tuned threshold.",
+          "Heat-dissipation, power and overstrain diagnosers reach test PR-AUC of 0.97 to 1.0."
+        ],
+        "limitations": [
+          "AI4I 2020 is itself a synthetic benchmark dataset, and the warranty layer is generated, so the results do not transfer directly to field data.",
+          "The tool-wear failure diagnoser is weak (test PR-AUC 0.06), and random failures cannot be predicted from these signals."
+        ]
+      }
+    },
+    {
+      "id": "designiq",
+      "title": "DesignIQ",
+      "repo": "DesignIQ-CAD-CAE-design-optimization-with-an-ML-surrogate-and-DFM-checks-",
+      "github_url": "https://github.com/charan-reddy-dev/DesignIQ-CAD-CAE-design-optimization-with-an-ML-surrogate-and-DFM-checks-",
+      "summary": "Parametric CAD and automated FEA of an automotive mounting bracket (FreeCAD, Gmsh, CalculiX) over a Latin hypercube design of experiments, a Gaussian-process surrogate for stress and displacement, rule-based DFM checks and Pareto ranking in a Streamlit explorer.",
+      "category": "ai-ml",
+      "secondary_categories": [
+        "data-engineering"
+      ],
+      "tech": [
+        "Python",
+        "FreeCAD",
+        "Gmsh",
+        "CalculiX",
+        "scikit-learn",
+        "XGBoost",
+        "Streamlit",
+        "Plotly"
+      ],
+      "status": "complete",
+      "synthetic_data": false,
+      "brief": {
+        "problem": "Every finite-element evaluation of a bracket design needs CAD, meshing and a solver pass, so engineers explore few variants and check manufacturability late, after the geometry is fixed.",
+        "approach": "A headless FreeCAD, Gmsh and CalculiX pipeline simulates 121 Latin-hypercube variants; a Gaussian-process surrogate trained on them predicts stress and displacement in milliseconds, and 8 rule-based DFM checks and a weighted Pareto ranking run on every candidate.",
+        "outcomes": [
+          "Gaussian-process stress surrogate: R² 0.994 in 5-fold cross-validation, ahead of XGBoost, random forest and polynomial ridge.",
+          "Heavy CAE runs offline; the deployed app ships only the dataset and trained models."
+        ]
+      },
+      "featured_rank": null,
+      "demo_url": "https://designiq.onrender.com",
+      "demo_kind": "live-app",
+      "demo_note": "Free-tier hosting; the first request after idle can take 30 to 60 seconds.",
+      "docs_url": null,
+      "updated": "2026-10-31",
+      "metrics": [
+        {
+          "label": "Stress surrogate R², 5-fold CV (Gaussian process)",
+          "value": "0.994 ± 0.003",
+          "evidence": "reports/metrics.json stress_surrogate.cv_metrics[\"Gaussian Process\"].r2_mean (0.99376), r2_std (0.00328)"
+        },
+        {
+          "label": "Stress surrogate MAPE vs XGBoost",
+          "value": "4.1% vs 6.1%",
+          "evidence": "reports/metrics.json stress_surrogate.cv_metrics[\"Gaussian Process\"].mape_mean_pct (4.12), [\"XGBoost\"].mape_mean_pct (6.15)"
+        },
+        {
+          "label": "FEA variants in the training set",
+          "value": "121",
+          "evidence": "reports/metrics.json dataset.total_variants; data/fea_results.csv"
+        }
+      ],
+      "image": null,
+      "image_alt": null,
+      "case_study": {
+        "problem": "Finite-element analysis is accurate but slow, so design exploration covers only a handful of variants, and manufacturability problems such as tight bend radii or holes too close to an edge surface late. The goal is to explore the design space interactively while keeping predictions tied to real simulations.",
+        "architecture": [
+          {
+            "label": "Design of experiments",
+            "detail": "Latin hypercube sampling over thickness, width, flange lengths, hole diameter, bend radius and load, defined in configs/design_space.yaml."
+          },
+          {
+            "label": "Headless CAD and meshing",
+            "detail": "FreeCAD builds each L-bracket with constructive solid geometry (fillet and fastener holes); Gmsh meshes it with second-order tetrahedra after a mesh-size study."
+          },
+          {
+            "label": "CalculiX solver",
+            "detail": "Linear static analysis of Al 6061-T6 with a fixed base and a transverse load writes peak von Mises stress and displacement to data/fea_results.csv."
+          },
+          {
+            "label": "Surrogate training",
+            "detail": "Physics features (analytical beam stress, hole-edge and radius ratios) feed Gaussian-process, XGBoost, random-forest and polynomial-ridge models compared with 5-fold cross-validation."
+          },
+          {
+            "label": "DFM rules and ranking",
+            "detail": "8 rules from configs/dfm_rules.yaml (bend radius, hole size and edge distance, flange length, standard fastener sizes, tool access, safety factor, unit cost) plus a weighted, Pareto-aware design ranking."
+          },
+          {
+            "label": "Streamlit explorer",
+            "detail": "Sliders, a 3D stress view, a safety-factor gauge and a DFM checklist, served from committed models without any CAE dependencies."
+          }
+        ],
+        "decisions": [
+          "Separates the offline CAE pipeline from the online app, so the deployed service needs no FreeCAD or solver and answers in milliseconds.",
+          "Chooses a Gaussian process for 121 samples: it beat tree ensembles on R² and MAPE and is a natural fit for small, smooth design spaces.",
+          "Adds the analytical beam-theory stress as an input feature so models learn the correction from simple theory rather than the full physics.",
+          "Keeps DFM thresholds in a YAML config with cited sources, so manufacturing rules can change without code changes.",
+          "Warns in the UI when a slider leaves the sampled design domain instead of extrapolating silently."
+        ],
+        "testing": [
+          "pytest tests for all 8 DFM rules and an app smoke test, run in a GitHub Actions CI pipeline.",
+          "A mesh-size study (6.0 mm down to 1.2 mm elements) and a comparison with 1D beam theory validate the FEA setup."
+        ],
+        "results": [
+          "Stress surrogate: Gaussian process R² 0.994 ± 0.003 and MAPE 4.1% in 5-fold CV, against 0.979 and 6.1% for XGBoost.",
+          "Displacement surrogate: Gaussian process R² 0.990 ± 0.005 and MAPE 4.1%."
+        ],
+        "limitations": [
+          "Linear static analysis only: no plasticity, fatigue, vibration or thermal loads, and the base is treated as rigidly clamped.",
+          "Peak stress keeps rising as the mesh is refined, consistent with a stress concentration at the fillet, so absolute peak values need careful interpretation.",
+          "121 samples bound the surrogate's valid domain; predictions outside the sampled ranges are not trustworthy."
+        ]
+      }
     }
   ]
 }
