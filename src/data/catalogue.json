@@ -1130,18 +1130,21 @@
     },
     {
       "id": "smart-loan-recovery",
-      "title": "Smart Loan Recovery",
+      "title": "Smart Loan Recovery: PD × LGD × EAD",
       "repo": "Smart-Loan-Recovery-System-with-Machine-Learning-",
       "github_url": "https://github.com/charan-reddy-dev/Smart-Loan-Recovery-System-with-Machine-Learning-",
-      "summary": "Generates 1,000 synthetic loan records, segments borrowers with K-Means and trains a Random Forest to flag high-risk borrowers and suggest a recovery strategy for each segment.",
+      "summary": "Leak-free credit-risk pipeline on a month-by-month simulated loan book: calibrated PD (logistic regression vs LightGBM vs XGBoost), LGD and EAD models, Expected Loss = PD × LGD × EAD backtested out of time, recovery-priority tiers and SHAP driver summaries. Replaces an earlier version whose label was K-Means cluster membership.",
       "category": "data-science",
       "secondary_categories": [],
       "tech": [
         "Python",
         "scikit-learn",
-        "Pandas",
-        "Matplotlib",
-        "Plotly"
+        "LightGBM",
+        "XGBoost",
+        "SHAP",
+        "pandas",
+        "pytest",
+        "GitHub Actions"
       ],
       "status": "experimental",
       "synthetic_data": true,
@@ -1150,51 +1153,79 @@
       "demo_kind": null,
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-09-13",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "PD out-of-time ROC-AUC (oracle ceiling 0.8343)",
+          "value": "0.7645 · Brier 0.04106",
+          "evidence": "benchmarks/metrics.json pd.oot.logistic_regression.roc_auc, .brier; pd.oracle_oot.roc_auc; snapshot 2023-06, 21,477 loans, 1,086 defaults (synthetic)"
+        },
+        {
+          "label": "Realised OOT loss in the top 5% of loans by EL",
+          "value": "45.4% vs 36.3% by PD alone",
+          "evidence": "benchmarks/metrics.json expected_loss.loss_capture_top_share.top_5pct.by_expected_loss (0.4535), .by_pd_only (0.363)"
+        },
+        {
+          "label": "Shuffled-label leakage control, mean OOT ROC-AUC",
+          "value": "0.5055 over 5 draws",
+          "evidence": "benchmarks/metrics.json pd.label_shuffle_control_oot_roc_auc.mean"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "Loan recovery teams have limited capacity, so borrowers need to be grouped and prioritised. This project explores segmentation and risk scoring on generated data; it does not have real repayment outcomes.",
+        "problem": "The first version labelled borrowers high-risk by K-Means cluster and trained a classifier on the same features, so its 93.5% accuracy measured how well it re-learned the clusters, not default. A credit model needs a future default event as the target, features frozen at an observation date, and loss severity and exposure as well as probability.",
         "architecture": [
           {
-            "label": "Synthetic data",
-            "detail": "src/generate_sample_data.py creates 1,000 borrower records with a fixed seed."
+            "label": "Loan-book simulation",
+            "detail": "52,000 applicants across personal, auto, home-equity and revolving products are underwritten and simulated month by month: missed instalments, cures, roll to 90+ DPD, prepayment, utilisation draw-down and collateral workouts."
           },
           {
-            "label": "Segmentation",
-            "detail": "K-Means (k = 4) on 10 standardised numeric features."
+            "label": "Leak-free snapshots",
+            "detail": "A column registry tags every field as origination, snapshot, outcome or generator; features use history up to the snapshot only and the label is 90+ DPD in the next 12 months. Development snapshot 2022-06, out-of-time test 2023-06."
           },
           {
-            "label": "Risk scoring",
-            "detail": "A random forest trained on an 80/20 stratified split predicts the high-risk flag (clusters 0 and 3) and outputs a 0 to 1 score."
+            "label": "PD",
+            "detail": "Logistic regression, LightGBM and XGBoost with isotonic calibration, compared by stratified 5-fold CV; the lowest CV Brier score was the pre-declared selection rule."
           },
           {
-            "label": "Strategy mapping",
-            "detail": "Fixed thresholds on the score (0.50 and 0.75) assign each borrower a recovery strategy."
+            "label": "LGD and EAD",
+            "detail": "LightGBM models on development defaults (cross-entropy objective for LGD in [0, 1], EAD as a factor of limit or balance), each compared with a product-mean baseline."
+          },
+          {
+            "label": "Expected Loss and tiers",
+            "detail": "EL = PD × LGD × EAD per loan, backtested against realised OOT losses; loans are ranked by EL into four recovery tiers with actions."
+          },
+          {
+            "label": "Explainability",
+            "detail": "SHAP (linear and tree explainers) per model, with one-hot columns summed back to their source feature."
           }
         ],
         "decisions": [
-          "Documents openly that the classifier re-learns the clustering, and that its 0.94 accuracy is not a default-prediction metric.",
-          "Keeps the pipeline reproducible with fixed seeds for data generation, clustering and the split."
+          "Tests leakage directly: re-simulating every month after the snapshot leaves all features identical while labels change.",
+          "Reports the generator's oracle PD as a ceiling so model AUC is read against what is learnable.",
+          "Removes features that are exact functions of others after they split the logistic model's SHAP attributions.",
+          "Leaves the 30% EL over-prediction uncorrected and traces it to PD drift between periods instead of using OOT data to fix it."
         ],
         "testing": [
-          "No automated tests or cross-validation."
+          "16 pytest tests including the future-resampling leakage test, SHAP additivity and EL identities; CI runs them and the full pipeline on Python 3.12 and 3.13.",
+          "Five shuffled-label refits as a leakage control, plus a 500-resample bootstrap for the selected model's OOT metrics."
         ],
         "results": [
-          "Reproducible segmentation, scoring and strategy assignment with EDA and visualisations."
+          "PD OOT ROC-AUC 0.7645 (bootstrap 95% CI 0.749 to 0.780) against an oracle ceiling of 0.8343; the three PD models are statistically tied.",
+          "LGD R² 0.8354 and EAD-factor R² 0.6415 on OOT defaults; the top 5% of loans by EL hold 45.4% of realised OOT loss."
         ],
         "limitations": [
-          "Circular target: the model predicts cluster membership, not default or write-off.",
-          "Synthetic data, hard-coded segment names and unvalidated strategy thresholds."
+          "Synthetic data: the models recover the generator's assumptions, so the numbers do not describe a real portfolio.",
+          "No macro feature: EL over-predicts realised OOT loss by 30% because the training year had a higher default rate."
         ]
       },
       "brief": {
-        "problem": "Collection teams need to decide which borrowers to contact first and with which strategy.",
-        "approach": "K-Means segments 1,000 synthetic borrowers into 4 groups on 10 standardised features, a random forest scores membership of the two higher-risk segments, and fixed score thresholds map borrowers to recovery strategies.",
+        "problem": "Collection teams need to know which performing loans are likely to default and how much each would cost, without a model that leaks the answer into its features.",
+        "approach": "Month-by-month loan-book simulation with timing-tagged columns and an out-of-time split; calibrated PD, LGD and EAD models combined into Expected Loss and recovery tiers, with SHAP explanations.",
         "outcomes": [
-          "Segment-to-strategy pipeline with EDA, Plotly visualisations and a step-by-step notebook.",
-          "The README documents that the risk label is cluster membership, not observed default, and what an outcome-based model would need."
+          "PD OOT ROC-AUC 0.7645 vs an oracle ceiling of 0.8343; shuffled-label control averages 0.5055.",
+          "Ranking by EL puts 45.4% of realised OOT loss in the top 5% of loans, against 36.3% by PD alone."
         ]
       }
     },
@@ -1227,17 +1258,17 @@
       "metrics": [
         {
           "label": "Injected faults caught by the Verifier (offline mock)",
-          "value": "20/20 ? 0 false flags",
+          "value": "20/20 · 0 false flags",
           "evidence": "benchmarks/results.json runs.benchmark.fault_detection.detected (20), nodes_with_injected_fault (20), flagged_without_injected_fault (0); 20 cases, seed 7"
         },
         {
-          "label": "Verified pass rate, first draft ? after repair",
-          "value": "0.55 ? 0.95",
+          "label": "Verified pass rate, first draft → after repair",
+          "value": "0.55 → 0.95",
           "evidence": "benchmarks/results.json runs.benchmark.final_report.verified_pass_rate_first_draft (0.55), verified_pass_rate_final (0.95)"
         },
         {
-          "label": "Anchor retention in final answers, first ? final",
-          "value": "0.7802 ? 0.989",
+          "label": "Anchor retention in final answers, first → final",
+          "value": "0.7802 → 0.989",
           "evidence": "benchmarks/results.json runs.benchmark.final_report.anchor_retention_first_draft, anchor_retention_final; mock fault rates fixed before the run"
         }
       ],
@@ -1290,7 +1321,7 @@
         "problem": "LLM-written technical summaries silently drop or alter given figures, break output formats and ignore instructions, and an LLM judge shares those failure modes.",
         "approach": "Rule-extracted immutable anchors, a validated task DAG run in async waves, a deterministic Verifier that scores every draft and a bounded Refiner loop, behind a Groq/Gemini/OpenAI-compatible router with backoff and fallback.",
         "outcomes": [
-          "Offline benchmark: 20/20 injected first-draft faults flagged with no false flags; verified pass rate 0.55 ? 0.95 after repair.",
+          "Offline benchmark: 20/20 injected first-draft faults flagged with no false flags; verified pass rate 0.55 → 0.95 after repair.",
           "Every number is reproducible from benchmarks/results.json with one command; limitations of the mock evaluation are documented."
         ]
       }

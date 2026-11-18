@@ -41,7 +41,7 @@ const SHOWCASE: ShowcaseEntry[] = [
   { id: 'ab-testing-platform', tracks: ['data'], tagline: 'Experiment sizing, SRM guardrail and significance engine', title: 'AeroTest' },
   { id: 'churn-predictive-agent', tracks: ['data', 'ai'], tagline: 'Explainable churn risk scoring and retention ROI' },
   { id: 'neural-gateway', tracks: ['ai', 'systems'], tagline: 'Fault-tolerant multi-provider LLM gateway' },
-  { id: 'smart-loan-recovery', tracks: ['data'], tagline: 'Borrower segmentation and recovery-strategy scoring', title: 'Smart Loan Recovery' },
+  { id: 'smart-loan-recovery', tracks: ['data'], tagline: 'Leak-free PD × LGD × EAD expected-loss pipeline', title: 'Smart Loan Recovery' },
   { id: 'featurehub-dataguard', tracks: ['data'], tagline: 'Feature store guarded by data contracts' },
   { id: 'designiq', tracks: ['data'], tagline: 'ML surrogate for CAD/CAE design optimization with DFM checks' },
   { id: 'ticketlens', tracks: ['data', 'ai'], tagline: 'Ticket classifier benchmarked across three model families' },
