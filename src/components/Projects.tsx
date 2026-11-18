@@ -55,9 +55,14 @@ export function Projects() {
   return (
     <Section
       id="projects"
-      eyebrow="02 · Projects"
-      title="Systems I've designed and shipped"
-      intro="Each card follows problem → architecture → impact. Open the architecture view for the data flow, the trade-offs I made, and benchmarks traced to result files committed in each repository."
+      index="03"
+      label="Selected projects"
+      title={
+        <>
+          Systems, end to end. <em>With the trade-offs.</em>
+        </>
+      }
+      intro="Each card follows problem → architecture → impact. Open the architecture view for the data flow, the decisions I made, and benchmarks traced to result files committed in each repository."
     >
       <div className="filters" role="group" aria-label="Filter projects by role track">
         {TRACKS.map((t) => {

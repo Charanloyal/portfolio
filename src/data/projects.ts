@@ -31,21 +31,21 @@ interface ShowcaseEntry {
 // Display order of the project showcase. Content comes from catalogue.json.
 const SHOWCASE: ShowcaseEntry[] = [
   { id: 'agent-orchestration-system', tracks: ['ai', 'systems'], tagline: 'Human-gated multi-agent research DAG' },
-  { id: 'lakeflow', tracks: ['data', 'systems'], tagline: 'Idempotent CDC pipeline into an Iceberg lakehouse' },
-  { id: 'raftkv', tracks: ['systems'], tagline: 'Raft-replicated, crash-safe key-value store' },
-  { id: 'neural-gateway', tracks: ['ai', 'systems'], tagline: 'Fault-tolerant multi-provider LLM gateway' },
   { id: 'multi-agent-llm-orchestration', tracks: ['ai'], tagline: 'LLM-routed agents with critique, budgets and eval loop' },
   { id: 'octoscale-url-shortener', tracks: ['systems'], tagline: 'Cache-first URL shortener with Redis rate limiting' },
+  { id: 'raftkv', tracks: ['systems'], tagline: 'Raft-replicated, crash-safe key-value store' },
+  { id: 'full-stack-integration', tracks: ['systems'], tagline: 'Real-time task and chat board in a TypeScript monorepo', title: 'Task & Chat Board' },
   { id: 'partsense', tracks: ['data', 'ai'], tagline: 'Predictive maintenance tuned for recall on rare failures' },
   { id: 'drivedocs', tracks: ['ai', 'data'], tagline: 'Multimodal RAG with verified citations and guardrails' },
+  { id: 'lakeflow', tracks: ['data', 'systems'], tagline: 'Idempotent CDC pipeline into an Iceberg lakehouse' },
+  { id: 'ab-testing-platform', tracks: ['data'], tagline: 'Experiment sizing, SRM guardrail and significance engine', title: 'AeroTest' },
+  { id: 'churn-predictive-agent', tracks: ['data', 'ai'], tagline: 'Explainable churn risk scoring and retention ROI' },
+  { id: 'neural-gateway', tracks: ['ai', 'systems'], tagline: 'Fault-tolerant multi-provider LLM gateway' },
+  { id: 'smart-loan-recovery', tracks: ['data'], tagline: 'Borrower segmentation and recovery-strategy scoring', title: 'Smart Loan Recovery' },
   { id: 'featurehub-dataguard', tracks: ['data'], tagline: 'Feature store guarded by data contracts' },
-  { id: 'full-stack-integration', tracks: ['systems'], tagline: 'Real-time task and chat board in a TypeScript monorepo', title: 'Task & Chat Board' },
   { id: 'designiq', tracks: ['data'], tagline: 'ML surrogate for CAD/CAE design optimization with DFM checks' },
   { id: 'ticketlens', tracks: ['data', 'ai'], tagline: 'Ticket classifier benchmarked across three model families' },
   { id: 'vehicle-telemetry-anomaly-detection', tracks: ['data'], tagline: 'Stateful streaming anomaly detection with ONNX serving' },
-  { id: 'ab-testing-platform', tracks: ['data'], tagline: 'Experiment sizing, SRM guardrail and significance engine', title: 'AeroTest' },
-  { id: 'churn-predictive-agent', tracks: ['data', 'ai'], tagline: 'Explainable churn risk scoring and retention ROI' },
-  { id: 'smart-loan-recovery', tracks: ['data'], tagline: 'Borrower segmentation and recovery-strategy scoring', title: 'Smart Loan Recovery' },
 ];
 
 /** Cards shown per filter before "Show all". */

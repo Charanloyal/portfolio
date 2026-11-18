@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
 import { profile } from '../data/profile.ts';
 import { useActiveSection, useScrolledPast } from '../hooks/useScroll.ts';
-import { CloseIcon, DownloadIcon, MenuIcon } from './Icons.tsx';
+import { CloseIcon, GitHubIcon, LinkedInIcon, MenuIcon } from './Icons.tsx';
 
 const NAV = [
-  { id: 'experience', label: 'Experience' },
+  { id: 'about', label: 'About' },
+  { id: 'work', label: 'Work' },
   { id: 'projects', label: 'Projects' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'achievements', label: 'Achievements' },
+  { id: 'stack', label: 'Stack' },
   { id: 'contact', label: 'Contact' },
 ] as const;
 
 const NAV_IDS = NAV.map((n) => n.id);
 
-export function Header() {
+export function FloatingNav() {
   const active = useActiveSection(NAV_IDS);
-  const scrolled = useScrolledPast(12);
+  const scrolled = useScrolledPast(24);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -26,16 +26,16 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className={`site-header${scrolled ? ' is-scrolled' : ''}`}>
-      <div className="container header-inner">
-        <a href="#top" className="brand">
-          <span className="brand-mark" aria-hidden="true">
+    <header className={`nav-shell${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
+      <div className="nav-pill">
+        <a href="#about" className="brand">
+          <span className="brand-mark mono" aria-hidden="true">
             CR
           </span>
-          <span className="brand-name">{profile.name}</span>
+          <span className="brand-name">{profile.shortName}</span>
         </a>
 
-        <nav aria-label="Primary" className={`nav${open ? ' is-open' : ''}`} id="primary-nav">
+        <nav aria-label="Primary" id="primary-nav" className="nav-links">
           <ul>
             {NAV.map((item) => (
               <li key={item.id}>
@@ -49,11 +49,17 @@ export function Header() {
               </li>
             ))}
           </ul>
-          <a className="btn btn-ghost btn-sm" href={profile.resumeUrl} target="_blank" rel="noreferrer">
-            <DownloadIcon size={15} />
-            Résumé
-          </a>
         </nav>
+
+        <span className="nav-divider" aria-hidden="true" />
+        <div className="nav-icons">
+          <a href={profile.links.github} target="_blank" rel="noreferrer" aria-label="GitHub profile">
+            <GitHubIcon size={17} />
+          </a>
+          <a href={profile.links.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn profile">
+            <LinkedInIcon size={16} />
+          </a>
+        </div>
 
         <button
           type="button"
@@ -63,7 +69,7 @@ export function Header() {
           aria-label={open ? 'Close menu' : 'Open menu'}
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? <CloseIcon /> : <MenuIcon />}
+          {open ? <CloseIcon size={18} /> : <MenuIcon size={18} />}
         </button>
       </div>
     </header>

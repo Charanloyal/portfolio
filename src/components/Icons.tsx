@@ -62,6 +62,12 @@ export const ArrowUpIcon = (p: IconProps) => (
   </svg>
 );
 
+export const ArrowDownIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M12 5v14M6 13l6 6 6-6" />
+  </svg>
+);
+
 export const ExternalIcon = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
