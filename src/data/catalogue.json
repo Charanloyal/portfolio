@@ -1203,17 +1203,18 @@
       "title": "Multi-Agent LLM Orchestration",
       "repo": "Multi-Agent-LLM-Orchestration",
       "github_url": "https://github.com/charan-reddy-dev/Multi-Agent-LLM-Orchestration",
-      "summary": "Containerized multi-agent system where an LLM-driven orchestrator routes work between decomposition, multi-hop retrieval, per-claim critique, synthesis and compression agents through a shared context, with typed tool failure contracts, token budgets and a self-improving evaluation loop gated by human approval.",
+      "summary": "Planner-Executor-Verifier-Refiner (PEVR) engine that turns a multi-part request into a validated task DAG, runs it with LLM agents and checks every draft against rule-extracted facts no model can change; flagged drafts go through a bounded repair loop. Runs on Groq, Gemini or any OpenAI-compatible endpoint with retry and fallback, or offline with a deterministic mock.",
       "category": "ai-ml",
       "secondary_categories": [],
       "tech": [
         "Python",
-        "FastAPI",
-        "Anthropic API",
-        "SSE",
-        "SQLite",
-        "tiktoken",
-        "Docker Compose"
+        "asyncio",
+        "Pydantic",
+        "httpx",
+        "Groq",
+        "Gemini",
+        "pytest",
+        "GitHub Actions"
       ],
       "status": "experimental",
       "synthetic_data": false,
@@ -1222,64 +1223,75 @@
       "demo_kind": null,
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-05-08",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "Injected faults caught by the Verifier (offline mock)",
+          "value": "20/20 ? 0 false flags",
+          "evidence": "benchmarks/results.json runs.benchmark.fault_detection.detected (20), nodes_with_injected_fault (20), flagged_without_injected_fault (0); 20 cases, seed 7"
+        },
+        {
+          "label": "Verified pass rate, first draft ? after repair",
+          "value": "0.55 ? 0.95",
+          "evidence": "benchmarks/results.json runs.benchmark.final_report.verified_pass_rate_first_draft (0.55), verified_pass_rate_final (0.95)"
+        },
+        {
+          "label": "Anchor retention in final answers, first ? final",
+          "value": "0.7802 ? 0.989",
+          "evidence": "benchmarks/results.json runs.benchmark.final_report.anchor_retention_first_draft, anchor_retention_final; mock fault rates fixed before the run"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "A research-style query may be ambiguous, need several retrieval hops, or contain a prompt injection or a false premise. A static chain of agents cannot adapt its route, a long run overflows the context window, and tool failures are easy to swallow. Prompt changes also need a way to be evaluated and approved before they ship.",
+        "problem": "When an LLM writes a technical summary from a multi-part request it can silently drop or alter the figures and names it was given, break the output format, or ignore instructions such as a word limit. A second model acting as a judge has the same failure modes, so the check itself needs to be deterministic.",
         "architecture": [
           {
-            "label": "FastAPI and SSE",
-            "detail": "POST /query streams agent activity in real time; traces, evaluation results and rewrite approvals have their own endpoints, and errors carry machine-readable codes."
+            "label": "Planner",
+            "detail": "Extracts numbers, entities and machine-checkable constraints with rules into frozen anchors, asks the model for a task DAG, validates it (acyclic, at most 8 tasks, one synthesis node that reads every analysis task) and falls back to a clause-based DAG when the model's plan is invalid."
           },
           {
-            "label": "Master orchestrator",
-            "detail": "Uses the LLM to pick the next agent from the pipeline state, never skips critique before synthesis, compresses before an agent nears its budget and stops after 8 routing steps."
+            "label": "Executor",
+            "detail": "Runs the DAG in topological waves with asyncio, nodes in a wave concurrently, and requires a strict Pydantic JSON schema for every node output."
           },
           {
-            "label": "Decomposition and retrieval",
-            "detail": "Ambiguous queries become typed sub-tasks with explicit dependencies; retrieval needs at least two chunk citations per answer and records which chunk supported each hop."
+            "label": "Verifier",
+            "detail": "Pure code: scores each draft 0 to 1 from anchor recall, schema validity, constraint checks and a penalty for figures that appear nowhere in the request, and lists each violation."
           },
           {
-            "label": "Critique and synthesis",
-            "detail": "Critique scores each claim (0 to 1) rather than whole outputs; synthesis resolves flagged contradictions and links every sentence to its source agent and chunk."
+            "label": "Refiner",
+            "detail": "Runs only on flagged drafts, receives the exact violations, is re-verified, and is bounded by max_retries; an unparseable repair never replaces a valid earlier draft."
           },
           {
-            "label": "Tools with failure contracts",
-            "detail": "web_search, code_executor, data_lookup and self_reflection return typed timeout, empty and malformed results, with up to 2 retries on modified input and full call logging."
-          },
-          {
-            "label": "Evaluation and meta-agent",
-            "detail": "A harness scores 15 cases on 6 dimensions; a meta-agent proposes one rewrite for the worst prompt, stored as pending until a human approves it, then re-runs only failed cases."
+            "label": "Provider router",
+            "detail": "Groq, Gemini and OpenAI-compatible adapters with full-jitter exponential backoff on 429/5xx and timeouts, immediate fallback on non-retryable errors, and a seeded offline mock with fault injection."
           }
         ],
         "decisions": [
-          "Routes with the LLM instead of a fixed chain so the path adapts to the query, accepting an extra model call of latency per step and capping the route at 8 steps.",
-          "Puts failure handling in code through typed tool contracts rather than in prompts, so timeouts, empty results and malformed output each take a defined path.",
-          "Triggers lossless compression of structured data (JSON, scores, IDs) at 85% of an agent budget and records violations instead of dropping them.",
-          "Never auto-applies a prompt rewrite: the meta-agent proposes, a human approves, and only previously failed cases are re-evaluated.",
-          "Builds the scoring dimensions from scratch so every score comes with a justification string."
+          "Extracts anchors with rules rather than a model so the facts being checked cannot themselves be hallucinated.",
+          "Keeps the Verifier deterministic so the same draft always gets the same score and every failure names a specific anchor or rule.",
+          "Records the mock's injected faults as ground truth so the benchmark measures detection directly, which exposed a mock bug that hid faults in analysis nodes before the results were recorded.",
+          "Reports the one final answer that still fails after two repair rounds instead of tuning the fault rates or seed."
         ],
         "testing": [
-          "Evaluation harness with 5 straightforward, 5 ambiguous and 5 adversarial cases (prompt injection, false premises, forced contradictions).",
-          "Scoring dimensions: answer correctness, citation accuracy, contradiction resolution, tool efficiency, budget compliance and critique agreement."
+          "38 pytest tests covering anchor extraction, DAG validation, verifier scoring, router retry and fallback, HTTP adapters against mocked Groq/Gemini responses, the engine end to end, the CLI and an eval smoke run; CI on Python 3.12 and 3.13.",
+          "20-case benchmark (multi-step, anchor preservation, constraint following) with fault rates fixed before the first recorded run."
         ],
         "results": [
-          "Runs end to end with docker compose up and one API key; API docs, an SSE activity stream and a log interface are included."
+          "Offline mock run: the Verifier flagged all 20 first drafts with an injected fault and no others; 18 of 20 flagged nodes were repaired within 2 rounds.",
+          "Final-answer verified pass rate rose from 0.55 to 0.95 and constraint satisfaction from 0.7 to 1.0 after repair."
         ],
         "limitations": [
-          "Retrieval uses word-overlap scoring rather than vector embeddings, web_search is a mock and NL-to-SQL is a lookup table.",
-          "Evaluation scores are keyword-based heuristics, so paraphrased correct answers can score as wrong.",
-          "The API has no authentication, and LLM routing adds a model call of latency to every step."
+          "Recorded results use the offline mock and measure the detect-and-repair loop, not the quality of a real language model; a live run needs API keys.",
+          "The unsupported-number check also flags correctly derived figures, and entity extraction is capitalisation-based with author-labelled expected anchors."
         ]
       },
       "brief": {
-        "problem": "Fixed agent chains break on ambiguous or adversarial queries, overrun context windows, fail silently when a tool times out, and give no way to improve prompts safely.",
-        "approach": "An orchestrator asks the LLM which agent runs next under hard decision boundaries; agents share a schema-defined context, tools return typed failure contracts with bounded retries, a budget manager triggers compression at 85% of each token budget, and a meta-agent proposes prompt rewrites that a human must approve.",
+        "problem": "LLM-written technical summaries silently drop or alter given figures, break output formats and ignore instructions, and an LLM judge shares those failure modes.",
+        "approach": "Rule-extracted immutable anchors, a validated task DAG run in async waves, a deterministic Verifier that scores every draft and a bounded Refiner loop, behind a Groq/Gemini/OpenAI-compatible router with backoff and fallback.",
         "outcomes": [
-          "Evaluation harness of 15 cases (straightforward, ambiguous, adversarial) scored on 6 dimensions, each returning a score and a written justification.",
-          "Every routing decision, tool call (latency, retries, errors) and policy violation is traced and queryable per job."
+          "Offline benchmark: 20/20 injected first-draft faults flagged with no false flags; verified pass rate 0.55 ? 0.95 after repair.",
+          "Every number is reproducible from benchmarks/results.json with one command; limitations of the mock evaluation are documented."
         ]
       }
     },
