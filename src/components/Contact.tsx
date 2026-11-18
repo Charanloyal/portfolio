@@ -60,7 +60,7 @@ export function Contact() {
               <GitHubIcon size={20} />
               <span>
                 <strong>GitHub</strong>
-                <span className="mono">github.com/Charanloyal</span>
+                <span className="mono">{profile.links.github.replace('https://', '')}</span>
               </span>
             </a>
           </li>

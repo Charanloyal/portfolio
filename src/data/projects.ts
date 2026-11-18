@@ -1,7 +1,18 @@
 import catalogueData from './catalogue.json';
+import { githubUrl, githubUser } from './profile.ts';
 import type { CatalogueProject, ShowcaseProject, Track } from './types.ts';
 
-export const catalogue = catalogueData.projects as CatalogueProject[];
+/** Points repository and GitHub Pages links at the configured account, so a username change needs no data edits. */
+function withCurrentOwner(project: CatalogueProject): CatalogueProject {
+  const pages = (url: string | null) => url?.replace(/^https:\/\/[^./]+\.github\.io\//, `https://${githubUser}.github.io/`) ?? null;
+  return {
+    ...project,
+    github_url: project.github_url.replace(/^https:\/\/github\.com\/[^/]+/, githubUrl),
+    demo_url: pages(project.demo_url),
+  };
+}
+
+export const catalogue = (catalogueData.projects as CatalogueProject[]).map(withCurrentOwner);
 
 export const TRACKS: { id: Track | 'all'; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -25,6 +36,8 @@ const SHOWCASE: ShowcaseEntry[] = [
   { id: 'raftkv', tracks: ['systems'], tagline: 'Raft-replicated, crash-safe key-value store' },
   { id: 'featurehub-dataguard', tracks: ['data'], tagline: 'Feature store guarded by data contracts' },
   { id: 'drivedocs', tracks: ['ai'], tagline: 'Multimodal RAG with verified citations and guardrails' },
+  { id: 'partsense', tracks: ['data'], tagline: 'Predictive maintenance tuned for recall on rare failures' },
+  { id: 'designiq', tracks: ['data'], tagline: 'ML surrogate for CAD/CAE design optimization with DFM checks' },
   { id: 'octoscale-url-shortener', tracks: ['systems'], tagline: 'Cache-first URL shortener with Redis rate limiting' },
   { id: 'ticketlens', tracks: ['data', 'ai'], tagline: 'Ticket classifier benchmarked across three model families' },
   { id: 'vehicle-telemetry-anomaly-detection', tracks: ['data'], tagline: 'Stateful streaming anomaly detection with ONNX serving' },

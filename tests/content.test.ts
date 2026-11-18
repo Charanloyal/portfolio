@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { TRACKS, catalogue, moreProjects, showcase } from '../src/data/projects.ts';
-import { experience, impactMetrics, profile, skills } from '../src/data/profile.ts';
+import { experience, githubUser, impactMetrics, profile, skills } from '../src/data/profile.ts';
 
-const GITHUB_PREFIX = 'https://github.com/Charanloyal/';
+const GITHUB_PREFIX = `https://github.com/${githubUser}/`;
 
 describe('project catalogue', () => {
   it('has unique ids', () => {
@@ -10,8 +10,8 @@ describe('project catalogue', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('links every project to a Charanloyal GitHub repository', () => {
-    for (const p of catalogue) expect(p.github_url, p.id).toMatch(new RegExp(`^${GITHUB_PREFIX}`));
+  it("links every project to a repository on the owner's GitHub account", () => {
+    for (const p of catalogue) expect(p.github_url.startsWith(GITHUB_PREFIX), p.github_url).toBe(true);
   });
 
   it('backs every metric with an evidence file reference', () => {
@@ -66,8 +66,12 @@ describe('project showcase', () => {
 
 describe('profile', () => {
   it('points at the GitHub Pages site, not the retired Render deployment', () => {
-    expect(profile.siteUrl).toBe('https://charanloyal.github.io/portfolio/');
+    expect(profile.siteUrl).toBe(`https://${githubUser}.github.io/portfolio/`);
     expect(JSON.stringify(profile)).not.toContain('onrender.com');
+  });
+
+  it('uses a lowercase GitHub username, as GitHub Pages hostnames require', () => {
+    expect(githubUser).toMatch(/^[a-z0-9-]+$/);
   });
 
   it('has valid contact emails', () => {

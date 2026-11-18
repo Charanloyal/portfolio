@@ -2,7 +2,7 @@
 
 Software & AI/ML Engineer | Distributed Systems, LLM Architecture & Data Pipelines.
 
-**Live site:** https://charanloyal.github.io/portfolio/
+**Live site:** https://charan-reddy-dev.github.io/portfolio/
 
 A static React + TypeScript site built with Vite and deployed to GitHub Pages by GitHub Actions. It is aimed at engineering screens for SWE / SDE, AI/ML and data engineering roles: an impact summary, an experience timeline, a role-filtered project showcase with architecture write-ups, a skills matrix, achievements and contact.
 
@@ -11,7 +11,7 @@ A static React + TypeScript site built with Vite and deployed to GitHub Pages by
 - **Hero:** availability badge, primary actions (Explore Architecture, View GitHub, Contact Me) and a copy-email button with toast feedback.
 - **Impact bar:** headline numbers, each with its source.
 - **Experience timeline:** six internships with measured outcomes, plus education.
-- **Project showcase:** filter tabs for *All*, *AI & Agents*, *Distributed Systems / SDE* and *Data & ML*. Each card follows problem → architecture → impact and opens an accessible **Architecture & system design** dialog with the data flow, key trade-offs, benchmarks (with the committed evidence file for each number), testing and known limitations. Dialogs are deep-linkable: `#projects/<id>`, for example [`#projects/lakeflow`](https://charanloyal.github.io/portfolio/#projects/lakeflow).
+- **Project showcase:** filter tabs for *All*, *AI & Agents*, *Distributed Systems / SDE* and *Data & ML*. Each card follows problem → architecture → impact and opens an accessible **Architecture & system design** dialog with the data flow, key trade-offs, benchmarks (with the committed evidence file for each number), testing and known limitations. Dialogs are deep-linkable: `#projects/<id>`, for example [`#projects/lakeflow`](https://charan-reddy-dev.github.io/portfolio/#projects/lakeflow).
 - **Skills matrix, achievements, certifications and contact.**
 - Two in-browser demos served from this repo: the AeroTest A/B testing calculator (`/portfolio/demos/ab-testing/`) and a fraud-monitoring simulation on synthetic data (`/portfolio/demos/fraud-detector/`).
 
@@ -66,13 +66,17 @@ npm run dev        # http://localhost:5173/portfolio/
 | `npm test` | Content integrity tests (Vitest) |
 | `npm run check` | Type check, lint and tests |
 
-The tests check that project ids are unique, every repository link points at `github.com/Charanloyal`, every metric has evidence, bundled asset paths work under the base path, every showcase project has a full case study, every role filter has projects, and the profile no longer references the retired Render deployment.
+The tests check that project ids are unique, every repository link points at the owner's GitHub account, every metric has evidence, bundled asset paths work under the base path, every showcase project has a full case study, every role filter has projects, and the profile no longer references the retired Render deployment.
 
 ## Deployment
 
 `.github/workflows/deploy.yml` runs on every push to `main` (and on manual dispatch): `npm ci`, lint, tests, `npm run build`, then uploads `dist/` with `actions/upload-pages-artifact` and publishes it with `actions/deploy-pages`. `ci.yml` runs the same checks on pull requests.
 
-One-time setup: in the repository's **Settings → Pages**, set **Source** to **GitHub Actions**.
+One-time setup: in the repository's **Settings → Pages**, set **Source** to **GitHub Actions**. Don't add the suggested Jekyll or static starter workflows; they publish the raw repository instead of the build.
+
+### GitHub username
+
+The site never hard-codes the account name. In GitHub Actions, `vite.config.ts` reads `GITHUB_REPOSITORY_OWNER` and fills in the repository links, the `<user>.github.io` URLs and the meta tags (`__GITHUB_USER__` in `index.html`). After renaming the account, update `DEFAULT_GITHUB_USER` in `vite.config.ts` for local builds (or set `PORTFOLIO_GITHUB_USER`) and push; the deployed site follows automatically.
 
 The site was previously a FastAPI app on Render. `public/404.html` redirects that site's old paths: `/projects/<id>` opens the matching architecture dialog, and `/ab-testing/` and `/fraud-detector/` go to the demos.
 
@@ -80,4 +84,4 @@ The site was previously a FastAPI app on Render. `public/404.html` redirects tha
 
 - Email: [charan.workmaill@gmail.com](mailto:charan.workmaill@gmail.com) · [charankumarreddy2028@gmail.com](mailto:charankumarreddy2028@gmail.com)
 - LinkedIn: [b-charan-kumar-reddy](https://www.linkedin.com/in/b-charan-kumar-reddy)
-- GitHub: [@Charanloyal](https://github.com/charan-reddy-dev)
+- GitHub: [@charan-reddy-dev](https://github.com/charan-reddy-dev)
