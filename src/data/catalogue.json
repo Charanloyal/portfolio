@@ -916,25 +916,27 @@
       "title": "OctoScale",
       "repo": "Octoscale-URL-Shortener",
       "github_url": "https://github.com/charan-reddy-dev/Octoscale-URL-Shortener",
-      "summary": "URL shortener on FastAPI with Redis INCR and Base62 short codes, a PostgreSQL fallback, cached redirects, sliding-window rate limiting on Redis sorted sets and background click analytics.",
+      "summary": "URL shortener on FastAPI, PostgreSQL and Redis: Base62 codes from an atomic Redis counter, cache-aside redirects, an atomic Lua sliding-window rate limiter with an in-memory fallback, and batched click analytics. Load-tested at 2,404.8 redirects/s with zero errors and exact rate-limit enforcement.",
       "category": "backend",
       "secondary_categories": [],
       "tech": [
         "Python",
         "FastAPI",
+        "Redis (Lua, ZSET)",
         "PostgreSQL",
-        "Redis",
+        "asyncpg",
         "SQLAlchemy",
-        "Docker"
+        "Docker",
+        "pytest"
       ],
       "status": "complete",
       "synthetic_data": false,
       "brief": {
-        "problem": "A URL shortener's redirect path must stay fast, issue collision-free short codes and keep a single client from flooding the API.",
-        "approach": "A Redis atomic counter encoded in Base62 issues codes; redirects read through a Redis cache with PostgreSQL fallback, a sliding-window limiter on Redis sorted sets guards the API, and click analytics are deferred to background tasks.",
+        "problem": "A URL shortener's redirect path must stay fast under load, issue collision-free codes across workers, keep one client from flooding it, and keep serving when Redis fails.",
+        "approach": "A Lua script run with EVALSHA trims, counts and records each request atomically on a Redis sorted set; redirects read through a Redis cache with PostgreSQL fallback; codes come from INCR seeded with SET NX; clicks are queued and written in batches.",
         "outcomes": [
-          "20 automated tests cover code generation, cache-aside redirects, the rate limiter and analytics, using a mocked Redis and in-memory SQLite.",
-          "No load test has been run yet, so no throughput or latency figures are claimed."
+          "Rate limiter allowed exactly the limit in single-client bursts of 3x on both routes, with Retry-After on every 429.",
+          "The load test caught cross-worker deadlocks in click batches; fixed with ordered updates and retries, then verified every 307 became a row."
         ]
       },
       "featured_rank": null,
@@ -942,52 +944,78 @@
       "demo_kind": null,
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-09-24",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "Cached redirects, 126 connections, 30 s",
+          "value": "2,404.8 req/s · p99 219.874 ms",
+          "evidence": "benchmarks/results.json scenarios.redirect.requests_per_second, latency_ms.p99_ms (6 uvicorn workers, PostgreSQL 18.7, Redis 5.0.14.1, client on the same 14-core host)"
+        },
+        {
+          "label": "Link creation, 126 connections, 15 s",
+          "value": "1,155.8 req/s · p50 73.909 ms",
+          "evidence": "benchmarks/results.json scenarios.create.requests_per_second, latency_ms.p50_ms"
+        },
+        {
+          "label": "Rate limiter, 3x burst from one client",
+          "value": "600 of 1,800 allowed (exact)",
+          "evidence": "benchmarks/results.json rate_limiter[0].allowed, requests_sent, exact (redirect limit 600 per 60 s; API burst: 100 of 300)"
+        },
+        {
+          "label": "Responses persisted after the run",
+          "value": "73,728 / 73,728 clicks",
+          "evidence": "benchmarks/results.json data_integrity.new_click_rows, expected_new_click_rows; 18,478 / 18,478 URL rows, 0 duplicate codes"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "Every redirect sits on a user's critical path, short codes must be unique without collision checks, and the public API has to survive brute-force scraping and request floods from a single client.",
+        "problem": "Every redirect sits on a user's critical path. Short codes must be unique across processes without collision checks, the limiter must count accurately when many requests from one client arrive at once, and a Redis outage should degrade the service rather than take it down.",
         "architecture": [
           {
-            "label": "FastAPI routes",
-            "detail": "Presentation layer with routes, middleware and the dashboard; a sliding-window rate limiter runs before any lookup."
+            "label": "Rate limiter (Lua)",
+            "detail": "One script per request via EVALSHA: Redis TIME, ZREMRANGEBYSCORE, ZCARD, then ZADD with a unique member and PEXPIRE only when allowed; separate per-client limits for redirects (600/min) and the API (100/min)."
           },
           {
-            "label": "Service layer",
-            "detail": "Base62 encoding, rate-limit checks, cache coordination and scheduling of background analytics."
+            "label": "Fallback and circuit breaker",
+            "detail": "On a Redis error or 0.5 s timeout, Redis is skipped for 5 s and an in-process sliding window enforces the same limits per worker."
           },
           {
-            "label": "Redis",
-            "detail": "INCR counter for IDs (starting at 10,000,000, so codes stay 4 characters until 62^4), redirect cache with a 24-hour TTL, and the ZSET sliding window."
+            "label": "Redirect path",
+            "detail": "Cache-aside read from Redis with PostgreSQL fallback, 307 response, and a non-blocking enqueue of the click event."
           },
           {
-            "label": "Repository layer and PostgreSQL",
-            "detail": "SQLAlchemy 2.0 async repositories persist URL records and click logs; PostgreSQL re-seeds the Redis counter with SELECT MAX(id) if the key is lost."
+            "label": "Short-code allocation",
+            "detail": "INCR on a counter seeded from MAX(id) with SET NX, encoded in Base62; custom-code races map to 400 and a Redis outage to 503."
           },
           {
-            "label": "Background analytics",
-            "detail": "The 307 redirect returns first; click counts and click logs are written afterwards in a FastAPI background task."
+            "label": "Batched click writer",
+            "detail": "Per-worker queue flushed every 0.5 s: counter UPDATEs in ascending id order in one executemany plus a bulk INSERT; failed batches are retried up to 3 times."
+          },
+          {
+            "label": "Pools and workers",
+            "detail": "Shared Redis connection pool (RESP2) and an asyncpg pool per uvicorn worker; Docker Compose with PostgreSQL, Redis and health checks."
           }
         ],
         "decisions": [
-          "Generates IDs from a Redis atomic counter instead of random hashes, so codes are unique without a collision check, at the cost of predictable, enumerable codes.",
-          "Uses cache-aside reads with a 24-hour TTL and writes the cache on create, so hot links never touch PostgreSQL.",
-          "Implements the limiter as a sliding window on a Redis sorted set (ZREMRANGEBYSCORE, ZADD, ZCARD in one pipeline), which avoids fixed-window boundary bursts but costs O(log n) memory per request in the window.",
-          "Fails the limiter open when Redis is unreachable, choosing availability of redirects over strict rate enforcement.",
-          "Defers click analytics to background tasks so writes never add latency to the redirect; analytics can be lost if the process dies before they run."
+          "Does the whole sliding-window check in one Lua script so trim, count and insert cannot interleave between workers, using the Redis clock so app hosts with skewed clocks agree.",
+          "Records only allowed requests, so a client that keeps retrying is not locked out beyond the window.",
+          "Falls back to a per-process limiter instead of failing open, accepting that the effective limit multiplies by the worker count during an outage.",
+          "Batches click writes instead of two writes per redirect, accepting that up to 0.5 s of clicks can be lost on a crash.",
+          "Orders counter updates by id so concurrent batches from different workers always lock rows in the same order."
         ],
         "testing": [
-          "20 pytest tests with pytest-asyncio and pytest-mock against an in-process Redis mock and in-memory SQLite (aiosqlite).",
-          "Structured JSON logging with structlog in production mode."
+          "36 pytest tests on fakeredis with Lua: exact limits, an 80-request concurrent burst against a limit of 50, fallback on Redis failure, race-free counter seeding, redirects during a Redis outage, and click-batch retries. CI runs them on Python 3.12 and 3.13.",
+          "benchmarks/load_test.py: multi-process asyncio and httpx load generator with redirect, create and limiter-burst phases, hardware metadata and an optional database integrity check."
         ],
         "results": [
-          "Working single-instance service with dashboard, referrer breakdown and recent-click analytics, packaged with Docker Compose (FastAPI, PostgreSQL 15, Redis 7)."
+          "Recorded run: 2,404.8 redirects/s (p50 37.005 ms, p99 219.874 ms) and 1,155.8 creates/s (p99 629.644 ms) with 0 errors at 126 connections.",
+          "Every 201 produced one URL row and every 307 one click row (73,728 of 73,728) after the deadlock fix."
         ],
         "limitations": [
-          "No load test or benchmark yet: throughput and latency are unmeasured.",
-          "Tests use mocked Redis and SQLite, so real TTL expiry, pipelines and PostgreSQL-specific behaviour are not exercised.",
-          "Background analytics run in-process rather than on a durable queue."
+          "Benchmarked on one 14-core Windows laptop with the client, PostgreSQL and a Windows build of Redis 5 on the same host; not a multi-host capacity figure.",
+          "Clicks wait in memory for up to 0.5 s and are lost if a worker crashes.",
+          "No Alembic migrations; tables are created at startup."
         ]
       }
     },

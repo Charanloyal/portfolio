@@ -89,9 +89,9 @@ export const impactMetrics: ImpactMetric[] = [
     source: 'FAISS + Pinecone semantic search · General Motors',
   },
   {
-    value: '2 of 5',
-    label: 'nodes can fail while Raft keeps committing writes',
-    source: 'Leader election + log replication · RaftKV failover tests',
+    value: '2.4K req/s',
+    label: 'cached redirects with 0 errors and exact rate limiting',
+    source: 'Redis Lua sliding window · OctoScale load test',
   },
   {
     value: '1st',

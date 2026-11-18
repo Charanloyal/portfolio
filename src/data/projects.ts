@@ -32,7 +32,7 @@ interface ShowcaseEntry {
 const SHOWCASE: ShowcaseEntry[] = [
   { id: 'agent-orchestration-system', tracks: ['ai', 'systems'], tagline: 'Human-gated multi-agent research DAG' },
   { id: 'multi-agent-llm-orchestration', tracks: ['ai'], tagline: 'LLM-routed agents with critique, budgets and eval loop' },
-  { id: 'octoscale-url-shortener', tracks: ['systems'], tagline: 'Cache-first URL shortener with Redis rate limiting' },
+  { id: 'octoscale-url-shortener', tracks: ['systems'], tagline: 'URL shortener load-tested at 2.4K redirects/s with exact rate limiting' },
   { id: 'raftkv', tracks: ['systems'], tagline: 'Raft-replicated, crash-safe key-value store' },
   { id: 'full-stack-integration', tracks: ['systems'], tagline: 'Real-time task and chat board in a TypeScript monorepo', title: 'Task & Chat Board' },
   { id: 'partsense', tracks: ['data', 'ai'], tagline: 'Predictive maintenance tuned for recall on rare failures' },
