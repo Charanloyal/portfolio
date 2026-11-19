@@ -4,16 +4,18 @@ Distributed Systems & AI Infrastructure Engineer (SDE / FDE / AI-Infra).
 
 **Live site:** https://charan-reddy-dev.github.io/portfolio/
 
-A static React + TypeScript site built with Vite and deployed to GitHub Pages by GitHub Actions. It is aimed at engineering screens for SDE-I / SWE-I, Forward Deployed Engineer, AI/ML and data engineering roles at product companies and GCCs: an impact summary, an experience timeline, a role-filtered project showcase with architecture write-ups, a skills matrix, achievements and contact.
+A static React + TypeScript site built with Vite and deployed to GitHub Pages by GitHub Actions. It is aimed at engineering screens for SWE-I / SDE-I, AI-Infra / AI/ML, Forward Deployed Engineer and data engineering roles at product companies and GCCs. The design is editorial and minimal: a dark `#07090e` canvas, frosted surfaces with hairline borders, one sky accent (`#38bdf8`) and emerald (`#10b981`) for live status and measured impact.
 
 ## What's on the site
 
-- **Hero:** availability badge, primary actions (Explore Architecture, View GitHub, Contact Me) and a copy-email button with toast feedback.
-- **Impact bar:** headline numbers, each with its source.
-- **Experience timeline:** a glowing rail with a pulsing node for the current role, and two-column cards per internship: company, location, period, computed tenure and domain on the left; role, an impact strip of measured outcomes, engineering bullets and a tech-stack footer on the right. Roles are data in `src/data/profile.ts` (`start`/`end` as `YYYY-MM`).
-- **Project showcase:** filter tabs for *All*, *AI & Agents*, *Distributed Systems / SDE* and *Data & ML*. Each card follows problem → architecture → impact and opens an accessible **Architecture & system design** dialog with the data flow, key trade-offs, benchmarks (with the committed evidence file for each number), testing and known limitations. Dialogs are deep-linkable: `#projects/<id>`, for example [`#projects/lakeflow`](https://charan-reddy-dev.github.io/portfolio/#projects/lakeflow).
-- **Skills matrix, achievements, certifications and contact.**
+- **Floating pill navigation:** centered glass pill with *About*, *Work*, *Projects*, *Stack* and *Contact*, active-section tracking, and GitHub/LinkedIn shortcuts. Anchors land 96px below the top (`scroll-margin-top`).
+- **About (`#about`):** availability pill, headline, two-line pitch, *Explore Work*, GitHub, LinkedIn and *Copy Email* (with toast), and a four-cell KPI strip with a source under each number.
+- **Work (`#work`, alias `#experience`):** an interactive split pane. The left rail is an ARIA vertical tab list of companies (monogram, role, period) with a sliding indicator; arrow keys, Home and End move between roles. The right pane shows the role, company, location, employment type, domain, impact pills, bullets (with `**bold**` metrics) and a tech stack. *Expand all roles* stacks every role for recruiters who prefer to scan. Roles live in `src/data/profile.ts` (`start`/`end` as `YYYY-MM`; period and tenure are computed).
+- **Projects (`#projects`):** filters for *All*, *AI & Agents*, *Distributed Systems / SDE* and *Data & ML*; the first 8 cards per filter with *Show all*. Each card follows problem → architecture → impact and opens an **Architecture & system design** dialog (data flow, trade-offs, benchmarks with the committed evidence file for each number, testing, limitations). Escape closes it; dialogs are deep-linkable, e.g. [`#projects/lakeflow`](https://charan-reddy-dev.github.io/portfolio/#projects/lakeflow).
+- **Stack (`#stack`):** skills by domain, hackathons, LeetCode and certifications.
+- **Contact (`#contact`):** mailto, copy address, LinkedIn, GitHub and résumé.
 - Two in-browser demos served from this repo: the AeroTest A/B testing calculator (`/portfolio/demos/ab-testing/`) and a fraud-monitoring simulation on synthetic data (`/portfolio/demos/fraud-detector/`).
+- Motion is CSS-only (no animation library) and is switched off under `prefers-reduced-motion`.
 
 ## Project structure
 
@@ -22,15 +24,15 @@ index.html                 Entry HTML: title, meta description, Open Graph/Twitt
 vite.config.ts             base: '/portfolio/' for GitHub Pages; Vitest config
 src/
   main.tsx, App.tsx        Bootstrap and page layout
-  components/              Header, Hero, ImpactBar, Experience, Projects, ProjectCard,
-                           ArchitectureDialog, Skills, Achievements, Contact/Footer, Toast, Icons
+  components/              FloatingNav, Hero, Work, Projects, ProjectCard, ArchitectureDialog,
+                           Stack, Contact/Footer, Section, Toast, Icons
   hooks/                   Active-section tracking, scroll state, clipboard + toast
   data/
     catalogue.json         Every public project: summary, tech, status, metrics + evidence, case studies
     projects.ts            Showcase selection and order, role tracks, path helpers
     profile.ts             Identity, impact metrics, experience, skills, hackathons, certifications
     types.ts               Content types
-  styles/global.css        Design tokens (Midnight Obsidian base, Electric Cyan / Emerald / Indigo accents) and all styles
+  styles/global.css        Design tokens (#07090e canvas, frosted surfaces, sky and emerald accents) and all styles
 public/                    Copied as-is: avatar, favicon, og-image.png, project screenshots, demos, 404.html
 tests/content.test.ts      Content integrity tests (Vitest)
 .github/workflows/         deploy.yml (Pages) and ci.yml (pull requests)

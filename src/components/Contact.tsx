@@ -17,8 +17,13 @@ export function Contact() {
   return (
     <Section
       id="contact"
-      eyebrow="05 · Contact"
-      title="Let's talk about your team"
+      index="05"
+      label="Contact"
+      title={
+        <>
+          Let's talk about your team. <em>I reply within a day.</em>
+        </>
+      }
       intro={`I'm looking for ${profile.targetRoles.join(', ').replace(/, ([^,]*)$/, ' and $1')} roles at product companies and Global Capability Centers. Graduating ${profile.education.period.replace('Expected ', '')}; ${profile.mobility.toLowerCase()}.`}
     >
       <div className="contact-grid">

@@ -916,25 +916,27 @@
       "title": "OctoScale",
       "repo": "Octoscale-URL-Shortener",
       "github_url": "https://github.com/charan-reddy-dev/Octoscale-URL-Shortener",
-      "summary": "URL shortener on FastAPI with Redis INCR and Base62 short codes, a PostgreSQL fallback, cached redirects, sliding-window rate limiting on Redis sorted sets and background click analytics.",
+      "summary": "URL shortener on FastAPI, PostgreSQL and Redis: Base62 codes from an atomic Redis counter, cache-aside redirects, an atomic Lua sliding-window rate limiter with an in-memory fallback, and batched click analytics. Load-tested at 2,404.8 redirects/s with zero errors and exact rate-limit enforcement.",
       "category": "backend",
       "secondary_categories": [],
       "tech": [
         "Python",
         "FastAPI",
+        "Redis (Lua, ZSET)",
         "PostgreSQL",
-        "Redis",
+        "asyncpg",
         "SQLAlchemy",
-        "Docker"
+        "Docker",
+        "pytest"
       ],
       "status": "complete",
       "synthetic_data": false,
       "brief": {
-        "problem": "A URL shortener's redirect path must stay fast, issue collision-free short codes and keep a single client from flooding the API.",
-        "approach": "A Redis atomic counter encoded in Base62 issues codes; redirects read through a Redis cache with PostgreSQL fallback, a sliding-window limiter on Redis sorted sets guards the API, and click analytics are deferred to background tasks.",
+        "problem": "A URL shortener's redirect path must stay fast under load, issue collision-free codes across workers, keep one client from flooding it, and keep serving when Redis fails.",
+        "approach": "A Lua script run with EVALSHA trims, counts and records each request atomically on a Redis sorted set; redirects read through a Redis cache with PostgreSQL fallback; codes come from INCR seeded with SET NX; clicks are queued and written in batches.",
         "outcomes": [
-          "20 automated tests cover code generation, cache-aside redirects, the rate limiter and analytics, using a mocked Redis and in-memory SQLite.",
-          "No load test has been run yet, so no throughput or latency figures are claimed."
+          "Rate limiter allowed exactly the limit in single-client bursts of 3x on both routes, with Retry-After on every 429.",
+          "The load test caught cross-worker deadlocks in click batches; fixed with ordered updates and retries, then verified every 307 became a row."
         ]
       },
       "featured_rank": null,
@@ -942,52 +944,78 @@
       "demo_kind": null,
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-09-24",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "Cached redirects, 126 connections, 30 s",
+          "value": "2,404.8 req/s · p99 219.874 ms",
+          "evidence": "benchmarks/results.json scenarios.redirect.requests_per_second, latency_ms.p99_ms (6 uvicorn workers, PostgreSQL 18.7, Redis 5.0.14.1, client on the same 14-core host)"
+        },
+        {
+          "label": "Link creation, 126 connections, 15 s",
+          "value": "1,155.8 req/s · p50 73.909 ms",
+          "evidence": "benchmarks/results.json scenarios.create.requests_per_second, latency_ms.p50_ms"
+        },
+        {
+          "label": "Rate limiter, 3x burst from one client",
+          "value": "600 of 1,800 allowed (exact)",
+          "evidence": "benchmarks/results.json rate_limiter[0].allowed, requests_sent, exact (redirect limit 600 per 60 s; API burst: 100 of 300)"
+        },
+        {
+          "label": "Responses persisted after the run",
+          "value": "73,728 / 73,728 clicks",
+          "evidence": "benchmarks/results.json data_integrity.new_click_rows, expected_new_click_rows; 18,478 / 18,478 URL rows, 0 duplicate codes"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "Every redirect sits on a user's critical path, short codes must be unique without collision checks, and the public API has to survive brute-force scraping and request floods from a single client.",
+        "problem": "Every redirect sits on a user's critical path. Short codes must be unique across processes without collision checks, the limiter must count accurately when many requests from one client arrive at once, and a Redis outage should degrade the service rather than take it down.",
         "architecture": [
           {
-            "label": "FastAPI routes",
-            "detail": "Presentation layer with routes, middleware and the dashboard; a sliding-window rate limiter runs before any lookup."
+            "label": "Rate limiter (Lua)",
+            "detail": "One script per request via EVALSHA: Redis TIME, ZREMRANGEBYSCORE, ZCARD, then ZADD with a unique member and PEXPIRE only when allowed; separate per-client limits for redirects (600/min) and the API (100/min)."
           },
           {
-            "label": "Service layer",
-            "detail": "Base62 encoding, rate-limit checks, cache coordination and scheduling of background analytics."
+            "label": "Fallback and circuit breaker",
+            "detail": "On a Redis error or 0.5 s timeout, Redis is skipped for 5 s and an in-process sliding window enforces the same limits per worker."
           },
           {
-            "label": "Redis",
-            "detail": "INCR counter for IDs (starting at 10,000,000, so codes stay 4 characters until 62^4), redirect cache with a 24-hour TTL, and the ZSET sliding window."
+            "label": "Redirect path",
+            "detail": "Cache-aside read from Redis with PostgreSQL fallback, 307 response, and a non-blocking enqueue of the click event."
           },
           {
-            "label": "Repository layer and PostgreSQL",
-            "detail": "SQLAlchemy 2.0 async repositories persist URL records and click logs; PostgreSQL re-seeds the Redis counter with SELECT MAX(id) if the key is lost."
+            "label": "Short-code allocation",
+            "detail": "INCR on a counter seeded from MAX(id) with SET NX, encoded in Base62; custom-code races map to 400 and a Redis outage to 503."
           },
           {
-            "label": "Background analytics",
-            "detail": "The 307 redirect returns first; click counts and click logs are written afterwards in a FastAPI background task."
+            "label": "Batched click writer",
+            "detail": "Per-worker queue flushed every 0.5 s: counter UPDATEs in ascending id order in one executemany plus a bulk INSERT; failed batches are retried up to 3 times."
+          },
+          {
+            "label": "Pools and workers",
+            "detail": "Shared Redis connection pool (RESP2) and an asyncpg pool per uvicorn worker; Docker Compose with PostgreSQL, Redis and health checks."
           }
         ],
         "decisions": [
-          "Generates IDs from a Redis atomic counter instead of random hashes, so codes are unique without a collision check, at the cost of predictable, enumerable codes.",
-          "Uses cache-aside reads with a 24-hour TTL and writes the cache on create, so hot links never touch PostgreSQL.",
-          "Implements the limiter as a sliding window on a Redis sorted set (ZREMRANGEBYSCORE, ZADD, ZCARD in one pipeline), which avoids fixed-window boundary bursts but costs O(log n) memory per request in the window.",
-          "Fails the limiter open when Redis is unreachable, choosing availability of redirects over strict rate enforcement.",
-          "Defers click analytics to background tasks so writes never add latency to the redirect; analytics can be lost if the process dies before they run."
+          "Does the whole sliding-window check in one Lua script so trim, count and insert cannot interleave between workers, using the Redis clock so app hosts with skewed clocks agree.",
+          "Records only allowed requests, so a client that keeps retrying is not locked out beyond the window.",
+          "Falls back to a per-process limiter instead of failing open, accepting that the effective limit multiplies by the worker count during an outage.",
+          "Batches click writes instead of two writes per redirect, accepting that up to 0.5 s of clicks can be lost on a crash.",
+          "Orders counter updates by id so concurrent batches from different workers always lock rows in the same order."
         ],
         "testing": [
-          "20 pytest tests with pytest-asyncio and pytest-mock against an in-process Redis mock and in-memory SQLite (aiosqlite).",
-          "Structured JSON logging with structlog in production mode."
+          "36 pytest tests on fakeredis with Lua: exact limits, an 80-request concurrent burst against a limit of 50, fallback on Redis failure, race-free counter seeding, redirects during a Redis outage, and click-batch retries. CI runs them on Python 3.12 and 3.13.",
+          "benchmarks/load_test.py: multi-process asyncio and httpx load generator with redirect, create and limiter-burst phases, hardware metadata and an optional database integrity check."
         ],
         "results": [
-          "Working single-instance service with dashboard, referrer breakdown and recent-click analytics, packaged with Docker Compose (FastAPI, PostgreSQL 15, Redis 7)."
+          "Recorded run: 2,404.8 redirects/s (p50 37.005 ms, p99 219.874 ms) and 1,155.8 creates/s (p99 629.644 ms) with 0 errors at 126 connections.",
+          "Every 201 produced one URL row and every 307 one click row (73,728 of 73,728) after the deadlock fix."
         ],
         "limitations": [
-          "No load test or benchmark yet: throughput and latency are unmeasured.",
-          "Tests use mocked Redis and SQLite, so real TTL expiry, pipelines and PostgreSQL-specific behaviour are not exercised.",
-          "Background analytics run in-process rather than on a durable queue."
+          "Benchmarked on one 14-core Windows laptop with the client, PostgreSQL and a Windows build of Redis 5 on the same host; not a multi-host capacity figure.",
+          "Clicks wait in memory for up to 0.5 s and are lost if a worker crashes.",
+          "No Alembic migrations; tables are created at startup."
         ]
       }
     },
@@ -1102,18 +1130,21 @@
     },
     {
       "id": "smart-loan-recovery",
-      "title": "Smart Loan Recovery",
+      "title": "Smart Loan Recovery: PD × LGD × EAD",
       "repo": "Smart-Loan-Recovery-System-with-Machine-Learning-",
       "github_url": "https://github.com/charan-reddy-dev/Smart-Loan-Recovery-System-with-Machine-Learning-",
-      "summary": "Generates 1,000 synthetic loan records, segments borrowers with K-Means and trains a Random Forest to flag high-risk borrowers and suggest a recovery strategy for each segment.",
+      "summary": "Leak-free credit-risk pipeline on a month-by-month simulated loan book: calibrated PD (logistic regression vs LightGBM vs XGBoost), LGD and EAD models, Expected Loss = PD × LGD × EAD backtested out of time, recovery-priority tiers and SHAP driver summaries. Replaces an earlier version whose label was K-Means cluster membership.",
       "category": "data-science",
       "secondary_categories": [],
       "tech": [
         "Python",
         "scikit-learn",
-        "Pandas",
-        "Matplotlib",
-        "Plotly"
+        "LightGBM",
+        "XGBoost",
+        "SHAP",
+        "pandas",
+        "pytest",
+        "GitHub Actions"
       ],
       "status": "experimental",
       "synthetic_data": true,
@@ -1122,51 +1153,79 @@
       "demo_kind": null,
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-09-13",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "PD out-of-time ROC-AUC (oracle ceiling 0.8343)",
+          "value": "0.7645 · Brier 0.04106",
+          "evidence": "benchmarks/metrics.json pd.oot.logistic_regression.roc_auc, .brier; pd.oracle_oot.roc_auc; snapshot 2023-06, 21,477 loans, 1,086 defaults (synthetic)"
+        },
+        {
+          "label": "Realised OOT loss in the top 5% of loans by EL",
+          "value": "45.4% vs 36.3% by PD alone",
+          "evidence": "benchmarks/metrics.json expected_loss.loss_capture_top_share.top_5pct.by_expected_loss (0.4535), .by_pd_only (0.363)"
+        },
+        {
+          "label": "Shuffled-label leakage control, mean OOT ROC-AUC",
+          "value": "0.5055 over 5 draws",
+          "evidence": "benchmarks/metrics.json pd.label_shuffle_control_oot_roc_auc.mean"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "Loan recovery teams have limited capacity, so borrowers need to be grouped and prioritised. This project explores segmentation and risk scoring on generated data; it does not have real repayment outcomes.",
+        "problem": "The first version labelled borrowers high-risk by K-Means cluster and trained a classifier on the same features, so its 93.5% accuracy measured how well it re-learned the clusters, not default. A credit model needs a future default event as the target, features frozen at an observation date, and loss severity and exposure as well as probability.",
         "architecture": [
           {
-            "label": "Synthetic data",
-            "detail": "src/generate_sample_data.py creates 1,000 borrower records with a fixed seed."
+            "label": "Loan-book simulation",
+            "detail": "52,000 applicants across personal, auto, home-equity and revolving products are underwritten and simulated month by month: missed instalments, cures, roll to 90+ DPD, prepayment, utilisation draw-down and collateral workouts."
           },
           {
-            "label": "Segmentation",
-            "detail": "K-Means (k = 4) on 10 standardised numeric features."
+            "label": "Leak-free snapshots",
+            "detail": "A column registry tags every field as origination, snapshot, outcome or generator; features use history up to the snapshot only and the label is 90+ DPD in the next 12 months. Development snapshot 2022-06, out-of-time test 2023-06."
           },
           {
-            "label": "Risk scoring",
-            "detail": "A random forest trained on an 80/20 stratified split predicts the high-risk flag (clusters 0 and 3) and outputs a 0 to 1 score."
+            "label": "PD",
+            "detail": "Logistic regression, LightGBM and XGBoost with isotonic calibration, compared by stratified 5-fold CV; the lowest CV Brier score was the pre-declared selection rule."
           },
           {
-            "label": "Strategy mapping",
-            "detail": "Fixed thresholds on the score (0.50 and 0.75) assign each borrower a recovery strategy."
+            "label": "LGD and EAD",
+            "detail": "LightGBM models on development defaults (cross-entropy objective for LGD in [0, 1], EAD as a factor of limit or balance), each compared with a product-mean baseline."
+          },
+          {
+            "label": "Expected Loss and tiers",
+            "detail": "EL = PD × LGD × EAD per loan, backtested against realised OOT losses; loans are ranked by EL into four recovery tiers with actions."
+          },
+          {
+            "label": "Explainability",
+            "detail": "SHAP (linear and tree explainers) per model, with one-hot columns summed back to their source feature."
           }
         ],
         "decisions": [
-          "Documents openly that the classifier re-learns the clustering, and that its 0.94 accuracy is not a default-prediction metric.",
-          "Keeps the pipeline reproducible with fixed seeds for data generation, clustering and the split."
+          "Tests leakage directly: re-simulating every month after the snapshot leaves all features identical while labels change.",
+          "Reports the generator's oracle PD as a ceiling so model AUC is read against what is learnable.",
+          "Removes features that are exact functions of others after they split the logistic model's SHAP attributions.",
+          "Leaves the 30% EL over-prediction uncorrected and traces it to PD drift between periods instead of using OOT data to fix it."
         ],
         "testing": [
-          "No automated tests or cross-validation."
+          "16 pytest tests including the future-resampling leakage test, SHAP additivity and EL identities; CI runs them and the full pipeline on Python 3.12 and 3.13.",
+          "Five shuffled-label refits as a leakage control, plus a 500-resample bootstrap for the selected model's OOT metrics."
         ],
         "results": [
-          "Reproducible segmentation, scoring and strategy assignment with EDA and visualisations."
+          "PD OOT ROC-AUC 0.7645 (bootstrap 95% CI 0.749 to 0.780) against an oracle ceiling of 0.8343; the three PD models are statistically tied.",
+          "LGD R² 0.8354 and EAD-factor R² 0.6415 on OOT defaults; the top 5% of loans by EL hold 45.4% of realised OOT loss."
         ],
         "limitations": [
-          "Circular target: the model predicts cluster membership, not default or write-off.",
-          "Synthetic data, hard-coded segment names and unvalidated strategy thresholds."
+          "Synthetic data: the models recover the generator's assumptions, so the numbers do not describe a real portfolio.",
+          "No macro feature: EL over-predicts realised OOT loss by 30% because the training year had a higher default rate."
         ]
       },
       "brief": {
-        "problem": "Collection teams need to decide which borrowers to contact first and with which strategy.",
-        "approach": "K-Means segments 1,000 synthetic borrowers into 4 groups on 10 standardised features, a random forest scores membership of the two higher-risk segments, and fixed score thresholds map borrowers to recovery strategies.",
+        "problem": "Collection teams need to know which performing loans are likely to default and how much each would cost, without a model that leaks the answer into its features.",
+        "approach": "Month-by-month loan-book simulation with timing-tagged columns and an out-of-time split; calibrated PD, LGD and EAD models combined into Expected Loss and recovery tiers, with SHAP explanations.",
         "outcomes": [
-          "Segment-to-strategy pipeline with EDA, Plotly visualisations and a step-by-step notebook.",
-          "The README documents that the risk label is cluster membership, not observed default, and what an outcome-based model would need."
+          "PD OOT ROC-AUC 0.7645 vs an oracle ceiling of 0.8343; shuffled-label control averages 0.5055.",
+          "Ranking by EL puts 45.4% of realised OOT loss in the top 5% of loans, against 36.3% by PD alone."
         ]
       }
     },
@@ -1175,17 +1234,18 @@
       "title": "Multi-Agent LLM Orchestration",
       "repo": "Multi-Agent-LLM-Orchestration",
       "github_url": "https://github.com/charan-reddy-dev/Multi-Agent-LLM-Orchestration",
-      "summary": "Containerized multi-agent system where an LLM-driven orchestrator routes work between decomposition, multi-hop retrieval, per-claim critique, synthesis and compression agents through a shared context, with typed tool failure contracts, token budgets and a self-improving evaluation loop gated by human approval.",
+      "summary": "Planner-Executor-Verifier-Refiner (PEVR) engine that turns a multi-part request into a validated task DAG, runs it with LLM agents and checks every draft against rule-extracted facts no model can change; flagged drafts go through a bounded repair loop. Runs on Groq, Gemini or any OpenAI-compatible endpoint with retry and fallback, or offline with a deterministic mock.",
       "category": "ai-ml",
       "secondary_categories": [],
       "tech": [
         "Python",
-        "FastAPI",
-        "Anthropic API",
-        "SSE",
-        "SQLite",
-        "tiktoken",
-        "Docker Compose"
+        "asyncio",
+        "Pydantic",
+        "httpx",
+        "Groq",
+        "Gemini",
+        "pytest",
+        "GitHub Actions"
       ],
       "status": "experimental",
       "synthetic_data": false,
@@ -1194,64 +1254,75 @@
       "demo_kind": null,
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-05-08",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "Injected faults caught by the Verifier (offline mock)",
+          "value": "20/20 · 0 false flags",
+          "evidence": "benchmarks/results.json runs.benchmark.fault_detection.detected (20), nodes_with_injected_fault (20), flagged_without_injected_fault (0); 20 cases, seed 7"
+        },
+        {
+          "label": "Verified pass rate, first draft → after repair",
+          "value": "0.55 → 0.95",
+          "evidence": "benchmarks/results.json runs.benchmark.final_report.verified_pass_rate_first_draft (0.55), verified_pass_rate_final (0.95)"
+        },
+        {
+          "label": "Anchor retention in final answers, first → final",
+          "value": "0.7802 → 0.989",
+          "evidence": "benchmarks/results.json runs.benchmark.final_report.anchor_retention_first_draft, anchor_retention_final; mock fault rates fixed before the run"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "A research-style query may be ambiguous, need several retrieval hops, or contain a prompt injection or a false premise. A static chain of agents cannot adapt its route, a long run overflows the context window, and tool failures are easy to swallow. Prompt changes also need a way to be evaluated and approved before they ship.",
+        "problem": "When an LLM writes a technical summary from a multi-part request it can silently drop or alter the figures and names it was given, break the output format, or ignore instructions such as a word limit. A second model acting as a judge has the same failure modes, so the check itself needs to be deterministic.",
         "architecture": [
           {
-            "label": "FastAPI and SSE",
-            "detail": "POST /query streams agent activity in real time; traces, evaluation results and rewrite approvals have their own endpoints, and errors carry machine-readable codes."
+            "label": "Planner",
+            "detail": "Extracts numbers, entities and machine-checkable constraints with rules into frozen anchors, asks the model for a task DAG, validates it (acyclic, at most 8 tasks, one synthesis node that reads every analysis task) and falls back to a clause-based DAG when the model's plan is invalid."
           },
           {
-            "label": "Master orchestrator",
-            "detail": "Uses the LLM to pick the next agent from the pipeline state, never skips critique before synthesis, compresses before an agent nears its budget and stops after 8 routing steps."
+            "label": "Executor",
+            "detail": "Runs the DAG in topological waves with asyncio, nodes in a wave concurrently, and requires a strict Pydantic JSON schema for every node output."
           },
           {
-            "label": "Decomposition and retrieval",
-            "detail": "Ambiguous queries become typed sub-tasks with explicit dependencies; retrieval needs at least two chunk citations per answer and records which chunk supported each hop."
+            "label": "Verifier",
+            "detail": "Pure code: scores each draft 0 to 1 from anchor recall, schema validity, constraint checks and a penalty for figures that appear nowhere in the request, and lists each violation."
           },
           {
-            "label": "Critique and synthesis",
-            "detail": "Critique scores each claim (0 to 1) rather than whole outputs; synthesis resolves flagged contradictions and links every sentence to its source agent and chunk."
+            "label": "Refiner",
+            "detail": "Runs only on flagged drafts, receives the exact violations, is re-verified, and is bounded by max_retries; an unparseable repair never replaces a valid earlier draft."
           },
           {
-            "label": "Tools with failure contracts",
-            "detail": "web_search, code_executor, data_lookup and self_reflection return typed timeout, empty and malformed results, with up to 2 retries on modified input and full call logging."
-          },
-          {
-            "label": "Evaluation and meta-agent",
-            "detail": "A harness scores 15 cases on 6 dimensions; a meta-agent proposes one rewrite for the worst prompt, stored as pending until a human approves it, then re-runs only failed cases."
+            "label": "Provider router",
+            "detail": "Groq, Gemini and OpenAI-compatible adapters with full-jitter exponential backoff on 429/5xx and timeouts, immediate fallback on non-retryable errors, and a seeded offline mock with fault injection."
           }
         ],
         "decisions": [
-          "Routes with the LLM instead of a fixed chain so the path adapts to the query, accepting an extra model call of latency per step and capping the route at 8 steps.",
-          "Puts failure handling in code through typed tool contracts rather than in prompts, so timeouts, empty results and malformed output each take a defined path.",
-          "Triggers lossless compression of structured data (JSON, scores, IDs) at 85% of an agent budget and records violations instead of dropping them.",
-          "Never auto-applies a prompt rewrite: the meta-agent proposes, a human approves, and only previously failed cases are re-evaluated.",
-          "Builds the scoring dimensions from scratch so every score comes with a justification string."
+          "Extracts anchors with rules rather than a model so the facts being checked cannot themselves be hallucinated.",
+          "Keeps the Verifier deterministic so the same draft always gets the same score and every failure names a specific anchor or rule.",
+          "Records the mock's injected faults as ground truth so the benchmark measures detection directly, which exposed a mock bug that hid faults in analysis nodes before the results were recorded.",
+          "Reports the one final answer that still fails after two repair rounds instead of tuning the fault rates or seed."
         ],
         "testing": [
-          "Evaluation harness with 5 straightforward, 5 ambiguous and 5 adversarial cases (prompt injection, false premises, forced contradictions).",
-          "Scoring dimensions: answer correctness, citation accuracy, contradiction resolution, tool efficiency, budget compliance and critique agreement."
+          "38 pytest tests covering anchor extraction, DAG validation, verifier scoring, router retry and fallback, HTTP adapters against mocked Groq/Gemini responses, the engine end to end, the CLI and an eval smoke run; CI on Python 3.12 and 3.13.",
+          "20-case benchmark (multi-step, anchor preservation, constraint following) with fault rates fixed before the first recorded run."
         ],
         "results": [
-          "Runs end to end with docker compose up and one API key; API docs, an SSE activity stream and a log interface are included."
+          "Offline mock run: the Verifier flagged all 20 first drafts with an injected fault and no others; 18 of 20 flagged nodes were repaired within 2 rounds.",
+          "Final-answer verified pass rate rose from 0.55 to 0.95 and constraint satisfaction from 0.7 to 1.0 after repair."
         ],
         "limitations": [
-          "Retrieval uses word-overlap scoring rather than vector embeddings, web_search is a mock and NL-to-SQL is a lookup table.",
-          "Evaluation scores are keyword-based heuristics, so paraphrased correct answers can score as wrong.",
-          "The API has no authentication, and LLM routing adds a model call of latency to every step."
+          "Recorded results use the offline mock and measure the detect-and-repair loop, not the quality of a real language model; a live run needs API keys.",
+          "The unsupported-number check also flags correctly derived figures, and entity extraction is capitalisation-based with author-labelled expected anchors."
         ]
       },
       "brief": {
-        "problem": "Fixed agent chains break on ambiguous or adversarial queries, overrun context windows, fail silently when a tool times out, and give no way to improve prompts safely.",
-        "approach": "An orchestrator asks the LLM which agent runs next under hard decision boundaries; agents share a schema-defined context, tools return typed failure contracts with bounded retries, a budget manager triggers compression at 85% of each token budget, and a meta-agent proposes prompt rewrites that a human must approve.",
+        "problem": "LLM-written technical summaries silently drop or alter given figures, break output formats and ignore instructions, and an LLM judge shares those failure modes.",
+        "approach": "Rule-extracted immutable anchors, a validated task DAG run in async waves, a deterministic Verifier that scores every draft and a bounded Refiner loop, behind a Groq/Gemini/OpenAI-compatible router with backoff and fallback.",
         "outcomes": [
-          "Evaluation harness of 15 cases (straightforward, ambiguous, adversarial) scored on 6 dimensions, each returning a score and a written justification.",
-          "Every routing decision, tool call (latency, retries, errors) and policy violation is traced and queryable per job."
+          "Offline benchmark: 20/20 injected first-draft faults flagged with no false flags; verified pass rate 0.55 → 0.95 after repair.",
+          "Every number is reproducible from benchmarks/results.json with one command; limitations of the mock evaluation are documented."
         ]
       }
     },
@@ -1367,23 +1438,27 @@
       "title": "ChurnIntel",
       "repo": "Data-Science-Projects",
       "github_url": "https://github.com/charan-reddy-dev/Data-Science-Projects/tree/main/churn-predictive-agent",
-      "summary": "Browser demo that scores customer churn risk with a fixed logistic formula, answers keyword-matched questions over 100 in-memory customer records and estimates retention-campaign ROI.",
+      "summary": "Schema-grounded text-to-SQL copilot over a churn database: live schema introspection, Gemini / OpenAI-compatible generation with a rule-based fallback, and a three-layer read-only SQL sandbox. A LightGBM churn model writes per-customer SHAP risk drivers back into the database for the copilot to query.",
       "category": "data-science",
       "secondary_categories": [],
       "tech": [
-        "JavaScript",
         "Python",
+        "SQLite",
+        "sqlparse",
+        "LightGBM",
+        "SHAP",
         "scikit-learn",
-        "Pandas"
+        "httpx",
+        "pytest"
       ],
       "status": "experimental",
-      "synthetic_data": false,
+      "synthetic_data": true,
       "brief": {
-        "problem": "Retention teams need to know which customers are likely to churn, why, and whether an incentive campaign pays for itself, without writing SQL for every question.",
-        "approach": "A browser app scores churn risk with a logistic model and shows each feature's contribution, maps natural-language questions to SQL over an in-memory customer table, and simulates campaign ROI; a notebook trains Random Forest and Gradient Boosting models.",
+        "problem": "LLM-written SQL can destroy data or answer the wrong question, and retention teams need to know who will churn and why.",
+        "approach": "Live schema introspection, LLM or rule-based SQL generation with bound parameters, a three-layer read-only sandbox, and a LightGBM churn model whose SHAP drivers the copilot can query.",
         "outcomes": [
-          "Per-feature contribution breakdown explains every risk score (contract type, tenure, support calls, charges).",
-          "Retention simulator estimates recovered lifetime value, campaign cost, net savings and ROI for a targeted segment."
+          "All 22 attack queries blocked, all 8 legitimate controls allowed, database unchanged after the suite.",
+          "Churn test ROC-AUC 0.8271 against an oracle ceiling of 0.8513 on synthetic data."
         ]
       },
       "featured_rank": null,
@@ -1391,48 +1466,67 @@
       "demo_kind": "browser-simulation",
       "demo_note": null,
       "docs_url": null,
-      "updated": "2026-09-20",
-      "metrics": [],
+      "updated": "2026-11-18",
+      "metrics": [
+        {
+          "label": "SQL attacks blocked / legitimate controls allowed",
+          "value": "22/22 · 8/8",
+          "evidence": "churn-predictive-agent/benchmarks/results.json sql_safety.direct_sql_blocked, control_queries_allowed; database_unchanged true"
+        },
+        {
+          "label": "Text-to-SQL execution accuracy (offline planner)",
+          "value": "15/15 dev · 9/10 held-out",
+          "evidence": "churn-predictive-agent/benchmarks/results.json text_to_sql.development_set.correct, heldout_set.correct; questions written by the author"
+        },
+        {
+          "label": "Churn ROC-AUC, test split (oracle ceiling 0.8513)",
+          "value": "0.8271",
+          "evidence": "churn-predictive-agent/benchmarks/results.json churn_model.test.lightgbm.roc_auc, churn_model.oracle_test.roc_auc; synthetic data, 1,200 test customers"
+        }
+      ],
       "image": null,
       "image_alt": null,
       "case_study": {
-        "problem": "A churn score is only actionable if the team can see why a customer is at risk, slice the customer base without an analyst, and check that a retention offer costs less than the revenue it saves.",
+        "problem": "Analysts want answers from customer data without writing SQL, but letting an LLM write SQL against a production database risks destructive or injected statements and silently wrong answers. Retention teams also need to know which customers will churn and why.",
         "architecture": [
           {
-            "label": "Modeling notebook",
-            "detail": "Pandas, scikit-learn Random Forest and Gradient Boosting models explore churn drivers and business impact."
+            "label": "Synthetic churn database",
+            "detail": "6,000 subscribers with 12 months of usage, support tickets and payments up to a 2025-12-31 snapshot; churn is cancellation in the following 90 days."
           },
           {
-            "label": "Risk scorer",
-            "detail": "A client-side logistic function over tenure, monthly charges, support calls and contract type returns a probability, shown on a radial risk gauge."
+            "label": "Schema grounding",
+            "detail": "Tables, keys, row counts, data-dictionary descriptions and distinct categorical values are introspected live and given to the LLM; the offline planner builds its vocabulary from the same catalogue."
           },
           {
-            "label": "Contribution breakdown",
-            "detail": "SHAP-style list of the features pushing each score up or down."
+            "label": "Generation",
+            "detail": "Gemini or any OpenAI-compatible endpoint returns JSON {sql, params}; if it is rejected or fails, a rule-based planner builds a small query IR and renders parameterised SQL."
           },
           {
-            "label": "SQL copilot simulator",
-            "detail": "Keyword-matched natural-language questions are mapped to SQL and run over 100 in-memory customer records, with the SQL, result table and a summary shown."
+            "label": "Read-only sandbox",
+            "detail": "A sqlparse validator (one SELECT, no DML/DDL/ATTACH/PRAGMA), the SQLite authorizer (allow-listed tables and functions) and a read-only connection with a timeout and row cap."
           },
           {
-            "label": "Campaign simulator",
-            "detail": "Estimates recovered LTV, campaign cost, net savings and ROI for incentives sent to high-risk segments."
+            "label": "Churn model",
+            "detail": "LightGBM selected by 5-fold CV against a logistic baseline; cross-fitted scores, risk tiers and top-3 TreeSHAP drivers per customer are written to the database."
           }
         ],
         "decisions": [
-          "Uses a fixed, interpretable logistic formula in the browser so every score can be explained term by term without a model server.",
-          "Simulates the SQL copilot with keyword matching instead of calling an LLM, keeping the demo deterministic and free to run.",
-          "Pairs prediction with an ROI simulator so the output is a decision, not just a probability."
+          "Treats LLM output as untrusted: it passes the same sandbox as everything else and falls back to the planner when rejected.",
+          "Binds every literal from the question as a parameter instead of splicing it into SQL.",
+          "Layers the authorizer and a read-only connection under the static check, so a validator bypass still cannot write.",
+          "Adds a held-out question set written before the planner was run on it, and reports its one silent wrong answer."
         ],
         "testing": [
-          "Manual verification in the browser demo; no automated test suite."
+          "61 pytest tests: attack and control queries, authorizer and read-only bypass checks, timeouts, mocked Gemini and OpenAI-compatible responses, malicious-LLM fallback, and SHAP checked against LightGBM's own TreeSHAP.",
+          "Evaluation script rebuilds the database, trains the model, runs 25 questions and the safety suite, and confirms the tables are unchanged."
         ],
         "results": [
-          "Public browser demo covering scoring, explanation, question answering and campaign ROI."
+          "22/22 attack queries and 22/22 malicious-LLM outputs blocked, 8/8 legitimate controls allowed, 5/5 write requests refused, database unchanged.",
+          "Churn LightGBM test ROC-AUC 0.8271 vs 0.8187 for logistic regression; the High tier (10% of customers) holds 40% of churners."
         ],
         "limitations": [
-          "The browser scorer is a hand-set logistic formula, not the trained notebook model.",
-          "The SQL copilot is keyword-matched, not an LLM, and runs over 100 in-memory records."
+          "Synthetic data, and the offline planner is narrow: it answered the held-out question 'Which region has the highest churn rate?' with the overall rate.",
+          "No live-LLM evaluation yet; the browser demo is still a client-side simulation."
         ]
       }
     },

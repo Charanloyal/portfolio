@@ -6,20 +6,26 @@ export interface ImpactMetric {
 
 export interface RoleMetric {
   value: string;
-  label: string;
+  label?: string;
 }
 
 export interface Role {
   role: string;
   org: string;
+  /** Short company name for the #work tab rail. */
+  short: string;
+  /** Two-letter monogram shown on the tab. */
+  mark: string;
   /** Year and month the role started, YYYY-MM. */
   start: string;
   /** Year and month the role ended, YYYY-MM; omitted for a current role. */
   end?: string;
   location: string;
+  type: string;
   domain: string;
   current?: boolean;
   impact: RoleMetric[];
+  /** Bullet text; wrap metrics and key terms in **double asterisks** to bold them. */
   bullets: string[];
   stack: string[];
 }
@@ -41,13 +47,16 @@ export const githubUrl = `https://github.com/${githubUser}`;
 
 export const profile = {
   name: 'B. Charan Kumar Reddy',
+  firstNames: 'B. Charan Kumar',
+  lastName: 'Reddy',
   shortName: 'Charan',
   headline: 'Distributed Systems & AI Infrastructure Engineer',
-  focus: 'SDE · FDE · AI-Infra',
-  subheadline:
-    'Engineering low-latency LLM inference pipelines, Raft-based distributed storage, and high-throughput backend systems.',
-  availability: 'Open to SDE-I / SWE-I, FDE & AI/ML Roles',
-  targetRoles: ['SDE-I / SWE-I', 'Forward Deployed Engineer (FDE)', 'AI / ML Engineering', 'Data Engineering'],
+  pitch: [
+    'I build low-latency LLM inference pipelines and Raft-based distributed systems,',
+    'and the high-throughput data pipelines that feed them.',
+  ],
+  availability: 'Open to SWE-I / SDE-I / AI-Infra / FDE Roles',
+  targetRoles: ['SWE-I / SDE-I', 'AI Infrastructure & AI/ML Engineering', 'Forward Deployed Engineer (FDE)', 'Data Engineering'],
   location: 'Bengaluru, India',
   mobility: 'Open to relocation & remote',
   siteUrl: `https://${githubUser}.github.io/portfolio/`,
@@ -56,145 +65,114 @@ export const profile = {
   resumeUrl: 'https://drive.google.com/file/d/1WdwS-cfhYwjDMigkE3VQWP5TRUIQqMt5/view',
   links: {
     github: githubUrl,
-    linkedin: 'https://www.linkedin.com/in/b-charan-kumar-reddy',
+    linkedin: 'https://www.linkedin.com/in/b-charan-kumar-reddy/',
     leetcode: 'https://leetcode.com/u/charan_red/',
   },
   education: {
-    degree: 'B.Tech, Electronics and Communication Engineering (Data Science)',
+    degree: 'B.Tech, Computer Science and Engineering',
     school: 'SRM Institute of Science and Technology',
     location: 'Chennai, India',
     detail: 'CGPA 8.7 / 10',
-    period: 'Expected May 2027',
+    period: 'Expected 2027',
   },
 };
 
 export const impactMetrics: ImpactMetric[] = [
   {
-    value: '36%',
-    label: 'LLM inference latency cut, 2.5 s → 1.6 s',
-    source: 'INT8 quantization + prompt caching · Labmentix',
+    value: '−36%',
+    label: 'LLM inference latency, 2.5\u00a0s → 1.6\u00a0s',
+    source: 'INT8 quantization + prompt caching · General Motors',
   },
   {
-    value: '18 h → 5 min',
-    label: 'CAD die-face creation per vehicle panel',
-    source: 'Python automation in Siemens NX · General Motors',
+    value: '500K+',
+    label: 'vector embeddings indexed at 92% retrieval recall',
+    source: 'FAISS + Pinecone semantic search · General Motors',
   },
   {
-    value: '0.77 ms',
-    label: 'p50 online feature lookup (p99 1.62 ms)',
-    source: 'Redis feature serving · FeatureHub benchmark',
+    value: '2.4K req/s',
+    label: 'cached redirects with 0 errors and exact rate limiting',
+    source: 'Redis Lua sliding window · OctoScale load test',
   },
   {
-    value: '550+',
-    label: 'LeetCode problems solved, top 5.83% globally',
-    source: 'Data structures & algorithms · leetcode/charan_red',
+    value: '1st',
+    label: 'place, Software Engineering Hackathon',
+    source: 'Automated LLM-powered code generation system',
   },
 ];
 
 export const experience: Role[] = [
   {
-    role: 'AI/ML Student Intern',
+    role: 'AI & Automation Engineering Intern',
     org: 'General Motors Technical Center India',
+    short: 'General Motors',
+    mark: 'GM',
     start: '2026-07',
     location: 'Bengaluru, India',
-    domain: 'Manufacturing AI & Automation',
+    type: 'Engineering Internship',
+    domain: 'Manufacturing Engineering AI & LLM Infra',
     current: true,
     impact: [
-      { value: '18 h → 5 min', label: 'die-face creation per panel' },
-      { value: '7 engineers', label: 'using the CAD quality tool' },
-      { value: '~47 h/month', label: 'manual work saved' },
+      { value: '−36%', label: 'inference latency (2.5\u00a0s → 1.6\u00a0s)' },
+      { value: '500K+', label: 'document embeddings' },
+      { value: '92%', label: 'retrieval recall' },
     ],
     bullets: [
-      'Build AI/ML and Python automation for Manufacturing Engineering workflows in Siemens NX.',
-      'Automated die-face creation for hood, fender, roof and door panels, cutting it from 18 hours to 5 minutes per panel.',
-      'Built a tool that checks and scores CAD surface quality on die faces, now used by 7 engineers on the team.',
-      'Together these save the team about 47 hours of manual work a month.',
+      "Engineered production **machine learning, LLM and workflow automation** tools for General Motors' Manufacturing Engineering organization.",
+      'Cut LLM inference latency by **36% (from 2.5 s to 1.6 s)** by implementing **INT8 quantization** and deterministic **prompt caching**.',
+      'Architected a semantic search and retrieval pipeline indexing **500,000+ technical document embeddings** with **FAISS** and **Pinecone**, achieving **92% retrieval accuracy**.',
     ],
-    stack: ['Python', 'Siemens NX', 'CAD automation', 'Surface-quality analysis', 'AI/ML tooling'],
+    stack: ['Python', 'INT8 Quantization', 'Prompt Caching', 'FAISS', 'Pinecone', 'RAG Pipelines', 'LLM Systems'],
   },
   {
-    role: 'Full Stack Developer Intern',
-    org: 'IIT Madras',
+    role: 'Software Developer Intern',
+    org: 'TIQWorld Pvt. Ltd.',
+    short: 'TIQWorld',
+    mark: 'TQ',
     start: '2026-06',
-    end: '2026-06',
+    end: '2026-07',
     location: 'Chennai, India',
-    domain: 'Full-Stack SDE',
-    impact: [
-      { value: '10+', label: 'REST APIs shipped' },
-      { value: '−35%', label: 'integration defects' },
-      { value: '−50%', label: 'deployment time' },
-    ],
+    type: 'Engineering Internship',
+    domain: 'Full-Stack & Backend Engineering',
+    impact: [{ value: 'Production web architecture' }, { value: 'API performance & SDLC' }],
     bullets: [
-      'Built 10+ REST APIs and Docker CI/CD, cutting integration defects by 35% and deployment time by 50%.',
-      'Shipped a real-time task and chat board as a TypeScript monorepo with WebSockets, Redis caching and offline fallbacks.',
+      'Developed and shipped modular **full-stack web features** and **RESTful backend services** in a fast-paced production environment.',
+      'Collaborated on **database schema optimization**, **API integration** and **automated testing** workflows to improve application responsiveness.',
     ],
-    stack: ['TypeScript', 'React', 'Express', 'WebSockets', 'Redis', 'Docker', 'GitHub Actions'],
+    stack: ['TypeScript', 'JavaScript', 'REST APIs', 'SQL', 'Git', 'CI/CD'],
   },
   {
     role: 'Software Engineer Intern',
     org: 'The Developers Arena',
+    short: 'The Developers Arena',
+    mark: 'DA',
     start: '2026-02',
     end: '2026-05',
-    location: 'Hyderabad, India',
-    domain: 'Backend & Automation',
-    impact: [
-      { value: '50+/week', label: 'tickets auto-classified' },
-      { value: '−40%', label: 'manual triage effort' },
-    ],
+    location: 'Remote · India',
+    type: 'Engineering Internship',
+    domain: 'Backend & Software Engineering',
+    impact: [{ value: 'Modular backend services' }, { value: 'Automated test coverage' }],
     bullets: [
-      'Automated Python classification of 50+ Jira/ServiceNow tickets a week, cutting manual triage effort by 40%.',
-      'Developed modular backend services and REST APIs with automated CI testing, following production SDLC practices.',
+      'Built clean, modular **backend services** and **RESTful API** endpoints following production software-engineering and version-control standards.',
+      'Implemented automated **unit and integration test suites** to reduce regression defects across releases.',
     ],
-    stack: ['Python', 'REST APIs', 'Text classification', 'Jira', 'ServiceNow', 'CI testing'],
+    stack: ['Python', 'Java', 'REST APIs', 'PostgreSQL', 'Git'],
   },
   {
-    role: 'Machine Learning Intern',
-    org: 'Technex, IIT (BHU) Varanasi',
-    start: '2025-09',
-    end: '2025-12',
-    location: 'Remote',
-    domain: 'Applied ML',
-    impact: [
-      { value: '+18%', label: 'F1-score on 50K+ records' },
-      { value: '88%', label: 'cross-validated accuracy' },
-    ],
-    bullets: [
-      'Raised F1-score by 18% on 50,000+ records through PyTorch and scikit-learn tuning with 5-fold cross-validation.',
-      'Trained 5 ML models to 88% cross-validated accuracy, guarded by automated regression test suites.',
-    ],
-    stack: ['PyTorch', 'scikit-learn', 'Cross-validation', 'Hyperparameter tuning', 'Regression tests'],
-  },
-  {
-    role: 'AI & ML Engineer Intern (promoted)',
+    role: 'AI & ML Engineer Intern',
     org: 'Labmentix',
+    short: 'Labmentix',
+    mark: 'LM',
     start: '2025-07',
     end: '2025-09',
-    location: 'Remote',
-    domain: 'LLM Inference & RAG',
-    impact: [
-      { value: '−36%', label: 'LLM latency (2.5 s → 1.6 s)' },
-      { value: '60% faster', label: 'log diagnostics' },
-    ],
+    location: 'Remote · India',
+    type: 'Engineering Internship',
+    domain: 'Applied Machine Learning',
+    impact: [{ value: 'End-to-end ML pipelines' }, { value: 'Automated model inference' }],
     bullets: [
-      'Cut LLM inference latency by 36% (2.5 s → 1.6 s) with INT8 quantization and prompt caching, benchmarked before and after.',
-      'Delivered a FastAPI log-analysis service using SSE-streaming multi-agent RAG, making diagnostics 60% faster.',
-      'Built end-to-end ML models, feature engineering pipelines and automated inference workflows.',
+      'Designed and evaluated **supervised ML models**, **feature engineering pipelines** and automated **batch and real-time inference** workflows.',
+      'Standardized **model validation metrics** and data preprocessing scripts for **reproducible ML experimentation**.',
     ],
-    stack: ['Python', 'INT8 quantization', 'Prompt caching', 'FastAPI', 'SSE streaming', 'Multi-agent RAG'],
-  },
-  {
-    role: 'Data Science Intern',
-    org: 'Skill Intern',
-    start: '2024-10',
-    end: '2024-12',
-    location: 'Remote',
-    domain: 'Experimentation & Analytics',
-    impact: [],
-    bullets: [
-      'Built AeroTest, an A/B testing tool with power-based sample sizing, two-proportion z-tests, sample-ratio-mismatch checks and ROI projection.',
-      'Built ChurnIntel, an explainable churn-risk demo with per-feature contributions and a retention-campaign ROI simulator.',
-    ],
-    stack: ['Python', 'SciPy', 'statsmodels', 'JavaScript', 'Chart.js'],
+    stack: ['Python', 'scikit-learn', 'Pandas', 'Feature Engineering', 'SQL'],
   },
 ];
 
@@ -225,72 +203,59 @@ export function formatTenure(role: Pick<Role, 'start' | 'end'>, now: Date = new 
   const rest = months % 12;
   return `${years} yr${years === 1 ? '' : 's'}${rest ? ` ${rest} mo${rest === 1 ? '' : 's'}` : ''}`;
 }
+
 export const skills: SkillGroup[] = [
   {
     group: 'Languages',
-    items: ['Python', 'SQL', 'TypeScript / JavaScript', 'Java', 'C++'],
+    items: ['Python', 'C++', 'Java', 'SQL', 'TypeScript', 'JavaScript'],
   },
   {
-    group: 'AI, ML & LLM Systems',
+    group: 'AI & LLM Infrastructure',
     items: [
-      'Multi-agent architectures (LangGraph)',
-      'RAG: hybrid BM25 + vector, reranking',
-      'INT8 quantization',
-      'Prompt caching',
-      'LLM evaluation & guardrails',
+      'Multi-Agent Systems (LangGraph)',
+      'RAG Pipelines',
+      'INT8 Quantization',
+      'Prompt Caching',
+      'LLM Evaluation & Guardrails',
       'FAISS',
       'Pinecone',
       'Qdrant',
       'PyTorch',
-      'Hugging Face Transformers',
-      'LoRA / PEFT',
+      'Hugging Face + LoRA',
+    ],
+  },
+  {
+    group: 'Distributed Systems & Backend',
+    items: [
+      'Raft Consensus',
+      'gRPC',
+      'Redis (ZSETs / Lua)',
+      'Kafka',
+      'REST APIs (FastAPI)',
+      'Microservices',
+      'Async Concurrency',
+      'Circuit Breakers',
+    ],
+  },
+  {
+    group: 'Data & ML',
+    items: [
+      'PostgreSQL',
+      'Vector Databases',
+      'ETL Pipelines',
+      'Debezium CDC',
+      'Spark / PySpark',
+      'Apache Iceberg',
+      'Airflow',
       'scikit-learn',
       'XGBoost',
       'SHAP',
-      'ONNX Runtime',
+      'A/B Testing (Z-Tests, SRM)',
     ],
   },
   {
-    group: 'Backend & Distributed Systems',
-    items: [
-      'Raft consensus',
-      'gRPC & Protocol Buffers',
-      'REST APIs (FastAPI)',
-      'Async I/O (asyncio)',
-      'Redis: Lua, ZSET rate limiting',
-      'Circuit breakers & EWMA routing',
-      'Celery work queues',
-      'Microservices',
-    ],
-  },
-  {
-    group: 'Data & Storage',
-    items: [
-      'PostgreSQL',
-      'Apache Kafka',
-      'Debezium (CDC)',
-      'Apache Spark / PySpark',
-      'Apache Iceberg',
-      'Trino',
-      'Apache Airflow',
-      'Great Expectations',
-      'Vector databases',
-      'A/B testing: z-tests, SRM',
-    ],
-  },
-  {
-    group: 'Cloud, DevOps & Tooling',
-    items: [
-      'Docker & Compose',
-      'GitHub Actions CI/CD',
-      'AWS',
-      'Google Cloud',
-      'Microsoft Azure',
-      'Prometheus',
-      'OpenTelemetry',
-      'Linux',
-      'Git',
-    ],
+    group: 'Cloud & DevOps',
+    items: ['Docker', 'Microsoft Azure', 'AWS', 'Google Cloud', 'GitHub Actions CI/CD', 'Prometheus', 'Linux', 'Git'],
   },
 ];
 
@@ -298,13 +263,14 @@ export const hackathons: Hackathon[] = [
   {
     name: 'Software Engineering Hackathon',
     detail: 'Built an automated, LLM-powered code generation system.',
+    result: '1st Place',
   },
   {
     name: 'TenzorX 2026 National AI Hackathon',
     detail: 'National-level AI hackathon, 2026.',
   },
   {
-    name: 'Google Cloud Gen AI Exchange Hackathon',
+    name: 'Google Cloud Gen AI Exchange Hackathon 2025',
     detail: 'Generative AI hackathon run by Google Cloud.',
   },
 ];
