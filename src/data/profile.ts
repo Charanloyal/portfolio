@@ -69,7 +69,7 @@ export const profile = {
     leetcode: 'https://leetcode.com/u/charan_red/',
   },
   education: {
-    degree: 'B.Tech, Computer Science and Engineering',
+    degree: 'B.Tech, Electronics and Communication Engineering (Data Science)',
     school: 'SRM Institute of Science and Technology',
     location: 'Chennai, India',
     detail: 'CGPA 8.7 / 10',
