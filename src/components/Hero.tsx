@@ -60,8 +60,8 @@ export function Hero() {
           <img
             src={`${import.meta.env.BASE_URL}avatar.jpg`}
             alt={`Portrait of ${profile.name}`}
-            width={413}
-            height={531}
+            width={900}
+            height={992}
             fetchPriority="high"
           />
           <figcaption className="mono">
