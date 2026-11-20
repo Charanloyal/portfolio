@@ -1,8 +1,10 @@
 # B. Charan Kumar Reddy · Engineering Portfolio
 
+> **This portfolio has moved to https://charan-portfolio-nine-xi.vercel.app/** — the GitHub Pages URL now redirects there. This repository is kept for history; its content is no longer maintained.
+
 Distributed Systems & AI Infrastructure Engineer (SDE / FDE / AI-Infra).
 
-**Live site:** https://charan-reddy-dev.github.io/portfolio/
+**Previous site:** https://charan-reddy-dev.github.io/portfolio/ (redirects to the new portfolio)
 
 A static React + TypeScript site built with Vite and deployed to GitHub Pages by GitHub Actions. It is aimed at engineering screens for SWE-I / SDE-I, AI-Infra / AI/ML, Forward Deployed Engineer and data engineering roles at product companies and GCCs. The design is editorial and minimal: a dark `#07090e` canvas, frosted surfaces with hairline borders, one sky accent (`#38bdf8`) and emerald (`#10b981`) for live status and measured impact.
 
