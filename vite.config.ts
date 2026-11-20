@@ -13,13 +13,14 @@ function githubUserHtml(user: string): Plugin {
   };
 }
 
-// Served as a GitHub Pages project site: https://<github-user>.github.io/portfolio/
+// Served as a GitHub Pages project site (https://<github-user>.github.io/portfolio/) or,
+// when Vercel builds it (VERCEL=1), from the domain root.
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   const githubUser = (env.PORTFOLIO_GITHUB_USER || env.GITHUB_REPOSITORY_OWNER || DEFAULT_GITHUB_USER).toLowerCase();
 
   return {
-    base: '/portfolio/',
+    base: env.VERCEL ? '/' : '/portfolio/',
     plugins: [react(), githubUserHtml(githubUser)],
     define: {
       __GITHUB_USER__: JSON.stringify(githubUser),
